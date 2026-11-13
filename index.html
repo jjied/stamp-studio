@@ -1,562 +1,2941 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MY STAMP GENERATOR - 手绘治愈系邮票生成器</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gaegu:wght@400;700&family=Indie+Flower&family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        .font-gaegu { font-family: 'Gaegu', 'ZCOOL KuaiLe', 'Comic Sans MS', cursive; }
+        .font-indie { font-family: 'Indie Flower', 'ZCOOL KuaiLe', 'Comic Sans MS', cursive; }
+        .font-caveat { font-family: 'Caveat', 'Ma Shan Zheng', cursive; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         body {
-            background-color: #121212;
-            color: #f1f1f1;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 16px;
+            background-color: #141312;
+            background-image: radial-gradient(circle at 50% 0%, #242220 0%, #141312 75%);
+            color: #f3f2f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
         }
-        .container {
+
+        .workbench-card {
+            background: rgba(30, 28, 26, 0.92);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 严格锁定 1:1 正方形预览舞台 */
+        .canvas-stage-wrapper {
             width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding-bottom: 40px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1e1e1e;
-            padding: 12px 16px;
-            border-radius: 16px;
-            border: 1px solid #2a2a2a;
-        }
-        .logo-title {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #fff;
-        }
-        .top-btn {
-            background: #2d2d2d;
-            border: none;
-            color: #ff758c;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        /* 预览舞台 */
-        .preview-box {
-            position: relative;
-            width: 100%;
+            max-width: 360px;
             aspect-ratio: 1 / 1;
-            background: #181818;
-            border-radius: 20px;
-            border: 1px solid #2a2a2a;
+            min-height: 290px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        canvas {
-            width: 92%;
-            height: 92%;
-            object-fit: contain;
-            cursor: grab;
-        }
-        canvas:active { cursor: grabbing; }
-        
-        .canvas-tip {
-            position: absolute;
-            bottom: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #aaa;
-            pointer-events: none;
-        }
-        .reset-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(45, 45, 45, 0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 11px;
-            cursor: pointer;
         }
 
-        /* 控制面板卡片 */
-        .panel {
-            background: #1a1a1a;
-            border-radius: 20px;
-            padding: 16px;
-            border: 1px solid #2a2a2a;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .section-title {
-            font-size: 11px;
-            color: #888;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-        
-        .color-row {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-        }
-        .color-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .color-btn.active {
-            border-color: #fff;
-            transform: scale(1.1);
+        #stampCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.75));
         }
 
-        /* 动物网格 */
-        .grid-animals {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            max-height: 160px;
-            overflow-y: auto;
-        }
-        .animal-card {
-            background: #252525;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            padding: 6px 2px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            cursor: pointer;
-        }
-        .animal-card.active {
-            border-color: #ff758c;
-            background: #2d2328;
-        }
-        .animal-card span {
-            font-size: 9px;
-            color: #bbb;
+        .grid-stamp-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.65));
         }
 
-        .input-group {
-            display: flex;
-            gap: 8px;
+        .ring-selected {
+            box-shadow: 0 0 0 2px #1e1c1a, 0 0 0 4px #f5d0fe;
         }
-        input[type="text"] {
-            flex: 1;
-            background: #252525;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-        }
-        input[type="text"]:focus { border-color: #ff758c; }
 
-        .action-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 6px;
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
         }
-        .main-btn {
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 15px;
+            width: 15px;
+            border-radius: 9999px;
+            background: #f5d0fe;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.3);
-            text-align: center;
+            margin-top: -5px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
         }
-        .sec-btn {
-            background: #2a2a2a;
-            color: #fff;
-            border: 1px solid #3a3a3a;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 13px;
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
             cursor: pointer;
-            text-align: center;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 9999px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area {
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 85vw;
+                max-width: 680px;
+            }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-5 select-none">
 
-<div class="container">
-    <header>
-        <div class="logo-title">💌 MY STAMP GENERATOR</div>
-        <button class="top-btn" onclick="randomizeAll()">✨ 随机搭配</button>
-    </header>
+    <!-- 主工作台容器 -->
+    <div class="workbench-card w-full max-w-6xl rounded-3xl overflow-hidden flex flex-col">
+        
+        <!-- 页面顶部署名横幅 -->
+        <div class="bg-gradient-to-r from-pink-500/10 via-amber-500/10 to-sky-500/10 px-4 py-2 border-b border-white/10 text-center text-xs sm:text-sm text-stone-300 font-medium tracking-wide">
+            此网站由 🍠雨季不再来 和 Gemini 共同制作
+        </div>
 
-    <!-- 预览画布 -->
-    <div class="preview-box">
-        <button class="reset-btn" onclick="resetPositions()">重置位置</button>
-        <canvas id="stampCanvas" width="1080" height="1080"></canvas>
-        <div class="canvas-tip">可直接拖拽动物、文字、邮戳与角标</div>
+        <!-- 顶部工具栏 -->
+        <header class="px-3.5 sm:px-5 py-3 border-b border-white/10 flex items-center justify-between gap-2 bg-[#1a1817]/80">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button onclick="downloadStamp()" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs sm:text-sm text-stone-100 transition active:scale-95 cursor-pointer" title="保存高分辨率 1080x1080 透明底 PNG">
+                    <svg class="w-4 h-4 text-pink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Save PNG</span>
+                </button>
+                <button onclick="copyStampToClipboard()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs sm:text-sm text-stone-200 transition active:scale-95 cursor-pointer" title="复制图片">
+                    <svg class="w-4 h-4 text-emerald-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span class="hidden sm:inline">Copy</span>
+                </button>
+            </div>
+
+            <h1 class="text-[11px] sm:text-sm md:text-base font-medium tracking-[0.16em] text-stone-100 uppercase text-center truncate">
+                MY STAMP GENERATOR
+            </h1>
+
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button onclick="resetStamp()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs sm:text-sm text-stone-300 transition active:scale-95 cursor-pointer" title="重置默认">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+                <button onclick="window.print()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs sm:text-sm text-stone-200 transition active:scale-95 cursor-pointer" title="打印">
+                    <svg class="w-4 h-4 text-amber-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    <span class="hidden sm:inline">Print</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主体内容区 -->
+        <main class="flex-1 grid grid-cols-1 lg:grid-cols-12">
+            
+            <!-- 左侧：预览舞台 -->
+            <section class="lg:col-span-6 p-4 sm:p-6 flex flex-col items-center justify-between bg-[#141312] border-b lg:border-b-0 lg:border-r border-white/10 relative">
+                
+                <!-- 顶部视图切换与提示 -->
+                <div class="w-full flex flex-wrap justify-between items-center gap-2 text-[11px] text-stone-400 mb-2">
+                    <div class="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+                        <button onclick="setPreviewMode('single')" id="view-single" class="px-2.5 py-1 rounded-lg bg-white/15 text-white font-medium transition cursor-pointer flex items-center gap-1">
+                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                            <span>单张 DIY 舞台</span>
+                        </button>
+                        <button onclick="setPreviewMode('grid')" id="view-grid" class="px-2.5 py-1 rounded-lg text-stone-400 hover:text-white transition cursor-pointer flex items-center gap-1">
+                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            <span>四宫格灵感墙</span>
+                        </button>
+                    </div>
+
+                    <div id="canvas-mode-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-stone-300">
+                        <svg class="w-3 h-3 text-pink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+                        <span>1:1 正方形 (点击元素自由拖拽)</span>
+                    </div>
+
+                    <button onclick="resetElementPositions()" title="一键将拖乱的元素归位" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-pink-300/15 hover:bg-pink-300/25 border border-pink-300/30 text-pink-200 transition active:scale-95 cursor-pointer">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        <span>归位元素</span>
+                    </button>
+                </div>
+
+                <!-- 邮票画布容器 (严格 1:1 正方形) -->
+                <div id="print-area" class="my-auto py-2 flex flex-col items-center justify-center w-full">
+                    <!-- 单张 DIY 画布 -->
+                    <div id="single-preview-box" class="canvas-stage-wrapper">
+                        <canvas id="stampCanvas" width="1080" height="1080" class="cursor-grab"></canvas>
+                    </div>
+
+                    <!-- 四宫格灵感墙 -->
+                    <div id="grid-preview-box" class="hidden grid-cols-2 gap-3 w-full max-w-[360px] aspect-square min-h-[290px]">
+                        <div class="bg-[#0d0c0c] rounded-2xl p-2 border border-white/10 flex items-center justify-center relative">
+                            <canvas id="gridCanvas0" width="540" height="540" class="grid-stamp-canvas"></canvas>
+                            <span class="absolute bottom-1.5 right-2 text-[9px] text-pink-200 bg-black/70 px-1.5 py-0.5 rounded">当前编辑</span>
+                        </div>
+                        <div onclick="applyGridPreset(1)" title="点击载入此样式" class="bg-[#0d0c0c] rounded-2xl p-2 border border-white/5 hover:border-pink-200/50 flex items-center justify-center cursor-pointer transition relative">
+                            <canvas id="gridCanvas1" width="540" height="540" class="grid-stamp-canvas"></canvas>
+                        </div>
+                        <div onclick="applyGridPreset(2)" title="点击载入此样式" class="bg-[#0d0c0c] rounded-2xl p-2 border border-white/5 hover:border-pink-200/50 flex items-center justify-center cursor-pointer transition relative">
+                            <canvas id="gridCanvas2" width="540" height="540" class="grid-stamp-canvas"></canvas>
+                        </div>
+                        <div onclick="applyGridPreset(3)" title="点击载入此样式" class="bg-[#0d0c0c] rounded-2xl p-2 border border-white/5 hover:border-pink-200/50 flex items-center justify-center cursor-pointer transition relative">
+                            <canvas id="gridCanvas3" width="540" height="540" class="grid-stamp-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部快捷操作栏 -->
+                <div class="w-full flex items-center justify-center gap-6 pt-3 text-xs text-stone-400">
+                    <button onclick="downloadStamp()" class="flex flex-col items-center gap-1 hover:text-white transition cursor-pointer group">
+                        <div class="p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition">
+                            <svg class="w-4 h-4 text-stone-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <span>Save PNG</span>
+                    </button>
+                    <button onclick="copyStampToClipboard()" class="flex flex-col items-center gap-1 hover:text-white transition cursor-pointer group">
+                        <div class="p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition">
+                            <svg class="w-4 h-4 text-stone-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </div>
+                        <span>Copy</span>
+                    </button>
+                    <button onclick="shareStamp()" class="flex flex-col items-center gap-1 hover:text-white transition cursor-pointer group">
+                        <div class="p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition">
+                            <svg class="w-4 h-4 text-stone-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        </div>
+                        <span>Share</span>
+                    </button>
+                    <button onclick="window.print()" class="flex flex-col items-center gap-1 hover:text-white transition cursor-pointer group">
+                        <div class="p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition">
+                            <svg class="w-4 h-4 text-stone-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        </div>
+                        <span>Print</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 右侧：DIY 控制面板 -->
+            <section class="lg:col-span-6 p-4 sm:p-6 flex flex-col gap-3.5 bg-[#1e1c1a]/75 lg:max-h-[86vh] lg:overflow-y-auto no-scrollbar">
+                
+                <!-- 1. Paper Color & Pattern -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-medium tracking-wider text-stone-300 uppercase">Paper Color & Pattern</label>
+                        <span id="paper-color-name" class="text-[11px] text-pink-200/90">樱花粉</span>
+                    </div>
+                    
+                    <div id="color-swatches" class="flex items-center gap-2 flex-wrap"></div>
+
+                    <!-- 底纹模式 -->
+                    <div class="grid grid-cols-4 gap-1.5 pt-0.5">
+                        <button onclick="setPattern('solid')" data-pattern="solid" class="pattern-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">纯色 Solid</button>
+                        <button onclick="setPattern('dots')" data-pattern="dots" class="pattern-btn py-1.5 px-2 rounded-xl text-xs bg-white/15 text-white border border-white/25 transition cursor-pointer">波点 Dots</button>
+                        <button onclick="setPattern('v-stripes')" data-pattern="v-stripes" class="pattern-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">竖条纹</button>
+                        <button onclick="setPattern('d-stripes')" data-pattern="d-stripes" class="pattern-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">斜条纹</button>
+                    </div>
+
+                    <!-- 底纹颜色与浓淡 -->
+                    <div id="pattern-color-panel" class="pt-2 border-t border-white/10 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] text-stone-300">波点/条纹颜色</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] text-stone-400">浓淡</span>
+                                <input type="range" id="patternOpacitySlider" min="20" max="100" value="70" oninput="setPatternOpacity(this.value)" class="w-20">
+                            </div>
+                        </div>
+                        <div id="pattern-swatches" class="flex items-center gap-1.5 flex-wrap"></div>
+                    </div>
+                </div>
+
+                <!-- 2. Stamp Border Color -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-medium tracking-wider text-stone-300 uppercase">Stamp Border Color (齿边颜色)</label>
+                        <span id="border-color-name" class="text-[11px] text-stone-300">纯白</span>
+                    </div>
+                    <div id="border-swatches" class="flex items-center gap-2 flex-wrap"></div>
+                </div>
+
+                <!-- 3. Add Character & Local Photo -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-2.5">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <label class="text-xs font-medium tracking-wider text-stone-300 uppercase">Character / Photo (小动物与照片)</label>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5 text-[11px] text-stone-400">
+                                <span>大小</span>
+                                <input type="range" id="charScaleSlider" min="60" max="140" value="100" oninput="setCharScale(this.value)" class="w-16">
+                            </div>
+                            <div class="flex items-center gap-1 text-[11px] bg-black/40 p-0.5 rounded-lg border border-white/5">
+                                <button onclick="setLayout('top')" id="layout-top" class="px-2 py-0.5 rounded bg-white/15 text-white transition cursor-pointer">居中</button>
+                                <button onclick="setLayout('corner')" id="layout-corner" class="px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer">探头</button>
+                                <button onclick="resetElementPositions()" class="px-1.5 py-0.5 rounded text-pink-200 hover:bg-white/10 transition cursor-pointer">归位</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="character-list" class="grid grid-cols-5 gap-1.5 max-h-[168px] overflow-y-auto no-scrollbar pr-0.5"></div>
+                    
+                    <!-- 本地照片上传与滤镜 -->
+                    <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap">
+                        <button onclick="document.getElementById('photoUploadInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-stone-200 cursor-pointer transition active:scale-95">
+                            <svg class="w-4 h-4 text-pink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span>上传本地相册照片</span>
+                            <input type="file" id="photoUploadInput" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
+                        </button>
+                        <label class="flex items-center gap-1.5 text-xs text-stone-300 cursor-pointer select-none">
+                            <input type="checkbox" id="sketchFilterCheckbox" checked onchange="toggleSketchFilter(this.checked)" class="rounded bg-black/40 border-white/20 text-pink-500 focus:ring-0 cursor-pointer w-4 h-4">
+                            <span>手绘线稿滤镜</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4. Enter Text -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-2.5">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <label for="stampText" class="text-xs font-medium tracking-wider text-stone-300 uppercase">Enter Text (核心治愈短句)</label>
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex items-center gap-0.5 bg-black/40 p-0.5 rounded-lg border border-white/10">
+                                <button onclick="setTextAlign('left')" data-talign="left" title="左对齐" class="talign-btn p-1 rounded text-stone-400 hover:text-white transition cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                                </button>
+                                <button onclick="setTextAlign('center')" data-talign="center" title="居中对齐" class="talign-btn p-1 rounded bg-white/15 text-white transition cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="18" y1="18" x2="6" y2="18"/></svg>
+                                </button>
+                                <button onclick="setTextAlign('right')" data-talign="right" title="右对齐" class="talign-btn p-1 rounded text-stone-400 hover:text-white transition cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[11px] text-stone-400">字号</span>
+                                <input type="range" id="fontSizeSlider" min="60" max="140" value="100" oninput="setFontScale(this.value)" class="w-16">
+                            </div>
+                        </div>
+                    </div>
+                    <textarea id="stampText" rows="2" maxlength="65" placeholder="输入你的治愈短句..."
+                        class="w-full bg-black/40 border border-white/10 focus:border-pink-300/60 focus:outline-none rounded-xl px-3.5 py-2 text-sm text-stone-100 placeholder-stone-600 resize-none transition"
+                        oninput="updateText(this.value)">SWEET
+DREAMS</textarea>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-stone-400">文字颜色</span>
+                        <div id="text-colors" class="flex items-center gap-1.5"></div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2" id="font-selector">
+                        <button onclick="setFont('Gaegu')" data-font="Gaegu" class="font-btn py-1.5 px-2 rounded-xl text-xs bg-white/15 text-white border border-white/25 font-gaegu transition cursor-pointer">呆萌手写体</button>
+                        <button onclick="setFont('Indie Flower')" data-font="Indie Flower" class="font-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 hover:text-white border border-white/5 font-indie transition cursor-pointer">随笔涂鸦体</button>
+                        <button onclick="setFont('Caveat')" data-font="Caveat" class="font-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 hover:text-white border border-white/5 font-caveat text-sm transition cursor-pointer">毛笔连笔体</button>
+                    </div>
+                </div>
+
+                <!-- 5. DIY Creative Studio (贴纸与手绘) -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <label class="text-xs font-medium tracking-wider text-pink-200 uppercase flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                            <span>DIY 自由创作 (贴纸 & 手绘)</span>
+                        </label>
+                        <div class="flex items-center gap-1 bg-black/40 p-0.5 rounded-lg border border-white/10 text-[11px]">
+                            <button onclick="setDiyTool('sticker')" id="tool-sticker" class="px-2 py-0.5 rounded bg-white/15 text-white transition cursor-pointer">移动/缩放</button>
+                            <button onclick="setDiyTool('draw')" id="tool-draw" class="px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer">手绘涂鸦</button>
+                        </div>
+                    </div>
+
+                    <!-- 子面板 A：贴纸 -->
+                    <div id="diy-sticker-panel" class="space-y-2">
+                        <div class="flex items-center justify-between text-[11px] text-stone-400">
+                            <span>点击添加印花，在画布上拖动、缩放或旋转</span>
+                            <button onclick="clearAllStickers()" class="text-stone-400 hover:text-rose-300 transition cursor-pointer">清空印花</button>
+                        </div>
+                        <div id="sticker-palette" class="grid grid-cols-5 sm:grid-cols-10 gap-1.5"></div>
+                    </div>
+
+                    <!-- 子面板 B：手绘 -->
+                    <div id="diy-draw-panel" class="hidden space-y-2.5">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div id="brush-colors" class="flex items-center gap-1.5"></div>
+                            <div class="flex items-center gap-1 text-[11px]">
+                                <button onclick="setBrushSize(5)" data-bsize="5" class="bsize-btn px-2 py-1 rounded-lg bg-black/30 text-stone-400 border border-white/5 cursor-pointer">细笔</button>
+                                <button onclick="setBrushSize(9)" data-bsize="9" class="bsize-btn px-2 py-1 rounded-lg bg-white/15 text-white border border-white/25 cursor-pointer">中笔</button>
+                                <button onclick="setBrushSize(15)" data-bsize="15" class="bsize-btn px-2 py-1 rounded-lg bg-black/30 text-stone-400 border border-white/5 cursor-pointer">粗笔</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="text-stone-400">直接在邮票内手写签名或涂鸦</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="undoBrushStroke()" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-stone-200 transition cursor-pointer">撤销一笔</button>
+                                <button onclick="clearBrushStrokes()" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 transition cursor-pointer">清空涂鸦</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Vintage Postmark (复古日期邮戳) -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-medium tracking-wider text-amber-200 uppercase flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M16 9c2 1 3-1 5 0"/><path d="M16 15c2 1 3-1 5 0"/></svg>
+                            <span>Vintage Postmark (复古邮戳)</span>
+                        </label>
+                        <button onclick="togglePostmark()" id="postmark-toggle-btn" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-amber-300/20 text-amber-200 border border-amber-300/35 transition cursor-pointer">已盖戳 ON</button>
+                    </div>
+
+                    <div id="postmark-controls" class="space-y-2.5">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="setPostmarkStyle('wave')" data-pmstyle="wave" class="pmstyle-btn py-1.5 px-2 rounded-xl text-[11px] bg-white/15 text-white border border-white/25 transition cursor-pointer">经典波浪圆戳</button>
+                            <button onclick="setPostmarkStyle('heart')" data-pmstyle="heart" class="pmstyle-btn py-1.5 px-2 rounded-xl text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">爱心浪漫邮戳</button>
+                            <button onclick="setPostmarkStyle('star')" data-pmstyle="star" class="pmstyle-btn py-1.5 px-2 rounded-xl text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">星星特快邮戳</button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <input type="text" id="pmTopInput" maxlength="16" value="CUTE MAIL" placeholder="顶部文字" oninput="updatePostmarkField('topText', this.value)"
+                                class="bg-black/40 border border-white/10 focus:border-amber-200/60 focus:outline-none rounded-lg px-2 py-1.5 text-xs text-stone-100 placeholder-stone-600">
+                            <input type="text" id="pmDateInput" maxlength="14" value="2026.11.13" placeholder="日期" oninput="updatePostmarkField('dateText', this.value)"
+                                class="bg-black/40 border border-white/10 focus:border-amber-200/60 focus:outline-none rounded-lg px-2 py-1.5 text-xs text-amber-100 text-center placeholder-stone-600">
+                            <input type="text" id="pmBottomInput" maxlength="16" value="SPECIAL POST" placeholder="底部文字" oninput="updatePostmarkField('bottomText', this.value)"
+                                class="bg-black/40 border border-white/10 focus:border-amber-200/60 focus:outline-none rounded-lg px-2 py-1.5 text-xs text-stone-100 placeholder-stone-600">
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2 pt-0.5">
+                            <div id="postmark-ink-swatches" class="flex items-center gap-1.5"></div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[11px] text-stone-400">印泥浓淡</span>
+                                <input type="range" id="pmOpacitySlider" min="25" max="100" value="78" oninput="updatePostmarkField('opacity', Number(this.value))" class="w-16">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Denomination Corner Badge (趣味面值角标) -->
+                <div class="bg-black/25 p-3.5 rounded-2xl border border-white/5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-medium tracking-wider text-sky-200 uppercase flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4"/><path d="M7 14h2"/><circle cx="15" cy="12" r="2"/></svg>
+                            <span>Denomination Badge (趣味角标)</span>
+                        </label>
+                        <button onclick="toggleBadge()" id="badge-toggle-btn" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-sky-300/20 text-sky-200 border border-sky-300/35 transition cursor-pointer">已显示 ON</button>
+                    </div>
+
+                    <div id="badge-controls" class="space-y-2.5">
+                        <div id="badge-presets" class="flex items-center gap-1.5 flex-wrap"></div>
+
+                        <div class="grid grid-cols-12 gap-1.5">
+                            <input type="text" id="badgeTextInput" maxlength="12" value="100% CUTE" placeholder="面值文字" oninput="updateBadgeField('text', this.value)"
+                                class="col-span-5 bg-black/40 border border-white/10 focus:border-sky-200/60 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-stone-100 placeholder-stone-600">
+                            <div class="col-span-7 grid grid-cols-3 gap-1">
+                                <button onclick="setBadgeFrame('none')" data-bframe="none" class="bframe-btn py-1 px-1.5 rounded-lg text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">无框手写</button>
+                                <button onclick="setBadgeFrame('box')" data-bframe="box" class="bframe-btn py-1 px-1.5 rounded-lg text-[11px] bg-white/15 text-white border border-white/25 transition cursor-pointer">手绘方框</button>
+                                <button onclick="setBadgeFrame('oval')" data-bframe="oval" class="bframe-btn py-1 px-1.5 rounded-lg text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer">椭圆印标</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between flex-wrap gap-2 pt-0.5">
+                            <div class="flex items-center gap-1 bg-black/40 p-0.5 rounded-lg border border-white/10 text-[11px]">
+                                <button onclick="snapBadgeCorner('tl')" class="px-2 py-0.5 rounded text-stone-300 hover:bg-white/15 hover:text-white transition cursor-pointer">左上</button>
+                                <button onclick="snapBadgeCorner('tr')" class="px-2 py-0.5 rounded text-stone-300 hover:bg-white/15 hover:text-white transition cursor-pointer">右上</button>
+                                <button onclick="snapBadgeCorner('bl')" class="px-2 py-0.5 rounded text-stone-300 hover:bg-white/15 hover:text-white transition cursor-pointer">左下</button>
+                                <button onclick="snapBadgeCorner('br')" class="px-2 py-0.5 rounded text-stone-300 hover:bg-white/15 hover:text-white transition cursor-pointer">右下</button>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[11px] text-stone-400">颜色</span>
+                                <div id="badge-color-swatches" class="flex items-center gap-1.5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. GENERATE 一键随机灵感按钮 -->
+                <div class="pt-0.5 mt-auto">
+                    <button onclick="generateRandomStamp()" class="w-full py-3.5 px-6 rounded-2xl bg-[#f3f1ed] hover:bg-white text-[#181716] font-semibold tracking-[0.2em] text-sm uppercase shadow-lg shadow-black/40 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>
+                        <span>GENERATE 随机灵感</span>
+                    </button>
+                </div>
+
+            </section>
+        </main>
     </div>
 
-    <!-- 控制面板 -->
-    <div class="panel">
-        <div>
-            <div class="section-title">纸张背景色</div>
-            <div class="color-row" id="paperColorRow"></div>
-        </div>
-
-        <div>
-            <div class="section-title">齿边框颜色</div>
-            <div class="color-row" id="borderColorRow"></div>
-        </div>
-
-        <div>
-            <div class="section-title">选择角色 / 上传相册照片</div>
-            <div class="grid-animals" id="animalGrid"></div>
-            <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="handlePhoto(event)">
-        </div>
-
-        <div>
-            <div class="section-title">手写文案</div>
-            <div class="input-group">
-                <input type="text" id="stampText" value="I CAN'T TAKE THIS CUTENESS" oninput="redraw()">
-            </div>
-        </div>
-
-        <div>
-            <div class="section-title">趣味面值角标</div>
-            <div class="input-group">
-                <input type="text" id="badgeText" value="100% CUTE" oninput="redraw()">
-            </div>
-        </div>
-
-        <div class="action-row">
-            <button class="sec-btn" onclick="randomizeAll()">换个灵感</button>
-            <button class="main-btn" onclick="savePNG()">💾 保存高清 PNG</button>
-        </div>
+    <!-- Toast 提示框 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full bg-stone-800/95 text-stone-100 text-xs sm:text-sm border border-white/15 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 z-50">
+        <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span id="toast-msg">操作成功</span>
     </div>
-</div>
 
-<script>
-    let state = {
-        paperColor: '#ffd1dc',
-        borderColor: '#ffffff',
-        animal: 'dog',
-        customImg: null,
-        text: "I CAN'T TAKE THIS CUTENESS",
-        badgeText: "100% CUTE",
-        // 元素位置与状态
-        animalPos: { x: 540, y: 460, scale: 1 },
-        textPos: { x: 540, y: 820 },
-        postmarkPos: { x: 800, y: 260 },
-        badgePos: { x: 880, y: 180 }
-    };
+    <script>
+        // ==========================================
+        // 1. 数据配置与初始化
+        // ==========================================
+        const PAPER_COLORS = [
+            { id: 'pink', name: '樱花粉', hex: '#FAD7EE' },
+            { id: 'cream', name: '奶油黄', hex: '#FDF3D0' },
+            { id: 'blue', name: '天空蓝', hex: '#D4ECFA' },
+            { id: 'mint', name: '薄荷绿', hex: '#D3F3DE' },
+            { id: 'lavender', name: '香芋紫', hex: '#E5DCFA' },
+            { id: 'peach', name: '蜜桃橘', hex: '#FDE0D2' },
+            { id: 'cloud', name: '云朵白', hex: '#FAF9F6' },
+            { id: 'oat', name: '复古米灰', hex: '#EAE4D7' }
+        ];
 
-    const paperColors = [
-        { hex: '#ffd1dc' }, { hex: '#fff4bd' }, { hex: '#d0f0fd' }, 
-        { hex: '#d4edda' }, { hex: '#e8dff5' }, { hex: '#fdfbf7' }, { hex: '#f3e5ab' }
-    ];
+        const PATTERN_COLORS = [
+            { id: 'white', name: '纯白', hex: '#FFFFFF' },
+            { id: 'mistpink', name: '柔雾粉', hex: '#F48FB1' },
+            { id: 'butter', name: '奶油黄', hex: '#FBC02D' },
+            { id: 'mint', name: '薄荷绿', hex: '#66BB6A' },
+            { id: 'sky', name: '天空蓝', hex: '#4FC3F7' },
+            { id: 'taro', name: '香芋紫', hex: '#BA68C8' },
+            { id: 'latte', name: '浅咖色', hex: '#A1887F' }
+        ];
 
-    const borderColors = [
-        { hex: '#ffffff' }, { hex: '#fff8dc' }, { hex: '#ffb6c1' }, 
-        { hex: '#98fb98' }, { hex: '#87cefa' }, { hex: '#dda0dd' }
-    ];
+        const BORDER_COLORS = [
+            { id: 'white', name: '纯白', hex: '#FFFFFF' },
+            { id: 'cream', name: '奶油黄', hex: '#FFF3C4' },
+            { id: 'strawberry', name: '草莓粉', hex: '#FFD6E0' },
+            { id: 'mint', name: '薄荷绿', hex: '#D1F2EB' },
+            { id: 'sky', name: '天空蓝', hex: '#D6EAF8' },
+            { id: 'taro', name: '香芋紫', hex: '#E8DAEF' },
+            { id: 'kraft', name: '牛皮纸色', hex: '#EED9B7' }
+        ];
 
-    const animals = [
-        { id: 'upload', name: '相册上传', icon: '📁' },
-        { id: 'dog', name: '小狗', icon: '🐶' },
-        { id: 'cat', name: '小猫', icon: '🐱' },
-        { id: 'bunny', name: '小兔', icon: '🐰' },
-        { id: 'bear', name: '小熊', icon: '🐻' },
-        { id: 'fox', name: '小狐狸', icon: '🦊' },
-        { id: 'pig', name: '小猪', icon: '🐷' },
-        { id: 'penguin', name: '企鹅', icon: '🐧' },
-        { id: 'frog', name: '青蛙', icon: '🐸' },
-        { id: 'duck', name: '小鸭', icon: '🐥' },
-        { id: 'hedgehog', name: '刺猬', icon: '🦔' },
-        { id: 'hamster', name: '仓鼠', icon: '🐹' },
-        { id: 'fish', name: '小鱼', icon: '🐠' },
-        { id: 'tiger', name: '小老虎', icon: '🐯' }
-    ];
+        const CHARACTERS = [
+            { id: 'cat', name: '猫咪' },
+            { id: 'puppy', name: '小狗' },
+            { id: 'bunny', name: '长耳兔' },
+            { id: 'bear', name: '小熊' },
+            { id: 'fox', name: '小狐' },
+            { id: 'hamster', name: '小仓鼠' },
+            { id: 'ferret', name: '雪鼬' },
+            { id: 'fish', name: '小鱼' },
+            { id: 'tiger', name: '小老虎' },
+            { id: 'pig', name: '小猪' },
+            { id: 'penguin', name: '企鹅' },
+            { id: 'frog', name: '青蛙' },
+            { id: 'duck', name: '小鸭' },
+            { id: 'hedgehog', name: '刺猬' },
+            { id: 'photo', name: '本地照片' },
+            { id: 'none', name: '纯文字' }
+        ];
 
-    function initUI() {
-        const pRow = document.getElementById('paperColorRow');
-        paperColors.forEach(c => {
-            const btn = document.createElement('div');
-            btn.className = `color-btn ${c.hex === state.paperColor ? 'active' : ''}`;
-            btn.style.background = c.hex;
-            btn.onclick = () => { state.paperColor = c.hex; updateUI(); };
-            pRow.appendChild(btn);
-        });
+        const STICKER_TYPES = [
+            { id: 'sparkle', name: '星芒' },
+            { id: 'star', name: '星星' },
+            { id: 'heart', name: '爱心' },
+            { id: 'swirl', name: '螺旋' },
+            { id: 'note', name: '音符' },
+            { id: 'fishbone', name: '鱼骨' },
+            { id: 'moon', name: '弯月' },
+            { id: 'flower', name: '小花' },
+            { id: 'paw', name: '肉垫' },
+            { id: 'crown', name: '皇冠' }
+        ];
 
-        const bRow = document.getElementById('borderColorRow');
-        borderColors.forEach(c => {
-            const btn = document.createElement('div');
-            btn.className = `color-btn ${c.hex === state.borderColor ? 'active' : ''}`;
-            btn.style.background = c.hex;
-            btn.onclick = () => { state.borderColor = c.hex; updateUI(); };
-            bRow.appendChild(btn);
-        });
+        const BRUSH_PALETTE = [
+            { name: '手绘黑墨', hex: '#231F20' },
+            { name: '草莓红', hex: '#F43F5E' },
+            { name: '奶油白', hex: '#FFFFFF' },
+            { name: '天空蓝', hex: '#0284C7' },
+            { name: '抹茶绿', hex: '#16A34A' }
+        ];
 
-        const aGrid = document.getElementById('animalGrid');
-        animals.forEach(a => {
-            const card = document.createElement('div');
-            card.className = `animal-card ${a.id === state.animal ? 'active' : ''}`;
-            card.innerHTML = `<span style="font-size:20px;">${a.icon}</span><span>${a.name}</span>`;
-            card.onclick = () => {
-                if (a.id === 'upload') {
-                    document.getElementById('photoUpload').click();
-                } else {
-                    state.animal = a.id;
-                    state.customImg = null;
-                    updateUI();
-                }
-            };
-            aGrid.appendChild(card);
-        });
-    }
+        const TEXT_COLORS = [
+            { name: '手绘墨黑', hex: '#231F20' },
+            { name: '可可深棕', hex: '#5D4037' },
+            { name: '莓果粉红', hex: '#DB2777' },
+            { name: '海盐深蓝', hex: '#1D4ED8' },
+            { name: '森林深绿', hex: '#15803D' },
+            { name: '纯白糖霜', hex: '#FFFFFF' }
+        ];
 
-    function updateUI() {
-        document.querySelectorAll('#paperColorRow .color-btn').forEach((b, i) => {
-            b.classList.toggle('active', paperColors[i].hex === state.paperColor);
-        });
-        document.querySelectorAll('#borderColorRow .color-btn').forEach((b, i) => {
-            b.classList.toggle('active', borderColors[i].hex === state.borderColor);
-        });
-        document.querySelectorAll('.animal-card').forEach((c, i) => {
-            c.classList.toggle('active', animals[i].id === state.animal);
-        });
-        redraw();
-    }
+        const INK_COLORS = [
+            { name: '复古炭黑', hex: '#231F20' },
+            { name: '朱砂印泥红', hex: '#B93838' },
+            { name: '邮政海军蓝', hex: '#2B4570' },
+            { name: '焦糖可可棕', hex: '#6B4432' },
+            { name: '樱花莓果粉', hex: '#C95D87' }
+        ];
 
-    function handlePhoto(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                state.customImg = img;
-                state.animal = 'upload';
-                updateUI();
-            };
-            img.src = event.target.result;
+        const BADGE_PRESETS = ['100% CUTE', 'HUG × 1', '50¢', 'FREE', 'LOVE', '★ 01'];
+
+        const INSPIRATION_PRESETS = [
+            {
+                color: '#FAD7EE', border: '#FFFFFF', pattern: 'dots', patternColor: '#FFFFFF', patternOpacity: 75,
+                char: 'puppy', charScale: 100, layout: 'top', text: "I CAN'T TAKE\nTHIS CUTENESS", font: 'Gaegu', scale: 100,
+                stickers: [
+                    { id: 'star', x: 245, y: 540, scale: 1.0, rotation: 0 },
+                    { id: 'swirl', x: 820, y: 270, scale: 1.05, rotation: 0 }
+                ],
+                postmark: { enabled: true, style: 'wave', topText: 'CUTE MAIL', dateText: '2026.11.13', bottomText: '100% SWEET', color: '#B93838', opacity: 75, x: 240, y: 235, scale: 0.92, rotation: -0.18 },
+                badge: { enabled: true, text: '100% CUTE', frame: 'box', color: '#231F20', x: 825, y: 880, scale: 0.95, rotation: 0 }
+            },
+            {
+                color: '#FDF3D0', border: '#FFF3C4', pattern: 'v-stripes', patternColor: '#F48FB1', patternOpacity: 35,
+                char: 'hamster', charScale: 105, layout: 'top', text: "SNACK TIME\nIS HAPPY TIME", font: 'Gaegu', scale: 100,
+                stickers: [
+                    { id: 'heart', x: 250, y: 275, scale: 1.0, rotation: -0.1 },
+                    { id: 'sparkle', x: 820, y: 530, scale: 1.0, rotation: 0.1 }
+                ],
+                postmark: { enabled: true, style: 'heart', topText: 'LOVE POST', dateText: '2026.11.13', bottomText: 'YUMMY DAY', color: '#C95D87', opacity: 80, x: 810, y: 240, scale: 0.95, rotation: 0.15 },
+                badge: { enabled: true, text: 'HUG × 1', frame: 'oval', color: '#6B4432', x: 235, y: 885, scale: 0.95, rotation: -0.05 }
+            },
+            {
+                color: '#D4ECFA', border: '#FFFFFF', pattern: 'dots', patternColor: '#4FC3F7', patternOpacity: 45,
+                char: 'fish', charScale: 105, layout: 'top', text: "JUST KEEP\nSWIMMING!", font: 'Gaegu', scale: 105,
+                stickers: [
+                    { id: 'swirl', x: 245, y: 280, scale: 0.95, rotation: 0 },
+                    { id: 'star', x: 830, y: 780, scale: 1.0, rotation: 0.15 }
+                ],
+                postmark: { enabled: true, style: 'star', topText: 'OCEAN EXPRESS', dateText: '2026.11.13', bottomText: 'BUBBLE POST', color: '#2B4570', opacity: 78, x: 820, y: 225, scale: 0.95, rotation: 0.12 },
+                badge: { enabled: true, text: '50¢', frame: 'none', color: '#2B4570', x: 215, y: 205, scale: 1.05, rotation: 0 }
+            },
+            {
+                color: '#EAE4D7', border: '#EED9B7', pattern: 'd-stripes', patternColor: '#A1887F', patternOpacity: 35,
+                char: 'ferret', charScale: 100, layout: 'corner', text: "STAY\nCOZY &\nCURIOUS", font: 'Indie Flower', scale: 105,
+                stickers: [
+                    { id: 'crown', x: 745, y: 470, scale: 0.95, rotation: 0.08 },
+                    { id: 'heart', x: 320, y: 810, scale: 1.0, rotation: -0.1 }
+                ],
+                postmark: { enabled: true, style: 'wave', topText: 'VINTAGE MAIL', dateText: '2026.11.13', bottomText: 'COZY CLUB', color: '#6B4432', opacity: 82, x: 245, y: 865, scale: 0.92, rotation: -0.12 },
+                badge: { enabled: true, text: '★ 01', frame: 'box', color: '#6B4432', x: 840, y: 205, scale: 0.95, rotation: 0 }
+            }
+        ];
+
+        let state = {
+            paperColor: '#FAD7EE',
+            borderColor: '#FFFFFF',
+            pattern: 'dots',
+            patternColor: '#FFFFFF',
+            patternOpacity: 70,
+            character: 'cat',
+            charX: 540,
+            charY: 420,
+            charScale: 100,
+            charRotation: 0,
+            layout: 'top',
+            text: 'SWEET\nDREAMS',
+            textX: 540,
+            textY: 710,
+            textColor: '#231F20',
+            textAlign: 'center',
+            textRotation: 0,
+            fontFamily: 'Gaegu',
+            fontScale: 100,
+            previewMode: 'single',
+            diyTool: 'sticker',
+            stickers: [
+                { id: 'sparkle', x: 815, y: 315, scale: 1.0, rotation: 0 },
+                { id: 'sparkle', x: 255, y: 695, scale: 0.9, rotation: 0 }
+            ],
+            postmark: {
+                enabled: true,
+                style: 'wave',
+                topText: 'CUTE MAIL',
+                dateText: '2026.11.13',
+                bottomText: 'SPECIAL POST',
+                color: '#231F20',
+                opacity: 78,
+                x: 245,
+                y: 235,
+                scale: 0.95,
+                rotation: -0.16
+            },
+            badge: {
+                enabled: true,
+                text: '100% CUTE',
+                frame: 'box',
+                color: '#231F20',
+                x: 825,
+                y: 205,
+                scale: 0.95,
+                rotation: 0
+            },
+            uploadedImageObj: null,
+            sketchFilter: true,
+            selectedElement: null,
+            snapGuides: { x: false, y: false },
+            brushColor: '#231F20',
+            brushSize: 9,
+            brushStrokes: []
         };
-        reader.readAsDataURL(file);
-    }
 
-    function resetPositions() {
-        state.animalPos = { x: 540, y: 460, scale: 1 };
-        state.textPos = { x: 540, y: 820 };
-        state.postmarkPos = { x: 800, y: 260 };
-        state.badgePos = { x: 880, y: 180 };
-        redraw();
-    }
+        let mainCanvas = null;
+        let mainCtx = null;
+        let sketchCanvasCache = null;
+        let lastImgLoaded = null;
 
-    function randomizeAll() {
-        state.paperColor = paperColors[Math.floor(Math.random() * paperColors.length)].hex;
-        state.borderColor = borderColors[Math.floor(Math.random() * borderColors.length)].hex;
-        const rand = animals.filter(a => a.id !== 'upload')[Math.floor(Math.random() * (animals.length - 1))];
-        state.animal = rand.id;
-        state.customImg = null;
-        resetPositions();
-    }
+        let interactionState = {
+            isPointerDown: false,
+            action: null,
+            target: null,
+            dragOffsetX: 0,
+            dragOffsetY: 0,
+            initialScale: 1,
+            initialDist: 1,
+            initialRotation: 0,
+            initialAngle: 0,
+            currentStroke: null
+        };
 
-    // 渲染引擎
-    const canvas = document.getElementById('stampCanvas');
-    const ctx = canvas.getContext('2d');
+        // ==========================================
+        // 2. 初始化 UI 与事件绑定
+        // ==========================================
+        function initApp() {
+            mainCanvas = document.getElementById('stampCanvas');
+            if (!mainCanvas) return;
+            mainCtx = mainCanvas.getContext('2d');
 
-    function redraw() {
-        ctx.clearRect(0, 0, 1080, 1080);
-        
-        // 1. 齿边背景
-        ctx.save();
-        ctx.fillStyle = state.borderColor;
-        ctx.fillRect(80, 80, 920, 920);
+            // 1. 纸张底色
+            const swatchContainer = document.getElementById('color-swatches');
+            swatchContainer.innerHTML = PAPER_COLORS.map(c => `
+                <button onclick="setPaperColor('${c.hex}')" data-color="${c.hex}" title="${c.name}" style="background-color: ${c.hex};"
+                    class="color-btn w-7 h-7 sm:w-8 sm:h-8 rounded-xl transition transform hover:scale-105 cursor-pointer border border-black/15"></button>
+            `).join('') + `
+                <label title="自定义纸张底色" class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden cursor-pointer border border-white/25 flex items-center justify-center bg-gradient-to-tr from-rose-200 via-amber-100 to-teal-200 hover:scale-105 transition">
+                    <input type="color" value="#FAD7EE" onchange="setPaperColor(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-stone-900 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg>
+                </label>
+            `;
 
-        ctx.globalCompositeOperation = 'destination-out';
-        const teeth = 14;
-        const step = 920 / teeth;
-        for (let i = 0; i < teeth; i++) {
-            ctx.beginPath(); ctx.arc(80 + i * step + step/2, 80, 24, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(80 + i * step + step/2, 1000, 24, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(80, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(1000, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
+            // 2. 波点/条纹颜色
+            const patternSwatchContainer = document.getElementById('pattern-swatches');
+            patternSwatchContainer.innerHTML = PATTERN_COLORS.map(p => `
+                <button onclick="setPatternColor('${p.hex}')" data-pcolor="${p.hex}" title="${p.name}" style="background-color: ${p.hex};"
+                    class="pcolor-btn w-6 h-6 rounded-full transition transform hover:scale-110 cursor-pointer border border-white/25"></button>
+            `).join('') + `
+                <label title="自定义底纹颜色" class="relative w-6 h-6 rounded-full overflow-hidden cursor-pointer border border-white/30 flex items-center justify-center bg-gradient-to-tr from-pink-400 via-yellow-300 to-cyan-400 hover:scale-110 transition">
+                    <input type="color" value="#FFFFFF" onchange="setPatternColor(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <span class="text-xs font-bold text-stone-900 pointer-events-none">+</span>
+                </label>
+            `;
+
+            // 3. 齿边框色
+            const borderContainer = document.getElementById('border-swatches');
+            borderContainer.innerHTML = BORDER_COLORS.map(b => `
+                <button onclick="setBorderColor('${b.hex}')" data-border="${b.hex}" title="${b.name}" style="background-color: ${b.hex};"
+                    class="border-btn w-7 h-7 sm:w-8 sm:h-8 rounded-xl transition transform hover:scale-105 cursor-pointer border border-white/20"></button>
+            `).join('') + `
+                <label title="自定义边框颜色" class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden cursor-pointer border border-white/25 flex items-center justify-center bg-gradient-to-tr from-pink-300 via-amber-200 to-sky-300 hover:scale-105 transition">
+                    <input type="color" value="#FFFFFF" onchange="setBorderColor(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-stone-900 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg>
+                </label>
+            `;
+
+            // 4. 小动物
+            const charContainer = document.getElementById('character-list');
+            charContainer.innerHTML = CHARACTERS.map(ch => `
+                <button onclick="setCharacter('${ch.id}')" data-char="${ch.id}" title="${ch.name}"
+                    class="char-btn rounded-2xl bg-[#262422] hover:bg-[#302d2a] border py-1.5 px-1 flex flex-col items-center justify-center gap-0.5 transition cursor-pointer">
+                    ${getCharacterThumbnailSVG(ch.id)}
+                    <span class="text-[10px] text-stone-300 truncate w-full text-center leading-tight">${ch.name}</span>
+                </button>
+            `).join('');
+
+            // 5. 贴纸
+            const stickerPalette = document.getElementById('sticker-palette');
+            stickerPalette.innerHTML = STICKER_TYPES.map(st => `
+                <button onclick="addSticker('${st.id}')" title="添加「${st.name}」贴纸"
+                    class="h-9 rounded-xl bg-[#262422] hover:bg-white/15 border border-white/10 hover:border-pink-200/60 text-stone-200 flex items-center justify-center transition active:scale-90 cursor-pointer">
+                    ${getStickerIconSVG(st.id)}
+                </button>
+            `).join('');
+
+            // 6. 画笔颜色
+            const brushColorsBox = document.getElementById('brush-colors');
+            brushColorsBox.innerHTML = BRUSH_PALETTE.map(b => `
+                <button onclick="setBrushColor('${b.hex}')" data-bcolor="${b.hex}" title="${b.name}" style="background-color: ${b.hex};"
+                    class="bcolor-btn w-6 h-6 rounded-full border border-white/25 transition hover:scale-110 cursor-pointer"></button>
+            `).join('') + `
+                <label title="自定义画笔颜色" class="relative w-6 h-6 rounded-full overflow-hidden cursor-pointer border border-white/30 flex items-center justify-center bg-gradient-to-tr from-rose-400 via-amber-300 to-sky-400 hover:scale-110 transition">
+                    <input type="color" value="#F43F5E" onchange="setBrushColor(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <span class="text-xs font-bold text-stone-900 pointer-events-none">+</span>
+                </label>
+            `;
+
+            // 7. 文字颜色
+            const textColorsBox = document.getElementById('text-colors');
+            textColorsBox.innerHTML = TEXT_COLORS.map(tc => `
+                <button onclick="setTextColor('${tc.hex}')" data-tcolor="${tc.hex}" title="${tc.name}" style="background-color: ${tc.hex};"
+                    class="tcolor-btn w-5 h-5 rounded-full border border-white/25 transition hover:scale-110 cursor-pointer"></button>
+            `).join('') + `
+                <label title="自定义文字颜色" class="relative w-5 h-5 rounded-full overflow-hidden cursor-pointer border border-white/30 flex items-center justify-center bg-gradient-to-tr from-pink-400 via-amber-300 to-indigo-400 hover:scale-110 transition">
+                    <input type="color" value="#231F20" onchange="setTextColor(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <span class="text-[10px] font-bold text-stone-900 pointer-events-none">+</span>
+                </label>
+            `;
+
+            // 8. 邮戳印泥
+            const pmInkBox = document.getElementById('postmark-ink-swatches');
+            pmInkBox.innerHTML = INK_COLORS.map(ic => `
+                <button onclick="updatePostmarkField('color', '${ic.hex}')" data-pmink="${ic.hex}" title="${ic.name}" style="background-color: ${ic.hex};"
+                    class="pmink-btn w-5 h-5 rounded-full border border-white/25 transition hover:scale-110 cursor-pointer"></button>
+            `).join('') + `
+                <label title="自定义印泥颜色" class="relative w-5 h-5 rounded-full overflow-hidden cursor-pointer border border-white/30 flex items-center justify-center bg-gradient-to-tr from-rose-400 via-amber-300 to-sky-400 hover:scale-110 transition">
+                    <input type="color" value="#B93838" onchange="updatePostmarkField('color', this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <span class="text-[10px] font-bold text-stone-900 pointer-events-none">+</span>
+                </label>
+            `;
+
+        // 9. 面值角标预设与颜色
+            const badgePresetsBox = document.getElementById('badge-presets');
+            badgePresetsBox.innerHTML = BADGE_PRESETS.map(txt => `
+                <button onclick="applyBadgePreset('${txt}')" class="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-sky-300/20 border border-white/10 hover:border-sky-300/40 text-[11px] font-gaegu text-stone-200 transition cursor-pointer">${txt}</button>
+            `).join('');
+
+            const badgeColorBox = document.getElementById('badge-color-swatches');
+            badgeColorBox.innerHTML = INK_COLORS.map(ic => `
+                <button onclick="updateBadgeField('color', '${ic.hex}')" data-bdcolor="${ic.hex}" title="${ic.name}" style="background-color: ${ic.hex};"
+                    class="bdcolor-btn w-5 h-5 rounded-full border border-white/25 transition hover:scale-110 cursor-pointer"></button>
+            `).join('') + `
+                <label title="自定义角标颜色" class="relative w-5 h-5 rounded-full overflow-hidden cursor-pointer border border-white/30 flex items-center justify-center bg-gradient-to-tr from-sky-400 via-pink-400 to-amber-300 hover:scale-110 transition">
+                    <input type="color" value="#231F20" onchange="updateBadgeField('color', this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    <span class="text-[10px] font-bold text-stone-900 pointer-events-none">+</span>
+                </label>
+            `;
+
+            bindCanvasInteractions();
+            syncUIState();
+            renderAllViews();
+
+            if (typeof ResizeObserver !== 'undefined') {
+                const wrapper = document.getElementById('single-preview-box');
+                if (wrapper) {
+                    const ro = new ResizeObserver(() => renderAllViews());
+                    ro.observe(wrapper);
+                }
+            }
         }
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.restore();
 
-        // 2. 纸张内芯
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(120, 120, 840, 840);
-        ctx.clip();
-        ctx.fillStyle = state.paperColor;
-        ctx.fillRect(120, 120, 840, 840);
-        ctx.restore();
+        function syncUIState() {
+            const foundPaper = PAPER_COLORS.find(c => c.hex.toLowerCase() === state.paperColor.toLowerCase());
+            document.getElementById('paper-color-name').textContent = foundPaper ? foundPaper.name : `自定义 (${state.paperColor.toUpperCase()})`;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                const isMatch = btn.dataset.color.toLowerCase() === state.paperColor.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-105', isMatch);
+            });
 
-        // 3. 动物/照片
-        ctx.save();
-        ctx.translate(state.animalPos.x, state.animalPos.y);
-        ctx.scale(state.animalPos.scale, state.animalPos.scale);
-        drawAnimal();
-        ctx.restore();
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                const isMatch = btn.dataset.pattern === state.pattern;
+                btn.className = isMatch
+                    ? 'pattern-btn py-1.5 px-2 rounded-xl text-xs bg-white/15 text-white border border-white/25 font-medium transition cursor-pointer'
+                    : 'pattern-btn py-1.5 px-2 rounded-xl text-xs bg-black/30 text-stone-400 hover:text-white border border-white/5 transition cursor-pointer';
+            });
 
-        // 4. 复古邮戳
-        ctx.save();
-        ctx.translate(state.postmarkPos.x, state.postmarkPos.y);
-        drawPostmark();
-        ctx.restore();
+            const patPanel = document.getElementById('pattern-color-panel');
+            patPanel.classList.toggle('hidden', state.pattern === 'solid');
 
-        // 5. 趣味角标
-        ctx.save();
-        ctx.translate(state.badgePos.x, state.badgePos.y);
-        drawBadge();
-        ctx.restore();
+            document.getElementById('patternOpacitySlider').value = state.patternOpacity;
+            document.querySelectorAll('.pcolor-btn').forEach(btn => {
+                const isMatch = btn.dataset.pcolor.toLowerCase() === state.patternColor.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-110', isMatch);
+            });
 
-        // 6. 手写文字
-        ctx.save();
-        ctx.translate(state.textPos.x, state.textPos.y);
-        ctx.font = "bold 48px monospace";
-        ctx.fillStyle = "#222";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(document.getElementById('stampText').value || state.text, 0, 0);
-        ctx.restore();
+            const foundBorder = BORDER_COLORS.find(b => b.hex.toLowerCase() === state.borderColor.toLowerCase());
+            document.getElementById('border-color-name').textContent = foundBorder ? foundBorder.name : `自定义 (${state.borderColor.toUpperCase()})`;
+            document.querySelectorAll('.border-btn').forEach(btn => {
+                const isMatch = btn.dataset.border.toLowerCase() === state.borderColor.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-105', isMatch);
+            });
+
+            document.getElementById('charScaleSlider').value = state.charScale;
+            document.querySelectorAll('.char-btn').forEach(btn => {
+                const isMatch = btn.dataset.char === state.character;
+                btn.className = `char-btn rounded-2xl bg-[#262422] hover:bg-[#302d2a] border py-1.5 px-1 flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${isMatch ? 'border-pink-200 ring-2 ring-pink-200/30 bg-[#332e2b]' : 'border-white/5 opacity-80 hover:opacity-100'}`;
+            });
+
+            const lTop = document.getElementById('layout-top');
+            const lCorner = document.getElementById('layout-corner');
+            lTop.className = state.layout === 'top' ? 'px-2 py-0.5 rounded bg-white/15 text-white transition cursor-pointer' : 'px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer';
+            lCorner.className = state.layout === 'corner' ? 'px-2 py-0.5 rounded bg-white/15 text-white transition cursor-pointer' : 'px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer';
+
+            const tSticker = document.getElementById('tool-sticker');
+            const tDraw = document.getElementById('tool-draw');
+            const pSticker = document.getElementById('diy-sticker-panel');
+            const pDraw = document.getElementById('diy-draw-panel');
+            const modeBadge = document.getElementById('canvas-mode-badge');
+
+            if (state.diyTool === 'sticker') {
+                tSticker.className = 'px-2 py-0.5 rounded bg-white/15 text-white transition cursor-pointer';
+                tDraw.className = 'px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer';
+                pSticker.classList.remove('hidden');
+                pDraw.classList.add('hidden');
+                if (mainCanvas) mainCanvas.style.cursor = 'grab';
+                modeBadge.innerHTML = `<span class="text-pink-300 font-bold">✥</span><span>1:1 正方形 (点击元素拖动·缩放·旋转)</span>`;
+            } else {
+                tDraw.className = 'px-2 py-0.5 rounded bg-pink-300/25 text-pink-200 border border-pink-300/30 transition cursor-pointer';
+                tSticker.className = 'px-2 py-0.5 rounded text-stone-400 hover:text-white transition cursor-pointer';
+                pSticker.classList.add('hidden');
+                pDraw.classList.remove('hidden');
+                if (mainCanvas) mainCanvas.style.cursor = 'crosshair';
+                modeBadge.innerHTML = `<span class="text-pink-300 font-bold">✎</span><span>自由手绘涂鸦模式</span>`;
+            }
+
+            document.querySelectorAll('.bcolor-btn').forEach(btn => {
+                const isMatch = btn.dataset.bcolor.toLowerCase() === state.brushColor.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-110', isMatch);
+            });
+            document.querySelectorAll('.bsize-btn').forEach(btn => {
+                const isMatch = Number(btn.dataset.bsize) === state.brushSize;
+                btn.className = isMatch ? 'bsize-btn px-2 py-1 rounded-lg bg-white/15 text-white border border-white/25 cursor-pointer' : 'bsize-btn px-2 py-1 rounded-lg bg-black/30 text-stone-400 border border-white/5 cursor-pointer';
+            });
+
+            document.getElementById('stampText').value = state.text;
+            document.getElementById('fontSizeSlider').value = state.fontScale;
+            document.querySelectorAll('.tcolor-btn').forEach(btn => {
+                const isMatch = btn.dataset.tcolor.toLowerCase() === state.textColor.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-110', isMatch);
+            });
+            document.querySelectorAll('.talign-btn').forEach(btn => {
+                const isMatch = btn.dataset.talign === state.textAlign;
+                btn.className = isMatch ? 'talign-btn p-1 rounded bg-white/15 text-white transition cursor-pointer' : 'talign-btn p-1 rounded text-stone-400 hover:text-white transition cursor-pointer';
+            });
+
+            document.querySelectorAll('.font-btn').forEach(btn => {
+                const isMatch = btn.dataset.font === state.fontFamily;
+                btn.classList.toggle('bg-white/15', isMatch);
+                btn.classList.toggle('text-white', isMatch);
+                btn.classList.toggle('border-white/25', isMatch);
+                btn.classList.toggle('bg-black/30', !isMatch);
+                btn.classList.toggle('text-stone-400', !isMatch);
+                btn.classList.toggle('border-white/5', !isMatch);
+            });
+
+            // Postmark UI
+            const pmBtn = document.getElementById('postmark-toggle-btn');
+            const pmCtrl = document.getElementById('postmark-controls');
+            if (state.postmark.enabled) {
+                pmBtn.textContent = '已盖戳 ON';
+                pmBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-amber-300/20 text-amber-200 border border-amber-300/35 transition cursor-pointer';
+                pmCtrl.classList.remove('opacity-45', 'pointer-events-none');
+            } else {
+                pmBtn.textContent = '已隐藏 OFF';
+                pmBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/5 text-stone-400 border border-white/10 transition cursor-pointer';
+                pmCtrl.classList.add('opacity-45', 'pointer-events-none');
+            }
+            document.getElementById('pmTopInput').value = state.postmark.topText;
+            document.getElementById('pmDateInput').value = state.postmark.dateText;
+            document.getElementById('pmBottomInput').value = state.postmark.bottomText;
+            document.getElementById('pmOpacitySlider').value = state.postmark.opacity;
+            document.querySelectorAll('.pmstyle-btn').forEach(btn => {
+                const isMatch = btn.dataset.pmstyle === state.postmark.style;
+                btn.className = isMatch ? 'pmstyle-btn py-1.5 px-2 rounded-xl text-[11px] bg-white/15 text-white border border-white/25 font-medium transition cursor-pointer' : 'pmstyle-btn py-1.5 px-2 rounded-xl text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer';
+            });
+            document.querySelectorAll('.pmink-btn').forEach(btn => {
+                const isMatch = btn.dataset.pmink.toLowerCase() === state.postmark.color.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-110', isMatch);
+            });
+
+            // Badge UI
+            const bdBtn = document.getElementById('badge-toggle-btn');
+            const bdCtrl = document.getElementById('badge-controls');
+            if (state.badge.enabled) {
+                bdBtn.textContent = '已显示 ON';
+                bdBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-sky-300/20 text-sky-200 border border-sky-300/35 transition cursor-pointer';
+                bdCtrl.classList.remove('opacity-45', 'pointer-events-none');
+            } else {
+                bdBtn.textContent = '已隐藏 OFF';
+                bdBtn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/5 text-stone-400 border border-white/10 transition cursor-pointer';
+                bdCtrl.classList.add('opacity-45', 'pointer-events-none');
+            }
+            document.getElementById('badgeTextInput').value = state.badge.text;
+            document.querySelectorAll('.bframe-btn').forEach(btn => {
+                const isMatch = btn.dataset.bframe === state.badge.frame;
+                btn.className = isMatch ? 'bframe-btn py-1 px-1.5 rounded-lg text-[11px] bg-white/15 text-white border border-white/25 font-medium transition cursor-pointer' : 'bframe-btn py-1 px-1.5 rounded-lg text-[11px] bg-black/30 text-stone-400 border border-white/5 transition cursor-pointer';
+            });
+            document.querySelectorAll('.bdcolor-btn').forEach(btn => {
+                const isMatch = btn.dataset.bdcolor.toLowerCase() === state.badge.color.toLowerCase();
+                btn.classList.toggle('ring-selected', isMatch);
+                btn.classList.toggle('scale-110', isMatch);
+            });
+
+            const vSingle = document.getElementById('view-single');
+            const vGrid = document.getElementById('view-grid');
+            const boxSingle = document.getElementById('single-preview-box');
+            const boxGrid = document.getElementById('grid-preview-box');
+
+            if (state.previewMode === 'single') {
+                vSingle.className = 'px-2.5 py-1 rounded-lg bg-white/15 text-white font-medium transition cursor-pointer flex items-center gap-1';
+                vGrid.className = 'px-2.5 py-1 rounded-lg text-stone-400 hover:text-white transition cursor-pointer flex items-center gap-1';
+                boxSingle.classList.remove('hidden');
+                boxGrid.classList.add('hidden');
+                boxGrid.classList.remove('grid');
+            } else {
+                vGrid.className = 'px-2.5 py-1 rounded-lg bg-white/15 text-white font-medium transition cursor-pointer flex items-center gap-1';
+                vSingle.className = 'px-2.5 py-1 rounded-lg text-stone-400 hover:text-white transition cursor-pointer flex items-center gap-1';
+                boxSingle.classList.add('hidden');
+                boxGrid.classList.remove('hidden');
+                boxGrid.classList.add('grid');
+            }
+        }
+
+        // ==========================================
+        // 3. 交互与控制函数
+        // ==========================================
+        function setPreviewMode(mode) { state.previewMode = mode; state.selectedElement = null; syncUIState(); renderAllViews(); }
+        function setPaperColor(hex) { state.paperColor = hex; syncUIState(); renderAllViews(); }
+        function setPattern(pat) { state.pattern = pat; syncUIState(); renderAllViews(); }
+        function setPatternColor(hex) { state.patternColor = hex; syncUIState(); renderAllViews(); }
+        function setPatternOpacity(val) { state.patternOpacity = Number(val); renderAllViews(); }
+        function setBorderColor(hex) { state.borderColor = hex; syncUIState(); renderAllViews(); }
+
+        function setCharacter(id) {
+            state.character = id;
+            if (id === 'photo' && !state.uploadedImageObj) {
+                document.getElementById('photoUploadInput').click();
+                return;
+            }
+            if (id !== 'none') state.selectedElement = { type: 'character' };
+            else if (state.selectedElement && state.selectedElement.type === 'character') state.selectedElement = null;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    state.uploadedImageObj = img;
+                    state.character = 'photo';
+                    state.selectedElement = { type: 'character' };
+                    sketchCanvasCache = null;
+                    syncUIState();
+                    renderAllViews();
+                    showToast('本地相册照片上传成功！✨');
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function toggleSketchFilter(val) {
+            state.sketchFilter = val;
+            renderAllViews();
+        }
+
+        function setCharScale(val) { state.charScale = Number(val); renderAllViews(); }
+
+        function setLayout(layout) {
+            state.layout = layout;
+            resetElementPositions(false);
+            syncUIState();
+            renderAllViews();
+        }
+
+        function resetElementPositions(notify = true) {
+            if (state.character === 'none') {
+                state.textX = 540;
+                state.textY = 540;
+            } else if (state.layout === 'top') {
+                state.charX = 540;
+                state.charY = 420;
+                state.textX = 540;
+                state.textY = 710;
+            } else {
+                state.charX = 745;
+                state.charY = 735;
+                state.textX = 335;
+                state.textY = 345;
+            }
+            state.charRotation = 0;
+            state.textRotation = 0;
+            state.postmark.x = 245;
+            state.postmark.y = 235;
+            state.postmark.rotation = -0.16;
+            state.badge.x = 825;
+            state.badge.y = 205;
+            state.badge.rotation = 0;
+            state.snapGuides = { x: false, y: false };
+            renderAllViews();
+            if (notify) showToast('已将所有元素归位 ✨');
+        }
+
+        function togglePostmark() {
+            state.postmark.enabled = !state.postmark.enabled;
+            if (!state.postmark.enabled && state.selectedElement?.type === 'postmark') state.selectedElement = null;
+            else if (state.postmark.enabled) state.selectedElement = { type: 'postmark' };
+            syncUIState();
+            renderAllViews();
+        }
+
+        function setPostmarkStyle(style) {
+            state.postmark.enabled = true;
+            state.postmark.style = style;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function updatePostmarkField(field, val) {
+            state.postmark.enabled = true;
+            state.postmark[field] = val;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function toggleBadge() {
+            state.badge.enabled = !state.badge.enabled;
+            if (!state.badge.enabled && state.selectedElement?.type === 'badge') state.selectedElement = null;
+            else if (state.badge.enabled) state.selectedElement = { type: 'badge' };
+            syncUIState();
+            renderAllViews();
+        }
+
+        function applyBadgePreset(txt) {
+            state.badge.enabled = true;
+            state.badge.text = txt;
+            state.selectedElement = { type: 'badge' };
+            syncUIState();
+            renderAllViews();
+        }
+
+        function setBadgeFrame(frame) {
+            state.badge.enabled = true;
+            state.badge.frame = frame;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function updateBadgeField(field, val) {
+            state.badge.enabled = true;
+            state.badge[field] = val;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function snapBadgeCorner(corner) {
+            state.badge.enabled = true;
+            const map = {
+                tl: { x: 255, y: 205 },
+                tr: { x: 825, y: 205 },
+                bl: { x: 255, y: 880 },
+                br: { x: 825, y: 880 }
+            };
+            if (map[corner]) {
+                state.badge.x = map[corner].x;
+                state.badge.y = map[corner].y;
+                state.badge.rotation = 0;
+            }
+            state.selectedElement = { type: 'badge' };
+            syncUIState();
+            renderAllViews();
+        }
+
+        function setDiyTool(tool) {
+            state.diyTool = tool;
+            if (tool === 'draw') state.selectedElement = null;
+            syncUIState();
+            renderAllViews();
+        }
+
+        function addSticker(id) {
+            const offsetX = (Math.random() - 0.5) * 90;
+            const offsetY = (Math.random() - 0.5) * 90;
+            state.stickers.push({ id, x: 540 + offsetX, y: 540 + offsetY, scale: 1.05, rotation: 0 });
+            state.diyTool = 'sticker';
+            state.selectedElement = { type: 'sticker', index: state.stickers.length - 1 };
+            syncUIState();
+            renderAllViews();
+            showToast('已添加印花 ✨');
+        }
+
+        function clearAllStickers() {
+            state.stickers = [];
+            if (state.selectedElement && state.selectedElement.type === 'sticker') state.selectedElement = null;
+            renderAllViews();
+            showToast('已清空所有印花');
+        }
+
+        function setTextColor(hex) { state.textColor = hex; syncUIState(); renderAllViews(); }
+        function setTextAlign(align) { state.textAlign = align; syncUIState(); renderAllViews(); }
+        function setBrushColor(hex) { state.brushColor = hex; syncUIState(); }
+        function setBrushSize(size) { state.brushSize = size; syncUIState(); }
+
+        // 修复的撤销函数
+        function undoBrushStroke() {
+            if (state.brushStrokes.length > 0) {
+                state.brushStrokes.pop();
+                renderAllViews();
+                showToast('已撤销上一笔 ✨');
+            } else {
+                showToast('没有可撤销的笔画啦');
+            }
+        }
+
+        function clearBrushStrokes() { state.brushStrokes = []; renderAllViews(); showToast('已清空手绘涂鸦'); }
+        function updateText(val) { state.text = val; renderAllViews(); }
+        function setFontScale(val) { state.fontScale = Number(val); renderAllViews(); }
+        function setFont(font) { state.fontFamily = font; syncUIState(); renderAllViews(); }
+
+        function applyGridPreset(idx) {
+            const preset = INSPIRATION_PRESETS[idx - 1];
+            if (!preset) return;
+            loadPresetData(preset);
+            state.previewMode = 'single';
+            syncUIState();
+            renderAllViews();
+            showToast('已载入灵感样式 ✨');
+        }
+
+        function generateRandomStamp() {
+            const preset = INSPIRATION_PRESETS[Math.floor(Math.random() * INSPIRATION_PRESETS.length)];
+            loadPresetData(preset);
+            syncUIState();
+            renderAllViews();
+            showToast('已随机生成全新邮票 ✨');
+        }
+
+        function loadPresetData(preset) {
+            state.paperColor = preset.color;
+            state.borderColor = preset.border;
+            state.pattern = preset.pattern;
+            state.patternColor = preset.patternColor;
+            state.patternOpacity = preset.patternOpacity;
+            state.character = preset.char;
+            state.charScale = preset.charScale;
+            state.charRotation = 0;
+            state.layout = preset.layout;
+            state.text = preset.text;
+            state.textColor = '#231F20';
+            state.textAlign = 'center';
+            state.textRotation = 0;
+            state.fontFamily = preset.font;
+            state.fontScale = preset.scale;
+            state.stickers = preset.stickers.map(s => ({ rotation: 0, ...s }));
+            if (preset.postmark) state.postmark = { ...preset.postmark };
+            if (preset.badge) state.badge = { ...preset.badge };
+            state.selectedElement = null;
+            state.brushStrokes = [];
+            if (!preset.postmark || !preset.badge) resetElementPositions(false);
+        }
+
+        function resetStamp() {
+            state = {
+                paperColor: '#FAD7EE',
+                borderColor: '#FFFFFF',
+                pattern: 'dots',
+                patternColor: '#FFFFFF',
+                patternOpacity: 70,
+                character: 'cat',
+                charX: 540,
+                charY: 420,
+                charScale: 100,
+                charRotation: 0,
+                layout: 'top',
+                text: 'SWEET\nDREAMS',
+                textX: 540,
+                textY: 710,
+                textColor: '#231F20',
+                textAlign: 'center',
+                textRotation: 0,
+                fontFamily: 'Gaegu',
+                fontScale: 100,
+                previewMode: state.previewMode,
+                diyTool: 'sticker',
+                stickers: [
+                    { id: 'sparkle', x: 815, y: 315, scale: 1.0, rotation: 0 },
+                    { id: 'sparkle', x: 255, y: 695, scale: 0.9, rotation: 0 }
+                ],
+                postmark: {
+                    enabled: true,
+                    style: 'wave',
+                    topText: 'CUTE MAIL',
+                    dateText: '2026.11.13',
+                    bottomText: 'SPECIAL POST',
+                    color: '#231F20',
+                    opacity: 78,
+                    x: 245,
+                    y: 235,
+                    scale: 0.95,
+                    rotation: -0.16
+                },
+                badge: {
+                    enabled: true,
+                    text: '100% CUTE',
+                    frame: 'box',
+                    color: '#231F20',
+                    x: 825,
+                    y: 205,
+                    scale: 0.95,
+                    rotation: 0
+                },
+                uploadedImageObj: state.uploadedImageObj,
+                sketchFilter: true,
+                selectedElement: null,
+                snapGuides: { x: false, y: false },
+                brushColor: '#231F20',
+                brushSize: 9,
+                brushStrokes: []
+            };
+            syncUIState();
+            renderAllViews();
+            showToast('已恢复默认设置');
+                }
+
+        // ==========================================
+        // 4. 画布全元素拖拽 & 缩放 & 旋转交互
+        // ==========================================
+        function getCanvasCoords(clientX, clientY) {
+            const rect = mainCanvas.getBoundingClientRect();
+            const w = rect.width || 340;
+            const h = rect.height || 340;
+            return {
+                x: (clientX - rect.left) * (mainCanvas.width / w),
+                y: (clientY - rect.top) * (mainCanvas.height / h)
+            };
+        }
+
+        function getElementBounds(cfg, target) {
+            if (!target) return null;
+            if (target.type === 'postmark') {
+                if (!cfg.postmark || !cfg.postmark.enabled) return null;
+                const s = cfg.postmark.scale || 1;
+                return { cx: cfg.postmark.x, cy: cfg.postmark.y, halfW: 155 * s, halfH: 96 * s, rotation: cfg.postmark.rotation || 0, canDelete: true };
+            }
+            if (target.type === 'badge') {
+                if (!cfg.badge || !cfg.badge.enabled) return null;
+                const s = cfg.badge.scale || 1;
+                const txtLen = Math.max(4, (cfg.badge.text || '').length);
+                const w = Math.max(85, txtLen * 16 + 38) * s;
+                return { cx: cfg.badge.x, cy: cfg.badge.y, halfW: w, halfH: 42 * s, rotation: cfg.badge.rotation || 0, canDelete: true };
+            }
+            if (target.type === 'sticker') {
+                const st = cfg.stickers[target.index];
+                if (!st) return null;
+                const half = 46 * st.scale;
+                return { cx: st.x, cy: st.y, halfW: half, halfH: half, rotation: st.rotation || 0, canDelete: true };
+            }
+            if (target.type === 'character') {
+                if (cfg.character === 'none') return null;
+                const factor = ((cfg.charScale || 100) / 100) * 1.15;
+                const isPhoto = (cfg.character === 'photo');
+                return { cx: cfg.charX, cy: cfg.charY, halfW: (isPhoto ? 100 : 145) * factor, halfH: (isPhoto ? 100 : 125) * factor, rotation: cfg.charRotation || 0, canDelete: false };
+            }
+            if (target.type === 'text') {
+                const lines = (cfg.text || '').split('\n').filter(l => l.trim() !== '');
+                if (lines.length === 0) return null;
+                const fontScaleFactor = (cfg.fontScale || 100) / 100;
+                const baseFont = (cfg.character === 'none' ? 110 : 84) * fontScaleFactor;
+                const maxLen = Math.max(...lines.map(l => l.length));
+                let fontSize = baseFont;
+                if (maxLen > 12) fontSize *= 0.82;
+                if (lines.length >= 4) fontSize *= 0.85;
+
+                let maxLineUnits = 0;
+                lines.forEach(line => {
+                    let units = 0;
+                    for (const ch of line) units += /[\u4e00-\u9fa5]/.test(ch) ? 1.05 : 0.58;
+                    if (units > maxLineUnits) maxLineUnits = units;
+                });
+
+                const lineHeight = fontSize * 1.14;
+                return {
+                    cx: cfg.textX,
+                    cy: cfg.textY,
+                    halfW: Math.max(90, (maxLineUnits * fontSize) / 2 + 28),
+                    halfH: Math.max(48, (lines.length * lineHeight) / 2 + 20),
+                    rotation: cfg.textRotation || 0,
+                    canDelete: false
+                };
+            }
+            return null;
+        }
+
+        function toLocalPoint(pt, bounds) {
+            const dx = pt.x - bounds.cx;
+            const dy = pt.y - bounds.cy;
+            const cos = Math.cos(-bounds.rotation);
+            const sin = Math.sin(-bounds.rotation);
+            return { x: dx * cos - dy * sin, y: dx * sin + dy * cos };
+        }
+
+        function toWorldPoint(lx, ly, bounds) {
+            const cos = Math.cos(bounds.rotation);
+            const sin = Math.sin(bounds.rotation);
+            return { x: bounds.cx + lx * cos - ly * sin, y: bounds.cy + lx * sin + ly * cos };
+        }
+
+        function handleCanvasDown(clientX, clientY) {
+            if (state.previewMode !== 'single') return;
+            const pt = getCanvasCoords(clientX, clientY);
+
+            if (state.diyTool === 'draw') {
+                interactionState.isPointerDown = true;
+                interactionState.action = 'draw-stroke';
+                interactionState.currentStroke = { color: state.brushColor, size: state.brushSize, points: [pt] };
+                state.brushStrokes.push(interactionState.currentStroke);
+                renderAllViews();
+                return;
+            }
+
+            if (state.selectedElement) {
+                const bounds = getElementBounds(state, state.selectedElement);
+                if (bounds) {
+                    const rotHandle = toWorldPoint(-bounds.halfW, -bounds.halfH, bounds);
+                    if (Math.hypot(pt.x - rotHandle.x, pt.y - rotHandle.y) <= 34) {
+                        interactionState.isPointerDown = true;
+                        interactionState.action = 'rotate-element';
+                        interactionState.target = { ...state.selectedElement };
+                        interactionState.initialRotation = bounds.rotation;
+                        interactionState.initialAngle = Math.atan2(pt.y - bounds.cy, pt.x - bounds.cx);
+                        return;
+                    }
+                    if (bounds.canDelete) {
+                        const delHandle = toWorldPoint(bounds.halfW, -bounds.halfH, bounds);
+                        if (Math.hypot(pt.x - delHandle.x, pt.y - delHandle.y) <= 34) {
+                            if (state.selectedElement.type === 'sticker') {
+                                state.stickers.splice(state.selectedElement.index, 1);
+                            } else if (state.selectedElement.type === 'postmark') {
+                                state.postmark.enabled = false;
+                                syncUIState();
+                            } else if (state.selectedElement.type === 'badge') {
+                                state.badge.enabled = false;
+                                syncUIState();
+                            }
+                            state.selectedElement = null;
+                            renderAllViews();
+                            return;
+                        }
+                    }
+                    const sclHandle = toWorldPoint(bounds.halfW, bounds.halfH, bounds);
+                    if (Math.hypot(pt.x - sclHandle.x, pt.y - sclHandle.y) <= 34) {
+                        interactionState.isPointerDown = true;
+                        interactionState.action = 'scale-element';
+                        interactionState.target = { ...state.selectedElement };
+                        interactionState.initialDist = Math.max(24, Math.hypot(pt.x - bounds.cx, pt.y - bounds.cy));
+                        if (state.selectedElement.type === 'sticker') interactionState.initialScale = state.stickers[state.selectedElement.index].scale;
+                        else if (state.selectedElement.type === 'postmark') interactionState.initialScale = state.postmark.scale;
+                        else if (state.selectedElement.type === 'badge') interactionState.initialScale = state.badge.scale;
+                        else if (state.selectedElement.type === 'character') interactionState.initialScale = state.charScale;
+                        else if (state.selectedElement.type === 'text') interactionState.initialScale = state.fontScale;
+                        return;
+                    }
+                }
+            }
+
+            let hitTarget = null;
+            if (!hitTarget && state.badge && state.badge.enabled) {
+                const bb = getElementBounds(state, { type: 'badge' });
+                if (bb) {
+                    const local = toLocalPoint(pt, bb);
+                    if (Math.abs(local.x) <= bb.halfW + 10 && Math.abs(local.y) <= bb.halfH + 10) hitTarget = { type: 'badge' };
+                }
+            }
+            if (!hitTarget && state.postmark && state.postmark.enabled) {
+                const pb = getElementBounds(state, { type: 'postmark' });
+                if (pb) {
+                    const local = toLocalPoint(pt, pb);
+                    if (Math.abs(local.x) <= pb.halfW + 10 && Math.abs(local.y) <= pb.halfH + 10) hitTarget = { type: 'postmark' };
+                }
+            }
+            if (!hitTarget) {
+                for (let i = state.stickers.length - 1; i >= 0; i--) {
+                    const b = getElementBounds(state, { type: 'sticker', index: i });
+                    if (b) {
+                        const local = toLocalPoint(pt, b);
+                        if (Math.abs(local.x) <= b.halfW + 12 && Math.abs(local.y) <= b.halfH + 12) {
+                            hitTarget = { type: 'sticker', index: i };
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!hitTarget) {
+                const tb = getElementBounds(state, { type: 'text' });
+                if (tb) {
+                    const local = toLocalPoint(pt, tb);
+                    if (Math.abs(local.x) <= tb.halfW && Math.abs(local.y) <= tb.halfH) hitTarget = { type: 'text' };
+                }
+            }
+            if (!hitTarget) {
+                const cb = getElementBounds(state, { type: 'character' });
+                if (cb) {
+                    const local = toLocalPoint(pt, cb);
+                    if (Math.abs(local.x) <= cb.halfW && Math.abs(local.y) <= cb.halfH) hitTarget = { type: 'character' };
+                }
+            }
+
+            if (hitTarget) {
+                state.selectedElement = hitTarget;
+                interactionState.isPointerDown = true;
+                interactionState.action = 'drag-element';
+                interactionState.target = { ...hitTarget };
+                if (hitTarget.type === 'sticker') {
+                    interactionState.dragOffsetX = pt.x - state.stickers[hitTarget.index].x;
+                    interactionState.dragOffsetY = pt.y - state.stickers[hitTarget.index].y;
+                } else if (hitTarget.type === 'postmark') {
+                    interactionState.dragOffsetX = pt.x - state.postmark.x;
+                    interactionState.dragOffsetY = pt.y - state.postmark.y;
+                } else if (hitTarget.type === 'badge') {
+                    interactionState.dragOffsetX = pt.x - state.badge.x;
+                    interactionState.dragOffsetY = pt.y - state.badge.y;
+                } else if (hitTarget.type === 'character') {
+                    interactionState.dragOffsetX = pt.x - state.charX;
+                    interactionState.dragOffsetY = pt.y - state.charY;
+                } else if (hitTarget.type === 'text') {
+                    interactionState.dragOffsetX = pt.x - state.textX;
+                    interactionState.dragOffsetY = pt.y - state.textY;
+                }
+                mainCanvas.style.cursor = 'grabbing';
+            } else {
+                state.selectedElement = null;
+            }
+            renderAllViews();
+        }
+
+        function handleCanvasMove(clientX, clientY) {
+            if (!interactionState.isPointerDown) return;
+            const pt = getCanvasCoords(clientX, clientY);
+
+            if (interactionState.action === 'draw-stroke' && interactionState.currentStroke) {
+                interactionState.currentStroke.points.push(pt);
+                renderAllViews();
+                return;
+            }
+
+            const target = interactionState.target;
+            if (!target) return;
+
+            if (interactionState.action === 'drag-element') {
+                const minB = target.type === 'postmark' ? 75 : 135;
+                const maxB = target.type === 'postmark' ? 1005 : 945;
+                let nx = Math.max(minB, Math.min(maxB, pt.x - interactionState.dragOffsetX));
+                let ny = Math.max(minB, Math.min(maxB, pt.y - interactionState.dragOffsetY));
+                let snapX = false, snapY = false;
+                if (Math.abs(nx - 540) < 14) { nx = 540; snapX = true; }
+                if (Math.abs(ny - 540) < 14) { ny = 540; snapY = true; }
+                state.snapGuides = { x: snapX, y: snapY };
+
+                if (target.type === 'sticker' && state.stickers[target.index]) {
+                    state.stickers[target.index].x = nx;
+                    state.stickers[target.index].y = ny;
+                } else if (target.type === 'postmark') {
+                    state.postmark.x = nx;
+                    state.postmark.y = ny;
+                } else if (target.type === 'badge') {
+                    state.badge.x = nx;
+                    state.badge.y = ny;
+                } else if (target.type === 'character') {
+                    state.charX = nx;
+                    state.charY = ny;
+                } else if (target.type === 'text') {
+                    state.textX = nx;
+                    state.textY = ny;
+                }
+                renderAllViews();
+            } else if (interactionState.action === 'scale-element') {
+                const bounds = getElementBounds(state, target);
+                if (!bounds) return;
+                const currDist = Math.max(20, Math.hypot(pt.x - bounds.cx, pt.y - bounds.cy));
+                const ratio = currDist / interactionState.initialDist;
+                if (target.type === 'sticker' && state.stickers[target.index]) {
+                    state.stickers[target.index].scale = Math.max(0.45, Math.min(2.4, interactionState.initialScale * ratio));
+                } else if (target.type === 'postmark') {
+                    state.postmark.scale = Math.max(0.5, Math.min(1.8, interactionState.initialScale * ratio));
+                } else if (target.type === 'badge') {
+                    state.badge.scale = Math.max(0.55, Math.min(1.9, interactionState.initialScale * ratio));
+                } else if (target.type === 'character') {
+                    state.charScale = Math.round(Math.max(45, Math.min(180, interactionState.initialScale * ratio)));
+                    document.getElementById('charScaleSlider').value = Math.min(140, Math.max(60, state.charScale));
+                } else if (target.type === 'text') {
+                    state.fontScale = Math.round(Math.max(45, Math.min(180, interactionState.initialScale * ratio)));
+                    document.getElementById('fontSizeSlider').value = Math.min(140, Math.max(60, state.fontScale));
+                }
+                renderAllViews();
+            } else if (interactionState.action === 'rotate-element') {
+                const bounds = getElementBounds(state, target);
+                if (!bounds) return;
+                const currAngle = Math.atan2(pt.y - bounds.cy, pt.x - bounds.cx);
+                let newRot = interactionState.initialRotation + (currAngle - interactionState.initialAngle);
+                if (Math.abs(newRot) < 0.06) newRot = 0;
+                if (target.type === 'sticker' && state.stickers[target.index]) state.stickers[target.index].rotation = newRot;
+                else if (target.type === 'postmark') state.postmark.rotation = newRot;
+                else if (target.type === 'badge') state.badge.rotation = newRot;
+                else if (target.type === 'character') state.charRotation = newRot;
+                else if (target.type === 'text') state.textRotation = newRot;
+                renderAllViews();
+            }
+        }
+
+        function handleCanvasUp() {
+            if (interactionState.isPointerDown) {
+                interactionState.isPointerDown = false;
+                interactionState.action = null;
+                interactionState.target = null;
+                interactionState.currentStroke = null;
+                state.snapGuides = { x: false, y: false };
+                if (state.diyTool === 'sticker') mainCanvas.style.cursor = 'grab';
+                renderAllViews();
+            }
+        }
+
+        function bindCanvasInteractions() {
+            mainCanvas.addEventListener('mousedown', (e) => handleCanvasDown(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => handleCanvasMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', handleCanvasUp);
+
+            mainCanvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 0) {
+                    e.preventDefault();
+                    handleCanvasDown(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: false });
+
+            mainCanvas.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0 && interactionState.isPointerDown) {
+                    e.preventDefault();
+                    handleCanvasMove(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: false });
+
+            mainCanvas.addEventListener('touchend', handleCanvasUp);
+            mainCanvas.addEventListener('touchcancel', handleCanvasUp);
     }
 
-    function drawAnimal() {
-        ctx.strokeStyle = "#222";
-        ctx.lineWidth = 10;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.fillStyle = "#fff";
+        // ==========================================
+        // 5. Canvas 核心渲染引擎 (1080x1080 正方形)
+        // ==========================================
+        function renderAllViews(isExporting = false) {
+            if (!mainCanvas || !mainCtx) return;
+            renderStampToCanvas(mainCanvas, mainCtx, state, isExporting);
 
-        if (state.animal === 'upload' && state.customImg) {
+            if (state.previewMode === 'grid') {
+                const c0 = document.getElementById('gridCanvas0');
+                if (c0) renderStampToCanvas(c0, c0.getContext('2d'), state, true);
+
+                for (let i = 1; i <= 3; i++) {
+                    const c = document.getElementById(`gridCanvas${i}`);
+                    const p = INSPIRATION_PRESETS[i];
+                    if (!c || !p) continue;
+                    const isCorner = p.layout === 'corner';
+                    renderStampToCanvas(c, c.getContext('2d'), {
+                        paperColor: p.color,
+                        borderColor: p.border,
+                        pattern: p.pattern,
+                        patternColor: p.patternColor,
+                        patternOpacity: p.patternOpacity,
+                        character: p.char,
+                        charX: isCorner ? 745 : 540,
+                        charY: isCorner ? 735 : 420,
+                        charScale: p.charScale,
+                        charRotation: 0,
+                        layout: p.layout,
+                        text: p.text,
+                        textX: isCorner ? 335 : 540,
+                        textY: isCorner ? 345 : 710,
+                        textColor: '#231F20',
+                        textAlign: 'center',
+                        textRotation: 0,
+                        fontFamily: p.font,
+                        fontScale: p.scale,
+                        stickers: p.stickers,
+                        postmark: p.postmark,
+                        badge: p.badge,
+                        selectedElement: null,
+                        snapGuides: { x: false, y: false },
+                        brushStrokes: []
+                    }, true);
+                }
+            }
+        }
+
+        function renderStampToCanvas(targetCanvas, ctx, cfg, isExporting = false) {
+            const W = targetCanvas.width;
+            const scaleRatio = W / 1080;
+
+            ctx.save();
+            ctx.clearRect(0, 0, W, W);
+            ctx.scale(scaleRatio, scaleRatio);
+
+            const baseSize = 1080;
+            const margin = 65;
+            const stampSize = baseSize - margin * 2;
+            const innerPad = 48;
+
+            // 1. 邮票齿边底框
+            ctx.fillStyle = cfg.borderColor;
             ctx.beginPath();
-            ctx.arc(0, 0, 160, 0, Math.PI * 2);
+            ctx.roundRect(margin, margin, stampSize, stampSize, 8);
+            ctx.fill();
+
+            // 2. 内部纸张底色与底纹
+            const innerX = margin + innerPad;
+            const innerY = margin + innerPad;
+            const innerSize = stampSize - innerPad * 2;
+
+            ctx.save();
+            ctx.fillStyle = cfg.paperColor;
+            ctx.fillRect(innerX, innerY, innerSize, innerSize);
+
+            drawPaperPattern(ctx, innerX, innerY, innerSize, cfg.pattern, cfg.patternColor, cfg.patternOpacity);
+
+            ctx.beginPath();
+            ctx.rect(innerX, innerY, innerSize, innerSize);
             ctx.clip();
-            ctx.drawImage(state.customImg, -160, -160, 320, 320);
-            return;
+
+            // 3. 小动物/照片
+            const fontScaleFactor = (cfg.fontScale || 100) / 100;
+            const charScaleFactor = (cfg.charScale || 100) / 100;
+
+            if (cfg.character !== 'none') {
+                ctx.save();
+                ctx.translate(cfg.charX ?? 540, cfg.charY ?? 420);
+                ctx.rotate(cfg.charRotation || 0);
+                ctx.scale(1.15 * charScaleFactor, 1.15 * charScaleFactor);
+                if (cfg.character === 'photo' && cfg.uploadedImageObj) {
+                    drawUploadedPhotoIllustration(ctx, cfg.uploadedImageObj, cfg.sketchFilter);
+                } else if (cfg.character !== 'photo') {
+                    drawCharacterIllustration(ctx, cfg.character);
+                }
+                ctx.restore();
+            }
+
+            // 4. 文字
+            const textBaseSize = (cfg.character === 'none' ? 110 : 84) * fontScaleFactor;
+            drawHandwrittenText(ctx, cfg.text, cfg.textX ?? 540, cfg.textY ?? 710, textBaseSize, cfg);
+
+            // 5. 手绘涂鸦
+            drawFreehandStrokes(ctx, cfg.brushStrokes);
+
+            // 6. 贴纸
+            drawInteractiveStickers(ctx, cfg.stickers);
+
+            // 7. 面值角标
+            if (cfg.badge && cfg.badge.enabled) {
+                drawDenominationBadge(ctx, cfg.badge);
+            }
+
+            // 8. 纸张噪点
+            drawPaperGrain(ctx, innerX, innerY, innerSize);
+            ctx.restore();
+
+            // 9. 复古邮戳
+            if (cfg.postmark && cfg.postmark.enabled) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.roundRect(margin, margin, stampSize, stampSize, 8);
+                ctx.clip();
+                drawVintagePostmark(ctx, cfg.postmark);
+                ctx.restore();
+            }
+
+            // 10. 切割半圆齿孔
+            cutStampPerforations(ctx, margin, margin, stampSize, stampSize);
+
+            // 11. 编辑 gizmos
+            if (!isExporting) {
+                if (cfg.snapGuides && (cfg.snapGuides.x || cfg.snapGuides.y)) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(244, 63, 94, 0.55)';
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([10, 8]);
+                    if (cfg.snapGuides.x) {
+                        ctx.beginPath(); ctx.moveTo(540, innerY); ctx.lineTo(540, innerY + innerSize); ctx.stroke();
+                    }
+                    if (cfg.snapGuides.y) {
+                        ctx.beginPath(); ctx.moveTo(innerX, 540); ctx.lineTo(innerX + innerSize, 540); ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                if (cfg.selectedElement) {
+                    const bounds = getElementBounds(cfg, cfg.selectedElement);
+                    if (bounds) drawSelectionGizmo(ctx, bounds);
+                }
+            }
+
+            ctx.restore();
         }
 
-        ctx.beginPath();
-        ctx.arc(0, 0, 130, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
+        function cutStampPerforations(ctx, x, y, w, h) {
+            const notches = 13;
+            const step = w / notches;
+            const holeRadius = step * 0.27;
 
-        ctx.fillStyle = "#222";
-        ctx.beginPath(); ctx.arc(-35, -20, 12, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(35, -20, 12, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(0, 15, 10, 0, Math.PI*2); ctx.fill();
-    }
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = '#000000';
 
-    function drawPostmark() {
-        ctx.strokeStyle = "rgba(180, 50, 50, 0.7)";
-        ctx.lineWidth = 6;
-        ctx.beginPath(); ctx.arc(0, 0, 90, 0, Math.PI*2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(0, 0, 75, 0, Math.PI*2); ctx.stroke();
-        
-        ctx.fillStyle = "rgba(180, 50, 50, 0.8)";
-        ctx.font = "bold 20px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText("AIR MAIL · 2026", 0, -35);
-        ctx.font = "bold 24px monospace";
-        ctx.fillText("11.13", 0, 10);
-    }
-
-    function drawBadge() {
-        const text = document.getElementById('badgeText').value || state.badgeText;
-        ctx.fillStyle = "#ff758c";
-        ctx.strokeStyle = "#222";
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.roundRect(-90, -35, 180, 70, 20);
-        ctx.fill(); ctx.stroke();
-
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 24px monospace";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(text, 0, 0);
-    }
-
-    // 拖拽交互支持
-    let dragging = false, activeItem = null, startX, startY;
-
-    canvas.addEventListener('pointerdown', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const sx = canvas.width / rect.width;
-        const sy = canvas.height / rect.height;
-        const x = (e.clientX - rect.left) * sx;
-        const y = (e.clientY - rect.top) * sy;
-
-        if (Math.hypot(x - state.postmarkPos.x, y - state.postmarkPos.y) < 90) {
-            activeItem = 'postmark';
-        } else if (Math.hypot(x - state.badgePos.x, y - state.badgePos.y) < 80) {
-            activeItem = 'badge';
-        } else if (Math.abs(y - state.textPos.y) < 50) {
-            activeItem = 'text';
-        } else {
-            activeItem = 'animal';
+            for (let i = 0; i <= notches; i++) {
+                const pos = i * step;
+                ctx.beginPath(); ctx.arc(x + pos, y, holeRadius, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x + pos, y + h, holeRadius, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y + pos, holeRadius, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x + w, y + pos, holeRadius, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore();
         }
-        dragging = true;
-        startX = x; startY = y;
-    });
 
-    window.addEventListener('pointermove', (e) => {
-        if (!dragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const sx = canvas.width / rect.width;
-        const sy = canvas.height / rect.height;
-        const x = (e.clientX - rect.left) * sx;
-        const y = (e.clientY - rect.top) * sy;
-        const dx = x - startX, dy = y - startY;
-        startX = x; startY = y;
+        function drawVintagePostmark(ctx, pm) {
+            ctx.save();
+            ctx.translate(pm.x, pm.y);
+            ctx.rotate(pm.rotation || 0);
+            ctx.scale(pm.scale || 1, pm.scale || 1);
 
-        if (activeItem === 'animal') { state.animalPos.x += dx; state.animalPos.y += dy; }
-        else if (activeItem === 'text') { state.textPos.x += dx; state.textPos.y += dy; }
-        else if (activeItem === 'postmark') { state.postmarkPos.x += dx; state.postmarkPos.y += dy; }
-        else if (activeItem === 'badge') { state.badgePos.x += dx; state.badgePos.y += dy; }
-        redraw();
-    });
+            ctx.globalAlpha = Math.max(0.15, Math.min(1, (pm.opacity ?? 78) / 100));
+            ctx.strokeStyle = pm.color || '#231F20';
+            ctx.fillStyle = pm.color || '#231F20';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-    window.addEventListener('pointerup', () => { dragging = false; });
+            const cx = -42;
 
-    function savePNG() {
-        const link = document.createElement('a');
-        link.download = 'my-cute-stamp.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }
+            if (pm.style === 'heart') {
+                ctx.lineWidth = 4.5;
+                drawSketchHeart(ctx, cx, 0, 74);
+                ctx.lineWidth = 2.5;
+                drawSketchHeart(ctx, cx, 0, 58);
 
-    initUI();
-    redraw();
-</script>
+                ctx.lineWidth = 3.6;
+                for (let row = -1; row <= 1; row++) {
+                    const wy = row * 24;
+                    ctx.beginPath();
+                    for (let wx = 44; wx <= 156; wx += 4) {
+                        const offset = Math.sin((wx - 44) * 0.13) * 6.5;
+                        if (wx === 44) ctx.moveTo(wx, wy + offset);
+                        else ctx.lineTo(wx, wy + offset);
+                    }
+                    ctx.stroke();
+                }
+                drawSketchHeart(ctx, 100, -40, 12);
+                drawSketchHeart(ctx, 128, 42, 10);
+            } else if (pm.style === 'star') {
+                ctx.lineWidth = 4.5;
+                ctx.beginPath(); ctx.arc(cx, 0, 76, 0, Math.PI * 2); ctx.stroke();
+                ctx.lineWidth = 2.4;
+                ctx.setLineDash([7, 5]);
+                ctx.beginPath(); ctx.arc(cx, 0, 62, 0, Math.PI * 2); ctx.stroke();
+                ctx.setLineDash([]);
+
+                drawMiniStar(ctx, cx - 52, 0, 7);
+                drawMiniStar(ctx, cx + 52, 0, 7);
+
+                ctx.lineWidth = 3.5;
+                for (let row = -1.5; row <= 1.5; row += 1) {
+                    const wy = row * 19;
+                    ctx.beginPath();
+                    for (let wx = 42; wx <= 158; wx += 4) {
+                        const offset = Math.sin((wx - 42) * 0.14) * 6;
+                        if (wx === 42) ctx.moveTo(wx, wy + offset);
+                        else ctx.lineTo(wx, wy + offset);
+                    }
+                    ctx.stroke();
+                }
+            } else {
+                ctx.lineWidth = 4.5;
+                ctx.beginPath(); ctx.arc(cx, 0, 76, 0, Math.PI * 2); ctx.stroke();
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.arc(cx, 0, 56, 0, Math.PI * 2); ctx.stroke();
+
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.moveTo(cx - 53, -15); ctx.lineTo(cx + 53, -15);
+                ctx.moveTo(cx - 53, 15); ctx.lineTo(cx + 53, 15);
+                ctx.stroke();
+
+                ctx.lineWidth = 3.8;
+                for (let row = -1.5; row <= 1.5; row += 1) {
+                    const wy = row * 20;
+                    ctx.beginPath();
+                    for (let wx = 42; wx <= 158; wx += 4) {
+                        const offset = Math.sin((wx - 42) * 0.13) * 7;
+                        if (wx === 42) ctx.moveTo(wx, wy + offset);
+                        else ctx.lineTo(wx, wy + offset);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '700 18px "Gaegu", "ZCOOL KuaiLe", cursive';
+            if (pm.topText) ctx.fillText(pm.topText.toUpperCase(), cx, -36);
+            if (pm.bottomText) ctx.fillText(pm.bottomText.toUpperCase(), cx, 36);
+
+            ctx.font = '700 22px "Gaegu", "Courier New", monospace';
+            if (pm.dateText) ctx.fillText(pm.dateText, cx, 1);
+
+            ctx.restore();
+        }
+
+        function drawSketchHeart(ctx, x, y, r) {
+            ctx.beginPath();
+            ctx.moveTo(x, y + r * 0.78);
+            ctx.bezierCurveTo(x - r * 1.15, y + r * 0.05, x - r * 0.85, y - r * 0.82, x, y - r * 0.28);
+            ctx.bezierCurveTo(x + r * 0.85, y - r * 0.82, x + r * 1.15, y + r * 0.05, x, y + r * 0.78);
+            ctx.stroke();
+        }
+
+        function drawMiniStar(ctx, x, y, r) {
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const a1 = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+                const a2 = a1 + Math.PI / 5;
+                if (i === 0) ctx.moveTo(x + Math.cos(a1) * r, y + Math.sin(a1) * r);
+                else ctx.lineTo(x + Math.cos(a1) * r, y + Math.sin(a1) * r);
+                ctx.lineTo(x + Math.cos(a2) * (r * 0.45), y + Math.sin(a2) * (r * 0.45));
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawDenominationBadge(ctx, badge) {
+            const text = (badge.text || '').trim();
+            if (!text) return;
+
+            ctx.save();
+            ctx.translate(badge.x, badge.y);
+            ctx.rotate(badge.rotation || 0);
+            ctx.scale(badge.scale || 1, badge.scale || 1);
+
+            const color = badge.color || '#231F20';
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.font = '700 34px "Gaegu", "ZCOOL KuaiLe", "Comic Sans MS", cursive';
+            const metrics = ctx.measureText(text);
+            const boxW = Math.max(96, metrics.width + 36);
+            const boxH = 54;
+
+            if (badge.frame === 'box') {
+                ctx.lineWidth = 4.2;
+                ctx.beginPath();
+                ctx.roundRect(-boxW / 2, -boxH / 2, boxW, boxH, 10);
+                ctx.stroke();
+
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.roundRect(-boxW / 2 + 5, -boxH / 2 + 5, boxW - 10, boxH - 10, 7);
+                ctx.stroke();
+            } else if (badge.frame === 'oval') {
+                ctx.lineWidth = 4.2;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, boxW * 0.56, boxH * 0.58, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 0, 2);
+
+            ctx.restore();
+        }
+
+        function drawPaperPattern(ctx, x, y, size, pattern, colorHex, opacityPercent) {
+            if (!pattern || pattern === 'solid') return;
+            ctx.save();
+            ctx.globalAlpha = Math.max(0.1, Math.min(1, (opacityPercent || 70) / 100));
+
+            if (pattern === 'dots') {
+                ctx.fillStyle = colorHex || '#FFFFFF';
+                const spacing = 42;
+                let row = 0;
+                for (let py = y + 20; py < y + size; py += spacing) {
+                    const offsetX = (row % 2 === 1) ? spacing / 2 : 0;
+                    for (let px = x + 20 + offsetX; px < x + size; px += spacing) {
+                        ctx.beginPath();
+                        ctx.arc(px, py, 6.2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    row++;
+                }
+            } else if (pattern === 'v-stripes') {
+                ctx.fillStyle = colorHex || '#FFFFFF';
+                const stripeW = 22;
+                const gap = 46;
+                for (let px = x + 14; px < x + size; px += gap) {
+                    ctx.fillRect(px, y, stripeW, size);
+                }
+            } else if (pattern === 'd-stripes') {
+                ctx.strokeStyle = colorHex || '#FFFFFF';
+                ctx.lineWidth = 18;
+                const step = 54;
+                for (let d = -size; d < size * 2; d += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + d, y);
+                    ctx.lineTo(x + d - size, y + size);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawHandwrittenText(ctx, text, x, y, baseSize, cfg) {
+            const lines = (text || '').split('\n').filter(l => l.trim() !== '');
+            if (lines.length === 0) return;
+
+            const maxLen = Math.max(...lines.map(l => l.length));
+            let fontSize = baseSize;
+            if (maxLen > 12) fontSize *= 0.82;
+            if (lines.length >= 4) fontSize *= 0.85;
+
+            const zhFallback = cfg.fontFamily === 'Caveat' ? '"Ma Shan Zheng"' : '"ZCOOL KuaiLe"';
+            ctx.font = `700 ${Math.round(fontSize)}px "${cfg.fontFamily}", ${zhFallback}, "Comic Sans MS", cursive`;
+            const lineHeight = fontSize * 1.14;
+            const align = cfg.textAlign || 'center';
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(cfg.textRotation || 0);
+            ctx.fillStyle = cfg.textColor || '#231F20';
+            ctx.textAlign = align;
+            ctx.textBaseline = 'middle';
+
+            const bounds = getElementBounds(cfg, { type: 'text' });
+            const halfW = bounds ? bounds.halfW - 22 : 0;
+            const anchorX = align === 'left' ? -halfW : (align === 'right' ? halfW : 0);
+            const startY = -((lines.length - 1) * lineHeight) / 2;
+
+            lines.forEach((line, index) => {
+                const jitterX = Math.sin(index * 2.5) * 2.2;
+                ctx.fillText(line, anchorX + jitterX, startY + index * lineHeight);
+            });
+            ctx.restore();
+        }
+
+        function drawFreehandStrokes(ctx, strokes) {
+            if (!strokes || strokes.length === 0) return;
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            strokes.forEach(stroke => {
+                if (!stroke.points || stroke.points.length === 0) return;
+                ctx.strokeStyle = stroke.color || '#231F20';
+                ctx.fillStyle = stroke.color || '#231F20';
+                ctx.lineWidth = stroke.size || 9;
+
+                if (stroke.points.length === 1) {
+                    const p = stroke.points[0];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, (stroke.size || 9) / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                    for (let i = 1; i < stroke.points.length - 1; i++) {
+                        const xc = (stroke.points[i].x + stroke.points[i + 1].x) / 2;
+                        const yc = (stroke.points[i].y + stroke.points[i + 1].y) / 2;
+                        ctx.quadraticCurveTo(stroke.points[i].x, stroke.points[i].y, xc, yc);
+                    }
+                    const last = stroke.points[stroke.points.length - 1];
+                    ctx.lineTo(last.x, last.y);
+                    ctx.stroke();
+                }
+            });
+            ctx.restore();
+        }
+
+        function drawSelectionGizmo(ctx, bounds) {
+            const { cx, cy, halfW, halfH, rotation, canDelete } = bounds;
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(rotation || 0);
+
+            ctx.strokeStyle = 'rgba(236, 72, 153, 0.9)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([9, 6]);
+            ctx.strokeRect(-halfW, -halfH, halfW * 2, halfH * 2);
+            ctx.setLineDash([]);
+
+            // 旋转手柄 (左上)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.strokeStyle = '#EC4899';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(-halfW, -halfH, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(-halfW, -halfH, 7.5, -Math.PI * 0.75, Math.PI * 0.65);
+            ctx.stroke();
+
+            // 删除按钮 (右上)
+            if (canDelete) {
+                ctx.fillStyle = '#F43F5E';
+                ctx.beginPath();
+                ctx.arc(halfW, -halfH, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(halfW - 6, -halfH - 6); ctx.lineTo(halfW + 6, -halfH + 6);
+                ctx.moveTo(halfW + 6, -halfH - 6); ctx.lineTo(halfW - 6, -halfH + 6);
+                ctx.stroke();
+            }
+
+            // 缩放手柄 (右下)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.strokeStyle = '#231F20';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(halfW, halfH, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(halfW - 6, halfH - 6); ctx.lineTo(halfW + 6, halfH + 6);
+            ctx.moveTo(halfW + 1, halfH + 6); ctx.lineTo(halfW + 6, halfH + 6); ctx.lineTo(halfW + 6, halfH + 1);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawSingleStickerShape(ctx, id) {
+            if (id === 'sparkle') {
+                ctx.beginPath();
+                ctx.moveTo(0, -24); ctx.quadraticCurveTo(0, 0, 22, 0);
+                ctx.quadraticCurveTo(0, 0, 0, 24); ctx.quadraticCurveTo(0, 0, -22, 0);
+                ctx.quadraticCurveTo(0, 0, 0, -24); ctx.stroke();
+                ctx.lineWidth = 4.5;
+                ctx.beginPath();
+                ctx.moveTo(24, 18); ctx.lineTo(24, 34);
+                ctx.moveTo(16, 26); ctx.lineTo(32, 26); ctx.stroke();
+            } else if (id === 'star') {
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    const outerAngle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+                    const innerAngle = outerAngle + Math.PI / 5;
+                    const ox = Math.cos(outerAngle) * 21, oy = Math.sin(outerAngle) * 21;
+                    const ix = Math.cos(innerAngle) * 9.5, iy = Math.sin(innerAngle) * 9.5;
+                    if (i === 0) ctx.moveTo(ox, oy); else ctx.lineTo(ox, oy);
+                    ctx.lineTo(ix, iy);
+                }
+                ctx.closePath(); ctx.stroke();
+            } else if (id === 'heart') {
+                ctx.beginPath();
+                ctx.moveTo(0, 15);
+                ctx.bezierCurveTo(-24, -4, -18, -22, 0, -8);
+                ctx.bezierCurveTo(18, -22, 24, -4, 0, 15);
+                ctx.stroke();
+            } else if (id === 'swirl') {
+                ctx.beginPath();
+                for (let t = 0; t < Math.PI * 4.2; t += 0.2) {
+                    const r = t * 1.9;
+                    const px = Math.cos(t) * r, py = Math.sin(t) * r;
+                    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+            } else if (id === 'note') {
+                ctx.beginPath();
+                ctx.ellipse(-12, 14, 8, 6, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(12, 10, 8, 6, -0.3, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(-5, 13); ctx.lineTo(-5, -16); ctx.lineTo(19, -20); ctx.lineTo(19, 9);
+                ctx.moveTo(-5, -6); ctx.lineTo(19, -10);
+                ctx.stroke();
+            } else if (id === 'fishbone') {
+                ctx.save();
+                ctx.rotate(-0.35);
+                ctx.beginPath();
+                ctx.moveTo(-30, 0); ctx.lineTo(-14, -11); ctx.lineTo(-14, 11); ctx.closePath(); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(-14, 0); ctx.lineTo(24, 0);
+                ctx.moveTo(-3, -10); ctx.lineTo(-3, 10);
+                ctx.moveTo(9, -8); ctx.lineTo(9, 8);
+                ctx.moveTo(24, 0); ctx.lineTo(34, -9);
+                ctx.moveTo(24, 0); ctx.lineTo(34, 9);
+                ctx.stroke();
+                ctx.restore();
+            } else if (id === 'moon') {
+                ctx.beginPath();
+                ctx.arc(0, 0, 20, -0.4 * Math.PI, 0.7 * Math.PI);
+                ctx.quadraticCurveTo(-8, 6, 0, -20);
+                ctx.stroke();
+            } else if (id === 'flower') {
+                for (let a = 0; a < 5; a++) {
+                    ctx.save();
+                    ctx.rotate((a * Math.PI * 2) / 5);
+                    ctx.beginPath();
+                    ctx.ellipse(0, -12, 6, 9, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.stroke();
+            } else if (id === 'paw') {
+                ctx.beginPath(); ctx.ellipse(0, 7, 13, 10, 0, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(-14, -6, 4.5, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(-5, -13, 4.5, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(5, -13, 4.5, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(14, -6, 4.5, 0, Math.PI * 2); ctx.stroke();
+            } else if (id === 'crown') {
+                ctx.beginPath();
+                ctx.moveTo(-22, 14); ctx.lineTo(-26, -12); ctx.lineTo(-10, 2);
+                ctx.lineTo(0, -18); ctx.lineTo(10, 2); ctx.lineTo(26, -12);
+                ctx.lineTo(22, 14); ctx.closePath(); ctx.stroke();
+            }
+        }
+
+        // ==========================================
+        // 6. 14 款动物与本地照片线稿渲染库
+        // ==========================================
+        function drawCharacterIllustration(ctx, type) {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#231F20';
+            ctx.lineWidth = 8.5;
+
+            if (type === 'cat') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.moveTo(-115, -35);
+                ctx.quadraticCurveTo(-125, -125, -108, -135);
+                ctx.quadraticCurveTo(-85, -125, -52, -88);
+                ctx.quadraticCurveTo(0, -102, 52, -88);
+                ctx.quadraticCurveTo(85, -125, 108, -135);
+                ctx.quadraticCurveTo(125, -125, 115, -35);
+                ctx.bezierCurveTo(145, 35, 95, 105, 0, 105);
+                ctx.bezierCurveTo(-95, 105, -145, 35, -115, -35);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-98, -75); ctx.lineTo(-95, -105); ctx.lineTo(-72, -82);
+                ctx.moveTo(98, -75); ctx.lineTo(95, -105); ctx.lineTo(72, -82);
+                ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-68, 22, 18, 11, 0, 0, Math.PI * 2);
+                ctx.ellipse(68, 22, 18, 11, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-45, 4, 8.5, 0, Math.PI * 2);
+                ctx.arc(45, 4, 8.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.lineWidth = 6.5;
+                ctx.beginPath(); ctx.ellipse(0, 14, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(-22, 26); ctx.quadraticCurveTo(-11, 38, 0, 24);
+                ctx.quadraticCurveTo(11, 38, 22, 26);
+                ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-105, -2); ctx.lineTo(-148, -10);
+                ctx.moveTo(-108, 16); ctx.lineTo(-152, 18);
+                ctx.moveTo(-102, 34); ctx.lineTo(-142, 44);
+                ctx.moveTo(105, -2); ctx.lineTo(148, -10);
+                ctx.moveTo(108, 16); ctx.lineTo(152, 18);
+                ctx.moveTo(102, 34); ctx.lineTo(142, 44);
+                ctx.stroke();
+
+            } else if (type === 'puppy') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.moveTo(-110, -40);
+                ctx.quadraticCurveTo(0, -110, 110, -40);
+                ctx.bezierCurveTo(145, 45, 95, 100, 0, 100);
+                ctx.bezierCurveTo(-95, 100, -145, 45, -110, -40);
+                ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-88, -72);
+                ctx.bezierCurveTo(-165, -45, -195, 45, -142, 62);
+                ctx.bezierCurveTo(-105, 70, -82, 15, -75, -15);
+                ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(88, -72);
+                ctx.bezierCurveTo(165, -45, 195, 45, 142, 62);
+                ctx.bezierCurveTo(105, 70, 82, 15, 75, -15);
+                ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(-25, -42); ctx.quadraticCurveTo(-20, -28, -28, -22);
+                ctx.moveTo(-8, -45); ctx.quadraticCurveTo(-3, -30, -11, -24);
+                ctx.moveTo(10, -44); ctx.quadraticCurveTo(15, -29, 7, -23);
+                ctx.moveTo(26, -40); ctx.quadraticCurveTo(31, -26, 23, -20);
+                ctx.stroke();
+
+                ctx.fillStyle = '#FBCFE8';
+                ctx.beginPath();
+                ctx.arc(-44, 62, 13, 0, Math.PI * 2);
+                ctx.arc(44, 62, 13, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(-36, 26); ctx.lineTo(-22, 21);
+                ctx.moveTo(36, 26); ctx.lineTo(22, 21);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.ellipse(-28, 44, 7.5, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(28, 44, 7.5, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.ellipse(0, 62, 9, 7, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+            } else if (type === 'bunny') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.moveTo(-55, -35); ctx.bezierCurveTo(-75, -155, -20, -170, -12, -45); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(12, -45); ctx.bezierCurveTo(20, -170, 75, -155, 55, -35); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(-38, -60); ctx.lineTo(-42, -115);
+                ctx.moveTo(38, -60); ctx.lineTo(42, -115);
+                ctx.stroke();
+
+                ctx.lineWidth = 8.5;
+                ctx.beginPath();
+                ctx.moveTo(-55, -38);
+                ctx.quadraticCurveTo(0, -48, 55, -38);
+                ctx.bezierCurveTo(125, -10, 125, 105, 0, 105);
+                ctx.bezierCurveTo(-125, 105, -125, -10, -55, -38);
+                ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-34, 42, 7.5, 0, Math.PI * 2);
+                ctx.arc(34, 42, 7.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath(); ctx.ellipse(0, 52, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-22, 62); ctx.quadraticCurveTo(-11, 74, 0, 60);
+                ctx.quadraticCurveTo(11, 74, 22, 62);
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(48, -12);
+                ctx.fillStyle = '#FBCFE8';
+                ctx.lineWidth = 4;
+                for (let a = 0; a < 5; a++) {
+                    ctx.rotate((Math.PI * 2) / 5);
+                    ctx.beginPath(); ctx.ellipse(0, -13, 7, 10, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                }
+                ctx.fillStyle = '#FDE047';
+                ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+
+            } else if (type === 'bear') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.arc(-85, -72, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(85, -72, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(0, 5, 118, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.ellipse(0, 26, 36, 26, 0, 0, Math.PI * 2); ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-70, 14, 15, 9, 0, 0, Math.PI * 2);
+                ctx.ellipse(70, 14, 15, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-45, -8, 8, 0, Math.PI * 2);
+                ctx.arc(45, -8, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath(); ctx.ellipse(0, 18, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(0, 25); ctx.lineTo(0, 38);
+                ctx.moveTo(-12, 36); ctx.quadraticCurveTo(0, 44, 12, 36);
+                ctx.stroke();
+
+            } else if (type === 'fox') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.moveTo(-115, -15); ctx.lineTo(-95, -125); ctx.lineTo(-42, -78);
+                ctx.quadraticCurveTo(0, -88, 42, -78); ctx.lineTo(95, -125); ctx.lineTo(115, -15);
+                ctx.quadraticCurveTo(135, 45, 0, 95); ctx.quadraticCurveTo(-135, 45, -115, -15);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(-112, 12); ctx.quadraticCurveTo(-55, 8, -25, 45);
+                ctx.moveTo(112, 12); ctx.quadraticCurveTo(55, 8, 25, 45);
+                ctx.stroke();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-44, 2, 7.5, 0, Math.PI * 2);
+                ctx.arc(44, 2, 7.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath(); ctx.arc(0, 68, 9, 0, Math.PI * 2); ctx.fill();
+
+            } else if (type === 'hamster') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.arc(-78, -68, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(78, -68, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.lineWidth = 5;
+                ctx.beginPath(); ctx.arc(-78, -66, 13, Math.PI * 0.8, Math.PI * 1.9); ctx.stroke();
+                ctx.beginPath(); ctx.arc(78, -66, 13, Math.PI * 1.1, Math.PI * 2.2); ctx.stroke();
+
+                ctx.lineWidth = 6.5;
+                ctx.beginPath();
+                ctx.moveTo(-8, -86); ctx.quadraticCurveTo(-20, -116, -4, -120);
+                ctx.moveTo(6, -86); ctx.quadraticCurveTo(22, -114, 14, -98);
+                ctx.stroke();
+
+                ctx.lineWidth = 8.5;
+                ctx.beginPath();
+                ctx.moveTo(0, -88);
+                ctx.bezierCurveTo(75, -88, 105, -35, 118, 15);
+                ctx.bezierCurveTo(132, 68, 88, 102, 0, 102);
+                ctx.bezierCurveTo(-88, 102, -132, 68, -118, 15);
+                ctx.bezierCurveTo(-105, -35, -75, -88, 0, -88);
+                ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-76, 18, 20, 13, 0, 0, Math.PI * 2);
+                ctx.ellipse(76, 18, 20, 13, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-42, -10, 8, 0, Math.PI * 2);
+                ctx.arc(42, -10, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath(); ctx.arc(0, 6, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(-14, 15); ctx.quadraticCurveTo(-7, 23, 0, 13);
+                ctx.quadraticCurveTo(7, 23, 14, 15);
+                ctx.stroke();
+
+                ctx.fillStyle = '#E5E7EB';
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.ellipse(0, 56, 16, 24, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(-4, 42); ctx.lineTo(-4, 70);
+                ctx.moveTo(5, 44); ctx.lineTo(5, 68);
+                ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.ellipse(-22, 58, 14, 11, -0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(22, 58, 14, 11, 0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            } else if (type === 'ferret') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 8.5;
+                ctx.beginPath();
+                ctx.moveTo(52, 82);
+                ctx.bezierCurveTo(135, 92, 165, 10, 128, -36);
+                ctx.bezierCurveTo(104, -64, 75, -24, 92, 18);
+                ctx.bezierCurveTo(102, 42, 75, 58, 48, 56);
+                ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#57534E';
+                ctx.beginPath(); ctx.ellipse(124, -28, 16, 22, -0.5, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.arc(-62, -74, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(46, -74, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-72, 96);
+                ctx.bezierCurveTo(-84, 15, -78, -86, -8, -86);
+                ctx.bezierCurveTo(62, -86, 68, 15, 56, 96);
+                ctx.quadraticCurveTo(-8, 106, -72, 96);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#E7E5E4';
+                ctx.beginPath();
+                ctx.ellipse(-36, -24, 22, 15, -0.15, 0, Math.PI * 2);
+                ctx.ellipse(20, -24, 22, 15, 0.15, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FBCFE8';
+                ctx.beginPath();
+                ctx.ellipse(-48, 0, 13, 8, 0, 0, Math.PI * 2);
+                ctx.ellipse(32, 0, 13, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-34, -24, 7, 0, Math.PI * 2);
+                ctx.arc(18, -24, 7, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#F472B6';
+                ctx.beginPath(); ctx.ellipse(-8, -8, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.lineWidth = 5.5;
+                ctx.beginPath();
+                ctx.moveTo(-22, 2); ctx.quadraticCurveTo(-15, 12, -8, 1);
+                ctx.quadraticCurveTo(-1, 12, 6, 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.ellipse(-28, 52, 14, 18, 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(12, 52, 14, 18, -0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            } else if (type === 'fish') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 8.5;
+                ctx.beginPath(); ctx.moveTo(-36, -62); ctx.quadraticCurveTo(-12, -108, 34, -64); ctx.fill(); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(74, -12);
+                ctx.bezierCurveTo(132, -68, 152, -26, 118, 0);
+                ctx.bezierCurveTo(152, 26, 132, 68, 74, 12);
+                ctx.fill(); ctx.stroke();
+
+                ctx.beginPath(); ctx.ellipse(-12, 0, 96, 72, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.arc(-42, 0, 42, -0.7, 0.7); ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.ellipse(-10, 22, 20, 12, 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath(); ctx.ellipse(-66, 14, 15, 9, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath(); ctx.arc(-68, -12, 8.5, 0, Math.PI * 2); ctx.fill();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath(); ctx.arc(-106, 2, 10, -0.9, 0.9); ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 5;
+                ctx.beginPath(); ctx.arc(-132, -28, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(-148, -58, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            } else if (type === 'tiger') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 8.5;
+                ctx.beginPath(); ctx.arc(-84, -68, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(84, -68, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(0, 6, 122, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-22, -66); ctx.lineTo(22, -66);
+                ctx.moveTo(-18, -50); ctx.lineTo(18, -50);
+                ctx.moveTo(-24, -34); ctx.lineTo(24, -34);
+                ctx.moveTo(0, -66); ctx.lineTo(0, -34);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(-114, -10); ctx.lineTo(-88, -6);
+                ctx.moveTo(-118, 12); ctx.lineTo(-90, 12);
+                ctx.moveTo(-110, 34); ctx.lineTo(-86, 28);
+                ctx.moveTo(114, -10); ctx.lineTo(88, -6);
+                ctx.moveTo(118, 12); ctx.lineTo(90, 12);
+                ctx.moveTo(110, 34); ctx.lineTo(86, 28);
+                ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-66, 22, 17, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(66, 22, 17, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-44, 0, 8.5, 0, Math.PI * 2);
+                ctx.arc(44, 0, 8.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#F472B6';
+                ctx.beginPath(); ctx.ellipse(0, 14, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-22, 26); ctx.quadraticCurveTo(-11, 38, 0, 24);
+                ctx.quadraticCurveTo(11, 38, 22, 26);
+                ctx.stroke();
+
+            } else if (type === 'pig') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.moveTo(-68, -68); ctx.quadraticCurveTo(-118, -108, -116, -42); ctx.quadraticCurveTo(-92, -35, -75, -45); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(68, -68); ctx.quadraticCurveTo(118, -108, 116, -42); ctx.quadraticCurveTo(92, -35, 75, -45); ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6.5;
+                ctx.beginPath();
+                ctx.moveTo(112, 58);
+                ctx.bezierCurveTo(148, 52, 148, 22, 126, 26);
+                ctx.bezierCurveTo(112, 30, 120, 56, 152, 42);
+                ctx.stroke();
+
+                ctx.lineWidth = 8.5;
+                ctx.beginPath(); ctx.ellipse(0, 8, 122, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-74, 22, 17, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(74, 22, 17, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-48, -6, 8, 0, Math.PI * 2);
+                ctx.arc(48, -6, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FBCFE8';
+                ctx.lineWidth = 6.5;
+                ctx.beginPath(); ctx.ellipse(0, 22, 32, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.ellipse(-11, 22, 4.5, 7, 0, 0, Math.PI * 2);
+                ctx.ellipse(11, 22, 4.5, 7, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+            } else if (type === 'penguin') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.ellipse(-102, 24, 22, 46, 0.35, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(102, 24, 22, 46, -0.35, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, -104);
+                ctx.bezierCurveTo(88, -104, 112, 12, 96, 88);
+                ctx.quadraticCurveTo(0, 112, -96, 88);
+                ctx.bezierCurveTo(-112, 12, -88, -104, 0, -104);
+                ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-76, -34); ctx.quadraticCurveTo(-36, -68, 0, -36);
+                ctx.quadraticCurveTo(36, -68, 76, -34);
+                ctx.stroke();
+
+                ctx.fillStyle = '#FBCFE8';
+                ctx.beginPath();
+                ctx.ellipse(-56, 2, 14, 9, 0, 0, Math.PI * 2);
+                ctx.ellipse(56, 2, 14, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-36, -14, 7.5, 0, Math.PI * 2);
+                ctx.arc(36, -14, 7.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FDE047';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-18, -4); ctx.quadraticCurveTo(0, -12, 18, -4);
+                ctx.quadraticCurveTo(0, 18, -18, -4);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.ellipse(-42, 98, 22, 11, -0.1, 0, Math.PI * 2);
+                ctx.ellipse(42, 98, 22, 11, 0.1, 0, Math.PI * 2);
+                ctx.fill(); ctx.stroke();
+
+            } else if (type === 'frog') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.arc(-56, -68, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(56, -68, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(0, 16, 126, 86, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-56, -68, 12, 0, Math.PI * 2);
+                ctx.arc(56, -68, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(-60, -72, 4, 0, Math.PI * 2);
+                ctx.arc(52, -72, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#F9A8D4';
+                ctx.beginPath();
+                ctx.ellipse(-78, 18, 18, 11, 0, 0, Math.PI * 2);
+                ctx.ellipse(78, 18, 18, 11, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.lineWidth = 6.5;
+                ctx.beginPath(); ctx.moveTo(-48, 14); ctx.quadraticCurveTo(0, 52, 48, 14); ctx.stroke();
+
+            } else if (type === 'duck') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 7;
+                ctx.beginPath();
+                ctx.moveTo(-6, -86); ctx.quadraticCurveTo(-22, -124, -4, -128);
+                ctx.moveTo(6, -86); ctx.quadraticCurveTo(24, -122, 16, -104);
+                ctx.stroke();
+
+                ctx.lineWidth = 8.5;
+                ctx.beginPath(); ctx.ellipse(0, 8, 114, 94, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#FBCFE8';
+                ctx.beginPath();
+                ctx.ellipse(-68, 16, 16, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(68, 16, 16, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-42, -6, 8, 0, Math.PI * 2);
+                ctx.arc(42, -6, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FDE047';
+                ctx.lineWidth = 6.5;
+                ctx.beginPath();
+                ctx.moveTo(22, 10); ctx.lineTo(62, 2); ctx.lineTo(24, 30); ctx.closePath();
+                ctx.fill(); ctx.stroke();
+
+            } else if (type === 'hedgehog') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 8.5;
+                ctx.beginPath();
+                ctx.moveTo(-75, 45);
+                ctx.bezierCurveTo(-115, -65, 35, -115, 95, -15);
+                ctx.bezierCurveTo(125, 45, 45, 95, -75, 45);
+                ctx.fill(); ctx.stroke();
+
+                ctx.lineWidth = 6;
+                for (let a = 0; a < Math.PI * 2; a += 0.45) {
+                    const sx = Math.cos(a) * 78;
+                    const sy = Math.sin(a) * 58 - 15;
+                    ctx.beginPath();
+                    ctx.moveTo(sx, sy);
+                    ctx.lineTo(sx * 1.35, sy * 1.35);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.lineWidth = 8.5;
+                ctx.beginPath(); ctx.ellipse(35, 25, 52, 46, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath(); ctx.arc(62, 18, 7.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(82, 32, 9, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function drawUploadedPhotoIllustration(ctx, img, applySketch) {
+            const maxDim = 170;
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(-maxDim/2, -maxDim/2, maxDim, maxDim, 22);
+            ctx.clip();
+
+            if (applySketch) {
+                const sketchCanvas = getSketchCanvas(img);
+                ctx.drawImage(sketchCanvas, -maxDim/2, -maxDim/2, maxDim, maxDim);
+            } else {
+                ctx.drawImage(img, -maxDim/2, -maxDim/2, maxDim, maxDim);
+            }
+            ctx.restore();
+
+            ctx.save();
+            ctx.strokeStyle = '#231F20';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.roundRect(-maxDim/2 - 4, -maxDim/2 - 4, maxDim + 8, maxDim + 8, 26);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function getSketchCanvas(img) {
+            if (sketchCanvasCache && lastImgLoaded === img) return sketchCanvasCache;
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            try {
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+                    let v = avg < 140 ? avg * 0.65 : Math.min(255, avg * 1.35 + 15);
+                    data[i] = v;
+                    data[i + 1] = v;
+                    data[i + 2] = v;
+                }
+                ctx.putImageData(imgData, 0, 0);
+            } catch (e) {}
+            sketchCanvasCache = canvas;
+            lastImgLoaded = img;
+            return canvas;
+        }
+
+        function drawPaperGrain(ctx, x, y, size) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.025)';
+            for (let i = 0; i < 420; i++) {
+                const gx = x + ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * size;
+                const gy = y + ((Math.sin(i * 78.233) * 43758.5453) % 1 + 1) % 1 * size;
+                ctx.fillRect(gx, gy, 2.5, 2.5);
+            }
+        }
+
+        // ==========================================
+        // 7. 图标缩略图渲染
+        // ==========================================
+        function getCharacterThumbnailSVG(id) {
+            const common = 'stroke="#f3f2f0" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+            switch (id) {
+                case 'cat':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M9 17 L8 8 L15 12 Q20 11 25 12 L32 8 L31 17 Q35 25 20 31 Q5 25 9 17 Z" ${common}/><circle cx="15" cy="20" r="1.3" fill="#f3f2f0"/><circle cx="25" cy="20" r="1.3" fill="#f3f2f0"/><path d="M17 24 Q20 26 23 24" ${common}/></svg>`;
+                case 'photo':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><rect x="7" y="9" width="26" height="22" rx="2" ${common}/><circle cx="14" cy="16" r="2.5" ${common}/><path d="M7 26 L14 19 L21 26 L27 21 L33 26" ${common}/></svg>`;
+                case 'puppy':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M11 16 Q20 10 29 16 Q34 28 20 30 Q6 28 11 16 Z" ${common}/><path d="M12 14 Q4 18 6 26 Q9 28 12 21" ${common}/><path d="M28 14 Q36 18 34 26 Q31 28 28 21" ${common}/><circle cx="16" cy="22" r="1.3" fill="#f3f2f0"/><circle cx="24" cy="22" r="1.3" fill="#f3f2f0"/></svg>`;
+                case 'bunny':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M15 17 C13 6 19 6 19 17" ${common}/><path d="M21 17 C21 6 27 6 25 17" ${common}/><ellipse cx="20" cy="25" rx="10" ry="8" ${common}/><circle cx="16.5" cy="24" r="1.2" fill="#f3f2f0"/><circle cx="23.5" cy="24" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'bear':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="11" cy="13" r="4" ${common}/><circle cx="29" cy="13" r="4" ${common}/><ellipse cx="20" cy="22" rx="11" ry="9.5" ${common}/><circle cx="16" cy="20" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="20" r="1.2" fill="#f3f2f0"/><circle cx="20" cy="24" r="1.4" fill="#f3f2f0"/></svg>`;
+                case 'fox':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M9 19 L11 9 L16 14 Q20 13 24 14 L29 9 L31 19 Q32 26 20 31 Q8 26 9 19 Z" ${common}/><circle cx="16" cy="21" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="21" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'hamster':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="12" cy="13" r="3.5" ${common}/><circle cx="28" cy="13" r="3.5" ${common}/><path d="M20 11 C28 11 32 20 30 27 C28 31 12 31 10 27 C8 20 12 11 20 11 Z" ${common}/><ellipse cx="20" cy="26" rx="2.5" ry="3.5" ${common}/><circle cx="16" cy="19" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="19" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'ferret':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="13" cy="12" r="3" ${common}/><circle cx="24" cy="12" r="3" ${common}/><path d="M11 31 C10 20 11 10 18.5 10 C26 10 27 20 26 31" ${common}/><path d="M26 29 C33 30 35 20 31 16 C28 14 27 20 28 24" ${common}/><circle cx="15.5" cy="18" r="1.2" fill="#f3f2f0"/><circle cx="21.5" cy="18" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'fish':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><ellipse cx="18" cy="21" rx="10" ry="7.5" ${common}/><path d="M27 19 L34 14 L32 21 L34 28 L27 23" ${common}/><circle cx="13" cy="19" r="1.3" fill="#f3f2f0"/><circle cx="6" cy="15" r="1.5" ${common}/></svg>`;
+                case 'tiger':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="11" cy="13" r="3.8" ${common}/><circle cx="29" cy="13" r="3.8" ${common}/><ellipse cx="20" cy="22" rx="11.5" ry="9.5" ${common}/><path d="M17 15 H23 M20 15 V19" ${common}/><circle cx="15.5" cy="21" r="1.2" fill="#f3f2f0"/><circle cx="24.5" cy="21" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'pig':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><ellipse cx="20" cy="21" rx="12" ry="9.5" ${common}/><path d="M12 13 Q7 9 8 16 M28 13 Q33 9 32 16" ${common}/><ellipse cx="20" cy="23" rx="4.5" ry="3.2" ${common}/><circle cx="15" cy="19" r="1.2" fill="#f3f2f0"/><circle cx="25" cy="19" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'penguin':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M20 9 C28 9 31 20 29 29 Q20 32 11 29 C9 20 12 9 20 9 Z" ${common}/><circle cx="16" cy="18" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="18" r="1.2" fill="#f3f2f0"/><polygon points="18,21 22,21 20,24" fill="#fde047"/></svg>`;
+                case 'frog':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="14" cy="13" r="4" ${common}/><circle cx="26" cy="13" r="4" ${common}/><ellipse cx="20" cy="23" rx="12" ry="8.5" ${common}/><path d="M15 24 Q20 28 25 24" ${common}/></svg>`;
+                case 'duck':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M19 11 Q17 7 20 6 M21 11 Q23 8 22 9" ${common}/><ellipse cx="20" cy="21" rx="11" ry="9.5" ${common}/><ellipse cx="20" cy="24" rx="4.5" ry="2.2" stroke="#fde047" stroke-width="1.8" fill="none"/><circle cx="16" cy="19" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="19" r="1.2" fill="#f3f2f0"/></svg>`;
+                case 'hedgehog':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M9 24 L8 19 L11 17 L11 13 L15 13 L17 9 L20 11 L23 9 L25 13 L29 13 L29 17 L32 19 L31 24 Q29 30 20 30 Q11 30 9 24 Z" ${common}/><circle cx="16.5" cy="22" r="1.1" fill="#f3f2f0"/><circle cx="23.5" cy="22" r="1.1" fill="#f3f2f0"/><circle cx="20" cy="25" r="1.3" fill="#f3f2f0"/></svg>`;
+                default:
+                    return `<div class="w-8 h-8 flex items-center justify-center text-xs font-gaegu font-bold text-stone-300 border border-dashed border-white/25 rounded-lg">Aa</div>`;
+            }
+        }
+
+        function getStickerIconSVG(id) {
+            const s = 'stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+            switch (id) {
+                case 'sparkle': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M12 3 Q12 12 21 12 Q12 12 12 21 Q12 12 3 12 Q12 12 12 3 Z" ${s}/></svg>`;
+                case 'star': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><polygon points="12,3 14.8,9 21,9.8 16.5,14.2 17.6,20.5 12,17.5 6.4,20.5 7.5,14.2 3,9.8 9.2,9" ${s}/></svg>`;
+                case 'heart': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M12 19 C4 13 5 6 12 10 C19 6 20 13 12 19 Z" ${s}/></svg>`;
+                case 'swirl': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M12 12 C13 10 15 11 14 14 C13 17 8 17 7 13 C6 8 11 5 16 7 C20 9 20 16 16 19" ${s}/></svg>`;
+                case 'note': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><circle cx="8" cy="17" r="2.5" ${s}/><circle cx="17" cy="15" r="2.5" ${s}/><path d="M10.5 17 V7 L19.5 5 V15" ${s}/></svg>`;
+                case 'fishbone': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M4 12 L8 9 V15 Z M8 12 H18 M11 9 V15 M14 10 V14 M18 12 L21 9 M18 12 L21 15" ${s}/></svg>`;
+                case 'moon': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M14 4 A8 8 0 1 0 20 15 A6.5 6.5 0 0 1 14 4 Z" ${s}/></svg>`;
+                case 'flower': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><circle cx="12" cy="12" r="2.5" ${s}/><circle cx="12" cy="6.5" r="2.5" ${s}/><circle cx="17" cy="10" r="2.5" ${s}/><circle cx="15" cy="16" r="2.5" ${s}/><circle cx="9" cy="16" r="2.5" ${s}/><circle cx="7" cy="10" r="2.5" ${s}/></svg>`;
+                case 'paw': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><ellipse cx="12" cy="15" rx="4.5" ry="3.5" ${s}/><circle cx="7" cy="10" r="1.5" ${s}/><circle cx="10.5" cy="7.5" r="1.5" ${s}/><circle cx="14.5" cy="7.5" r="1.5" ${s}/><circle cx="17.5" cy="10" r="1.5" ${s}/></svg>`;
+                case 'crown': return `<svg viewBox="0 0 24 24" class="w-4 h-4"><path d="M4 17 L3 8 L8 12 L12 6 L16 12 L21 8 L20 17 Z" ${s}/></svg>`;
+            }
+        }
+
+        // ==========================================
+        // 8. 导出与复制
+        // ==========================================
+        function downloadStamp() {
+            try {
+                renderAllViews(true);
+                const dataUrl = mainCanvas.toDataURL('image/png');
+                renderAllViews(false);
+
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 10);
+                link.download = `my-cute-stamp-${timestamp}.png`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('高清 1080x1080 邮票已保存！✨');
+            } catch (err) {
+                console.error(err);
+                showToast('保存失败，请重试');
+            }
+        }
+
+        function copyStampToClipboard() {
+            renderAllViews(true);
+            mainCanvas.toBlob(async blob => {
+                renderAllViews(false);
+                if (!blob) return;
+                try {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    await navigator.clipboard.write([item]);
+                    showToast('邮票已复制到剪贴板！');
+                } catch (e) {
+                    downloadStamp();
+                }
+            });
+        }
+
+        function shareStamp() {
+            renderAllViews(true);
+            mainCanvas.toBlob(async blob => {
+                renderAllViews(false);
+                if (!blob) return;
+                const file = new File([blob], 'cute-stamp.png', { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ title: 'My Cute Stamp', text: '送你一张手绘治愈小邮票 ✨', files: [file] });
+                        return;
+                    } catch (e) {}
+                }
+                copyStampToClipboard();
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2600);
+        }
+
+        // ==========================================
+        // 9. 安全启动
+        // ==========================================
+        let appInitialized = false;
+        function safeBoot() {
+            if (!appInitialized) {
+                appInitialized = true;
+                initApp();
+            } else {
+                renderAllViews();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', safeBoot);
+        window.onload = function () {
+            safeBoot();
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(() => renderAllViews());
+            }
+        };
+    </script>
 </body>
-    </html>
+</html>
