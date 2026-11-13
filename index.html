@@ -21,7 +21,8 @@
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+            padding-bottom: 40px;
         }
         header {
             display: flex;
@@ -33,7 +34,7 @@
             border: 1px solid #2a2a2a;
         }
         .logo-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             letter-spacing: 1px;
             color: #fff;
@@ -41,15 +42,13 @@
         .top-btn {
             background: #2d2d2d;
             border: none;
-            color: #fff;
-            padding: 8px 14px;
+            color: #ff758c;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
         }
-        .top-btn:active { transform: scale(0.95); background: #ff758c; }
         
         /* 预览舞台 */
         .preview-box {
@@ -66,36 +65,38 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         canvas {
-            width: 90%;
-            height: 90%;
+            width: 92%;
+            height: 92%;
             object-fit: contain;
-            cursor: crosshair;
+            cursor: grab;
         }
+        canvas:active { cursor: grabbing; }
+        
         .canvas-tip {
             position: absolute;
-            bottom: 12px;
+            bottom: 10px;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(4px);
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10px;
             color: #aaa;
             pointer-events: none;
         }
         .reset-btn {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             background: rgba(45, 45, 45, 0.8);
             border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
-            padding: 5px 10px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 10px;
             font-size: 11px;
             cursor: pointer;
         }
 
-        /* 控制面板区 */
+        /* 控制面板卡片 */
         .panel {
             background: #1a1a1a;
             border-radius: 20px;
@@ -103,32 +104,30 @@
             border: 1px solid #2a2a2a;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
         }
         
-        /* 颜色选择器 */
         .color-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
         }
         .color-btn {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             border: 2px solid transparent;
             cursor: pointer;
             flex-shrink: 0;
-            transition: 0.2s;
         }
         .color-btn.active {
             border-color: #fff;
@@ -139,33 +138,30 @@
         .grid-animals {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            max-height: 180px;
+            gap: 6px;
+            max-height: 160px;
             overflow-y: auto;
-            padding-right: 4px;
         }
         .animal-card {
             background: #252525;
             border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 8px 4px;
+            border-radius: 10px;
+            padding: 6px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             cursor: pointer;
-            transition: 0.2s;
         }
         .animal-card.active {
             border-color: #ff758c;
             background: #2d2328;
         }
         .animal-card span {
-            font-size: 10px;
+            font-size: 9px;
             color: #bbb;
         }
 
-        /* 输入框与滑块 */
         .input-group {
             display: flex;
             gap: 8px;
@@ -175,56 +171,41 @@
             background: #252525;
             border: 1px solid #333;
             color: #fff;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
             outline: none;
         }
         input[type="text"]:focus { border-color: #ff758c; }
-        
-        .slider-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 12px;
-            color: #aaa;
-        }
-        input[type="range"] {
-            flex: 1;
-            accent-color: #ff758c;
-        }
 
-        /* 底部操作大按钮 */
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 6px;
         }
         .main-btn {
             background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
             color: #fff;
             border: none;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 12px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
             box-shadow: 0 4px 15px rgba(255, 117, 140, 0.3);
+            text-align: center;
         }
         .sec-btn {
             background: #2a2a2a;
             color: #fff;
             border: 1px solid #3a3a3a;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 12px;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
+            text-align: center;
         }
     </style>
 </head>
@@ -233,78 +214,78 @@
 <div class="container">
     <header>
         <div class="logo-title">💌 MY STAMP GENERATOR</div>
-        <button class="top-btn" onclick="randomizeStamp()">✨ 随机灵感</button>
+        <button class="top-btn" onclick="randomizeAll()">✨ 随机搭配</button>
     </header>
 
     <!-- 预览画布 -->
     <div class="preview-box">
-        <button class="reset-btn" onclick="resetElements()">归位元素</button>
+        <button class="reset-btn" onclick="resetPositions()">重置位置</button>
         <canvas id="stampCanvas" width="1080" height="1080"></canvas>
-        <div class="canvas-tip">可直接拖动画布上的图案、文字与邮戳</div>
+        <div class="canvas-tip">可直接拖拽动物、文字、邮戳与角标</div>
     </div>
 
     <!-- 控制面板 -->
     <div class="panel">
         <div>
-            <div class="section-title">选择纸张颜色</div>
+            <div class="section-title">纸张背景色</div>
             <div class="color-row" id="paperColorRow"></div>
         </div>
 
         <div>
-            <div class="section-title">选择边框齿色</div>
+            <div class="section-title">齿边框颜色</div>
             <div class="color-row" id="borderColorRow"></div>
         </div>
 
         <div>
-            <div class="section-title">选择手绘角色 / 上传照片</div>
+            <div class="section-title">选择角色 / 上传相册照片</div>
             <div class="grid-animals" id="animalGrid"></div>
-            <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+            <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="handlePhoto(event)">
         </div>
 
         <div>
             <div class="section-title">手写文案</div>
             <div class="input-group">
-                <input type="text" id="stampText" value="I CAN'T TAKE THIS CUTENESS" oninput="drawStamp()">
+                <input type="text" id="stampText" value="I CAN'T TAKE THIS CUTENESS" oninput="redraw()">
+            </div>
+        </div>
+
+        <div>
+            <div class="section-title">趣味面值角标</div>
+            <div class="input-group">
+                <input type="text" id="badgeText" value="100% CUTE" oninput="redraw()">
             </div>
         </div>
 
         <div class="action-row">
-            <button class="sec-btn" onclick="randomizeStamp()">换个搭配</button>
-            <button class="main-btn" onclick="saveImage()">💾 保存高清水印图</button>
+            <button class="sec-btn" onclick="randomizeAll()">换个灵感</button>
+            <button class="main-btn" onclick="savePNG()">💾 保存高清 PNG</button>
         </div>
     </div>
 </div>
 
 <script>
-    // 基础状态
     let state = {
-        paperColor: '#ffd1dc', // 樱花粉
-        borderColor: '#ffffff', // 纯白
-        currentAnimal: 'dog',
-        customPhotoImg: null,
+        paperColor: '#ffd1dc',
+        borderColor: '#ffffff',
+        animal: 'dog',
+        customImg: null,
         text: "I CAN'T TAKE THIS CUTENESS",
-        // 元素位置
+        badgeText: "100% CUTE",
+        // 元素位置与状态
         animalPos: { x: 540, y: 460, scale: 1 },
         textPos: { x: 540, y: 820 },
+        postmarkPos: { x: 800, y: 260 },
+        badgePos: { x: 880, y: 180 }
     };
 
     const paperColors = [
-        { name: '樱花粉', hex: '#ffd1dc' },
-        { name: '奶油黄', hex: '#fff4bd' },
-        { name: '天空蓝', hex: '#d0f0fd' },
-        { name: '薄荷绿', hex: '#d4edda' },
-        { name: '香芋紫', hex: '#e8dff5' },
-        { name: '米白', hex: '#fdfbf7' },
-        { name: '牛皮纸', hex: '#f3e5ab' }
+        { hex: '#ffd1dc' }, { hex: '#fff4bd' }, { hex: '#d0f0fd' }, 
+        { hex: '#d4edda' }, { hex: '#e8dff5' }, { hex: '#fdfbf7' }, { hex: '#f3e5ab' }
     ];
 
     const borderColors = [
-        { name: '纯白', hex: '#ffffff' },
-        { name: '奶油', hex: '#fff8dc' },
-        { name: '粉红', hex: '#ffb6c1' },
-        { name: '浅绿', hex: '#98fb98' },
-        { name: '浅蓝', hex: '#87cefa' },
-        { name: '浅紫', hex: '#dda0dd' }
+        { hex: '#ffffff' }, { hex: '#fff8dc' }, { hex: '#ffb6c1' }, 
+        { hex: '#98fb98' }, { hex: '#87cefa' }, { hex: '#dda0dd' }
     ];
 
     const animals = [
@@ -320,15 +301,11 @@
         { id: 'duck', name: '小鸭', icon: '🐥' },
         { id: 'hedgehog', name: '刺猬', icon: '🦔' },
         { id: 'hamster', name: '仓鼠', icon: '🐹' },
-        { id: 'weasel', name: '雪鼬', icon: '🦦' },
         { id: 'fish', name: '小鱼', icon: '🐠' },
-        { id: 'tiger', name: '小老虎', icon: '🐯' },
-        { id: 'textonly', name: '仅文字', icon: '📝' }
+        { id: 'tiger', name: '小老虎', icon: '🐯' }
     ];
 
-    // 初始化界面
     function initUI() {
-        // 纸张颜色
         const pRow = document.getElementById('paperColorRow');
         paperColors.forEach(c => {
             const btn = document.createElement('div');
@@ -338,7 +315,6 @@
             pRow.appendChild(btn);
         });
 
-        // 边框颜色
         const bRow = document.getElementById('borderColorRow');
         borderColors.forEach(c => {
             const btn = document.createElement('div');
@@ -348,18 +324,17 @@
             bRow.appendChild(btn);
         });
 
-        // 动物网格
         const aGrid = document.getElementById('animalGrid');
         animals.forEach(a => {
             const card = document.createElement('div');
-            card.className = `animal-card ${a.id === state.currentAnimal ? 'active' : ''}`;
-            card.innerHTML = `<span style="font-size:22px;">${a.icon}</span><span>${a.name}</span>`;
+            card.className = `animal-card ${a.id === state.animal ? 'active' : ''}`;
+            card.innerHTML = `<span style="font-size:20px;">${a.icon}</span><span>${a.name}</span>`;
             card.onclick = () => {
                 if (a.id === 'upload') {
                     document.getElementById('photoUpload').click();
                 } else {
-                    state.currentAnimal = a.id;
-                    state.customPhotoImg = null;
+                    state.animal = a.id;
+                    state.customImg = null;
                     updateUI();
                 }
             };
@@ -375,20 +350,20 @@
             b.classList.toggle('active', borderColors[i].hex === state.borderColor);
         });
         document.querySelectorAll('.animal-card').forEach((c, i) => {
-            c.classList.toggle('active', animals[i].id === state.currentAnimal);
+            c.classList.toggle('active', animals[i].id === state.animal);
         });
-        drawStamp();
+        redraw();
     }
 
-    function handlePhotoUpload(e) {
+    function handlePhoto(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = (event) => {
             const img = new Image();
-            img.onload = function() {
-                state.customPhotoImg = img;
-                state.currentAnimal = 'upload';
+            img.onload = () => {
+                state.customImg = img;
+                state.animal = 'upload';
                 updateUI();
             };
             img.src = event.target.result;
@@ -396,53 +371,48 @@
         reader.readAsDataURL(file);
     }
 
-    function resetElements() {
+    function resetPositions() {
         state.animalPos = { x: 540, y: 460, scale: 1 };
         state.textPos = { x: 540, y: 820 };
-        drawStamp();
+        state.postmarkPos = { x: 800, y: 260 };
+        state.badgePos = { x: 880, y: 180 };
+        redraw();
     }
 
-    function randomizeStamp() {
+    function randomizeAll() {
         state.paperColor = paperColors[Math.floor(Math.random() * paperColors.length)].hex;
         state.borderColor = borderColors[Math.floor(Math.random() * borderColors.length)].hex;
-        const randAnim = animals.filter(a => a.id !== 'upload')[Math.floor(Math.random() * (animals.length - 1))];
-        state.currentAnimal = randAnim.id;
-        state.customPhotoImg = null;
-        resetElements();
+        const rand = animals.filter(a => a.id !== 'upload')[Math.floor(Math.random() * (animals.length - 1))];
+        state.animal = rand.id;
+        state.customImg = null;
+        resetPositions();
     }
 
-    // 核心绘画引擎
+    // 渲染引擎
     const canvas = document.getElementById('stampCanvas');
     const ctx = canvas.getContext('2d');
 
-    function drawStamp() {
-        ctx.clearRect(0, 1080, 1080, 1080);
+    function redraw() {
+        ctx.clearRect(0, 0, 1080, 1080);
         
-        // 1. 绘制邮票带齿轮外框
+        // 1. 齿边背景
         ctx.save();
         ctx.fillStyle = state.borderColor;
         ctx.fillRect(80, 80, 920, 920);
 
-        // 齿孔剪切
         ctx.globalCompositeOperation = 'destination-out';
-        const teethCount = 14;
-        const step = 920 / teethCount;
-        for (let i = 0; i <= teethCount; i++) {
-            // 上下
-            if (i < teethCount) {
-                ctx.beginPath(); ctx.arc(80 + i * step + step/2, 80, 24, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(80 + i * step + step/2, 1000, 24, 0, Math.PI * 2); ctx.fill();
-            }
-            // 左右
-            if (i < teethCount) {
-                ctx.beginPath(); ctx.arc(80, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(1000, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
-            }
+        const teeth = 14;
+        const step = 920 / teeth;
+        for (let i = 0; i < teeth; i++) {
+            ctx.beginPath(); ctx.arc(80 + i * step + step/2, 80, 24, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(80 + i * step + step/2, 1000, 24, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(80, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(1000, 80 + i * step + step/2, 24, 0, Math.PI * 2); ctx.fill();
         }
         ctx.globalCompositeOperation = 'source-over';
         ctx.restore();
 
-        // 2. 邮票内芯背景
+        // 2. 纸张内芯
         ctx.save();
         ctx.beginPath();
         ctx.rect(120, 120, 840, 840);
@@ -451,125 +421,142 @@
         ctx.fillRect(120, 120, 840, 840);
         ctx.restore();
 
-        // 3. 绘制中央动物图案
+        // 3. 动物/照片
         ctx.save();
         ctx.translate(state.animalPos.x, state.animalPos.y);
         ctx.scale(state.animalPos.scale, state.animalPos.scale);
-        drawAnimalContent();
+        drawAnimal();
         ctx.restore();
 
-        // 4. 绘制文字
+        // 4. 复古邮戳
+        ctx.save();
+        ctx.translate(state.postmarkPos.x, state.postmarkPos.y);
+        drawPostmark();
+        ctx.restore();
+
+        // 5. 趣味角标
+        ctx.save();
+        ctx.translate(state.badgePos.x, state.badgePos.y);
+        drawBadge();
+        ctx.restore();
+
+        // 6. 手写文字
         ctx.save();
         ctx.translate(state.textPos.x, state.textPos.y);
-        ctx.font = "bold 52px monospace";
+        ctx.font = "bold 48px monospace";
         ctx.fillStyle = "#222";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        const currentText = document.getElementById('stampText').value || state.text;
-        ctx.fillText(currentText, 0, 0);
+        ctx.fillText(document.getElementById('stampText').value || state.text, 0, 0);
         ctx.restore();
     }
 
-    function drawAnimalContent() {
+    function drawAnimal() {
         ctx.strokeStyle = "#222";
         ctx.lineWidth = 10;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.fillStyle = "#fff";
 
-        if (state.currentAnimal === 'upload' && state.customPhotoImg) {
+        if (state.animal === 'upload' && state.customImg) {
             ctx.beginPath();
-            ctx.arc(0, 0, 180, 0, Math.PI * 2);
+            ctx.arc(0, 0, 160, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(state.customPhotoImg, -180, -180, 360, 360);
+            ctx.drawImage(state.customImg, -160, -160, 320, 320);
             return;
         }
 
-        // 简化绘制代表性小动物简笔画
         ctx.beginPath();
-        if (state.currentAnimal === 'dog') {
-            ctx.ellipse(0, 0, 160, 120, 0, 0, Math.PI * 2);
-            ctx.fill(); ctx.stroke();
-            // 耳头
-            ctx.beginPath(); ctx.arc(-140, -40, 60, 0, Math.PI * 2); ctx.fillStyle="#fff"; ctx.fill(); ctx.stroke();
-            ctx.beginPath(); ctx.arc(140, -40, 60, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        } else if (state.currentAnimal === 'cat') {
-            ctx.beginPath(); ctx.arc(0, 0, 140, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            // 猫耳
-            ctx.beginPath(); ctx.moveTo(-120, -80); ctx.lineTo(-160, -180); ctx.lineTo(-60, -130); ctx.closePath(); ctx.fill(); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(120, -80); ctx.lineTo(160, -180); ctx.lineTo(60, -130); ctx.closePath(); ctx.fill(); ctx.stroke();
-        } else {
-            // 默认可爱圆形小动物脸
-            ctx.beginPath(); ctx.arc(0, 0, 130, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        }
-        
-        // 统一小眼睛和鼻子
+        ctx.arc(0, 0, 130, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
         ctx.fillStyle = "#222";
-        ctx.beginPath(); ctx.arc(-40, -20, 12, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(40, -20, 12, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-35, -20, 12, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(35, -20, 12, 0, Math.PI*2); ctx.fill();
         ctx.beginPath(); ctx.arc(0, 15, 10, 0, Math.PI*2); ctx.fill();
     }
 
+    function drawPostmark() {
+        ctx.strokeStyle = "rgba(180, 50, 50, 0.7)";
+        ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.arc(0, 0, 90, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, 75, 0, Math.PI*2); ctx.stroke();
+        
+        ctx.fillStyle = "rgba(180, 50, 50, 0.8)";
+        ctx.font = "bold 20px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("AIR MAIL · 2026", 0, -35);
+        ctx.font = "bold 24px monospace";
+        ctx.fillText("11.13", 0, 10);
+    }
+
+    function drawBadge() {
+        const text = document.getElementById('badgeText').value || state.badgeText;
+        ctx.fillStyle = "#ff758c";
+        ctx.strokeStyle = "#222";
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.roundRect(-90, -35, 180, 70, 20);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 24px monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, 0, 0);
+    }
+
     // 拖拽交互支持
-    let isDragging = false;
-    let activeTarget = 'animal'; // 'animal' 或 'text'
-    let startX, startY;
+    let dragging = false, activeItem = null, startX, startY;
 
     canvas.addEventListener('pointerdown', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = (e.clientX - rect.left) * scaleX;
-        const y = (e.clientY - rect.top) * scaleY;
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * sx;
+        const y = (e.clientY - rect.top) * sy;
 
-        // 简单判断点中文字还是动物
-        if (Math.abs(y - state.textPos.y) < 80) {
-            activeTarget = 'text';
+        if (Math.hypot(x - state.postmarkPos.x, y - state.postmarkPos.y) < 90) {
+            activeItem = 'postmark';
+        } else if (Math.hypot(x - state.badgePos.x, y - state.badgePos.y) < 80) {
+            activeItem = 'badge';
+        } else if (Math.abs(y - state.textPos.y) < 50) {
+            activeItem = 'text';
         } else {
-            activeTarget = 'animal';
+            activeItem = 'animal';
         }
-        isDragging = true;
-        startX = x;
-        startY = y;
+        dragging = true;
+        startX = x; startY = y;
     });
 
     window.addEventListener('pointermove', (e) => {
-        if (!isDragging) return;
+        if (!dragging) return;
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = (e.clientX - rect.left) * scaleX;
-        const y = (e.clientY - rect.top) * scaleY;
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * sx;
+        const y = (e.clientY - rect.top) * sy;
+        const dx = x - startX, dy = y - startY;
+        startX = x; startY = y;
 
-        const dx = x - startX;
-        const dy = y - startY;
-        startX = x;
-        startY = y;
-
-        if (activeTarget === 'animal') {
-            state.animalPos.x += dx;
-            state.animalPos.y += dy;
-        } else {
-            state.textPos.x += dx;
-            state.textPos.y += dy;
-        }
-        drawStamp();
+        if (activeItem === 'animal') { state.animalPos.x += dx; state.animalPos.y += dy; }
+        else if (activeItem === 'text') { state.textPos.x += dx; state.textPos.y += dy; }
+        else if (activeItem === 'postmark') { state.postmarkPos.x += dx; state.postmarkPos.y += dy; }
+        else if (activeItem === 'badge') { state.badgePos.x += dx; state.badgePos.y += dy; }
+        redraw();
     });
 
-    window.addEventListener('pointerup', () => { isDragging = false; });
+    window.addEventListener('pointerup', () => { dragging = false; });
 
-    // 导出图片
-    function saveImage() {
+    function savePNG() {
         const link = document.createElement('a');
         link.download = 'my-cute-stamp.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     }
 
-    // 初始化执行
     initUI();
-    drawStamp();
+    redraw();
 </script>
-
 </body>
     </html>
