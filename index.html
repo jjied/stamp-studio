@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY STAMP GENERATOR</title>
+    <!-- 引入Google Fonts手绘英文字体与中文手写风支持 -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Indie+Flower&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #121212;
+            color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        /* 顶部栏 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 4px;
+        }
+
+        .app-title {
+            font-family: 'Caveat', cursive, sans-serif;
+            font-size: 22px;
+            letter-spacing: 2px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-btn:hover {
+            background: #3a3a3a;
+            border-color: #666;
+        }
+
+        /* 预览舞台区 */
+        .preview-stage {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .stage-tabs {
+            display: flex;
+            background: #111;
+            padding: 4px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .stage-tab {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 12px;
+            color: #888;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stage-tab.active {
+            background: #333;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 6px 0;
+        }
+
+        canvas {
+            display: block;
+            width: 280px;
+            height: 280px;
+            cursor: crosshair;
+            border-radius: 4px;
+        }
+
+        .canvas-tip {
+            font-size: 11px;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* 控制面板卡片 */
+        .panel-card {
+            background: #1e1e1e;
+            border: 1px solid #2e2e2e;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #bbb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 颜色选择网格 */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .color-dot {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .color-dot.active {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* 图标/动物选择网格 */
+        .grid-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-height: 140px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .grid-selector::-webkit-scrollbar {
+            width: 4px;
+        }
+        .grid-selector::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 2px;
+        }
+
+        .selector-item {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 10px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .selector-item span {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .selector-item:hover {
+            background: #353535;
+            border-color: #555;
+        }
+
+        .selector-item.active {
+            background: #3d3d3d;
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* 输入框与滑块 */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .text-input {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: #888;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: #fff;
+            cursor: pointer;
+        }
+
+        /* 标签按钮组 */
+        .pill-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #ccc;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill-btn:hover {
+            background: #353535;
+        }
+
+        .pill-btn.active {
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            border-color: #fff;
+        }
+
+        /* 底部大生成按钮 */
+        .generate-btn {
+            background: linear-gradient(135deg, #fff, #dedede);
+            color: #121212;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.1s, opacity 0.2s;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 8px;
+        }
+        .flex-row > * {
+            flex: 1;
+        }
+
+        .sub-label {
+            font-size: 11px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+        <div class="app-title">STAMP STUDIO</div>
+        <div class="top-actions">
+            <button class="action-btn" id="save-top-btn">📥 保存图片</button>
+            <button class="action-btn" id="share-top-btn">🔗 复制</button>
+        </div>
+    </div>
+
+    <!-- 预览与舞台区 -->
+    <div class="preview-stage">
+        <div class="stage-tabs">
+            <div class="stage-tab active" data-mode="single">单张 DIY 舞台</div>
+            <div class="stage-tab" data-mode="grid">四宫格灵感墙</div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="stampCanvas" width="1080" height="1080"></canvas>
+        </div>
+        
+        <div class="canvas-tip" id="canvas-tip-text">✨ 提示：点击画布中的动物、文字或贴纸可直接拖拽、缩放与旋转</div>
+    </div>
+
+    <!-- 1. 邮票边框颜色与纸张配色 -->
+    <div class="panel-card">
+        <div class="panel-title">
+            <span>邮票边框与纸张底色</span>
+            <span class="sub-label" id="color-name-display">樱花粉</span>
+        </div>
+        <div class="color-grid" id="paper-color-grid">
+            <!-- 动态生成配色 -->
+        </div>
+        <div style="margin-top: 4px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 12px; color: #aaa;">自定义齿边边框色</span>
+            <input type="color" id="customBorderColor" value="#ffffff" style="background:none; border:none; width:28px; height:28px; cursor:pointer;">
+        </div>
+    </div>
+
+    <!-- 2. 底纹与样式定制 -->
+    <div class="panel-card">
+        <div class="panel-title">纸张纹理样式</div>
+        <div class="pill-group" id="pattern-type-group">
+            <button class="pill-btn active" data-pattern="solid">纯色背景</button>
+            <button class="pill-btn" data-pattern="dots">波点底纹</button>
+            <button class="pill-btn" data-pattern="v-stripe">竖条纹</button>
+            <button class="pill-btn" data-pattern="d-stripe">斜条纹</button>
+        </div>
+        <div id="pattern-color-container" style="display:none; margin-top:6px; flex-direction:column; gap:8px;">
+            <div class="slider-row">
+                <span>底纹颜色:</span>
+                <input type="color" id="patternColorPicker" value="#ffffff" style="background:none; border:none; width:24px; height:24px; cursor:pointer;">
+                <span style="margin-left:auto;">浓度:</span>
+                <input type="range" id="patternOpacityRange" min="0.05" max="0.5" step="0.05" value="0.2">
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 主角小动物选择 -->
+    <div class="panel-card">
+        <div class="panel-title">
+            <span>选择手绘主角</span>
+            <span class="sub-label">可自由缩放与拖拽位置</span>
+        </div>
+        <div class="grid-selector" id="animal-grid">
+            <!-- 动态填充14款动物 -->
+        </div>
+        <div class="slider-row" style="margin-top: 8px;">
+            <span>主角大小:</span>
+            <input type="range" id="animalScaleRange" min="0.5" max="1.6" step="0.05" value="1.0">
+        </div>
+    </div>
+
+    <!-- 4. 文字与字体定制 -->
+    <div class="panel-card">
+        <div class="panel-title">手写文案与对齐</div>
+        <div class="input-group">
+            <input type="text" class="text-input" id="stampTextInput" value="I CAN'T TAKE THIS CUTENESS" placeholder="输入你的英文或中文文案...">
+        </div>
+        <div class="flex-row">
+            <div class="input-group" style="flex:2;">
+                <select class="text-input" id="fontFamilySelect" style="padding: 8px 10px; font-size:12px;">
+                    <option value="Caveat">Caveat (手写英文1)</option>
+                    <option value="Indie Flower">Indie Flower (手写英文2)</option>
+                    <option value="ZCOOL KuaiLe">站酷快乐体 (中文手写)</option>
+                </select>
+            </div>
+            <div class="pill-group" id="textAlignGroup" style="flex:1; align-items:center;">
+                <button class="pill-btn active" data-align="center" style="flex:1; text-align:center;">居中</button>
+                <button class="pill-btn" data-align="left" style="flex:1; text-align:center;">左</button>
+                <button class="pill-btn" data-align="right" style="flex:1; text-align:center;">右</button>
+            </div>
+        </div>
+        <div class="slider-row">
+            <span>文字字号:</span>
+            <input type="range" id="fontSizeRange" min="20" max="64" step="2" value="38">
+            <span>字色:</span>
+            <input type="color" id="fontColorPicker" value="#222222" style="background:none; border:none; width:24px; height:24px; cursor:pointer;">
+        </div>
+    </div>
+
+    <!-- 5. 装饰印花贴纸 -->
+    <div class="panel-card">
+        <div class="panel-title">
+            <span>添加印花涂鸦贴纸</span>
+            <span class="sub-label">点选即加</span>
+        </div>
+        <div class="grid-selector" id="sticker-grid">
+            <!-- 动态填充印花贴纸 -->
+        </div>
+    </div>
+
+    <!-- 6. 创作模式切换 (DIY vs 手绘) -->
+    <div class="panel-card">
+        <div class="panel-title">画布操作模式</div>
+        <div class="pill-group" id="canvasModeGroup">
+            <button class="pill-btn active" data-mode="drag">👆 拖拽/排版模式</button>
+            <button class="pill-btn" data-mode="draw">✏️ 自由画笔涂鸦</button>
+            <button class="pill-btn" id="clearDoodlesBtn" style="color:#ff8888;">清除手绘</button>
+        </div>
+        <div id="draw-tools-panel" style="display:none; margin-top:8px; gap:8px;" class="slider-row">
+            <span>笔刷粗细:</span>
+            <input type="range" id="brushSizeRange" min="2" max="20" step="1" value="6">
+            <span>画笔颜色:</span>
+            <input type="color" id="brushColorPicker" value="#222222" style="background:none; border:none; width:24px; height:24px; cursor:pointer;">
+        </div>
+    </div>
+
+    <!-- 底部生成按钮 -->
+    <button class="generate-btn" id="generate-random-btn">🎲 一键随机灵感组合</button>
+</div>
+
+<script>
+    // 数据配置
+    const paperColors = [
+        { name: "草莓粉", bg: "#fce4ec", border: "#ffffff" },
+        { name: "奶油黄", bg: "#fffde7", border: "#ffffff" },
+        { name: "天空蓝", bg: "#e1f5fe", border: "#ffffff" },
+        { name: "薄荷绿", bg: "#e8f5e9", border: "#ffffff" },
+        { name: "香芋紫", bg: "#f3e5f5", border: "#ffffff" },
+        { name: "牛皮纸", bg: "#f5f0eb", border: "#ffffff" },
+        { name: "纯净白", bg: "#ffffff", border: "#e0e0e0" },
+        { name: "曜石黑", bg: "#222222", border: "#444444", textColor: "#ffffff" }
+    ];
+
+    const animals = [
+        { id: "dog", name: "垂耳狗", symbol: "🐕", desc: "Cute Puppy" },
+        { id: "cat", name: "微笑猫", symbol: "🐱", desc: "Happy Kitty" },
+        { id: "bunny", name: "长耳兔", symbol: "🐰", desc: "Sweet Bunny" },
+        { id: "bear", name: "小熊", symbol: "🐻", desc: "Teddy Bear" },
+        { id: "fox", name: "小狐狸", symbol: "🦊", desc: "Cunning Fox" },
+        { id: "pig", name: "小猪", symbol: "🐷", desc: "Cute Piggy" },
+        { id: "penguin", name: "企鹅", symbol: "🐧", desc: "Little Penguin" },
+        { id: "frog", name: "青蛙", symbol: "🐸", desc: "Green Frog" },
+        { id: "duck", name: "小鸭", symbol: "🦆", desc: "Yellow Duck" },
+        { id: "hedgehog", name: "刺猬", symbol: "🦔", desc: "Hedgehog" },
+        { id: "hamster", name: "仓鼠", symbol: "🐹", desc: "Little Hamster" },
+        { id: "weasel", name: "雪鼬", symbol: "🦦", desc: "Cute Weasel" },
+        { id: "fish", name: "小鱼", symbol: "🐠", desc: "Little Fish" },
+        { id: "tiger", name: "小老虎", symbol: "🐯", desc: "Little Tiger" },
+        { id: "none", name: "纯文字", symbol: "📝", desc: "Text Only" }
+    ];
+
+    const stickerSymbols = ["⭐", "🌟", "❤️", "💖", "🎵", "🎶", "🌀", "✨", "🌙", "🌸", "🍀", "☕", "🎀", "🐱"];
+
+    const sampleQuotes = [
+        "I CAN'T TAKE THIS CUTENESS",
+        "MY HEART CAN'T HANDLE THIS",
+        "THIS MAKES ME SO HAPPY!",
+        "PURR-FECTLY ADORABLE",
+        "SWEET DREAMS",
+        "FOREVER WITH YOU",
+        "CUTE MOMENT",
+        "JUST FOR YOU"
+    ];
+
+    // 状态管理
+    let state = {
+        activeTab: 'single', // 'single' or 'grid'
+        paperColorIndex: 0,
+        customBorderColor: '#ffffff',
+        patternType: 'solid', // solid, dots, v-stripe, d-stripe
+        patternColor: '#ffffff',
+        patternOpacity: 0.2,
+        selectedAnimal: 'dog',
+        animalScale: 1.0,
+        animalPos: { x: 540, y: 460 }, // Canvas坐标 (1080x1080)
+        
+        text: "I CAN'T TAKE THIS CUTENESS",
+        fontFamily: "Caveat",
+        textAlign: "center",
+        fontSize: 38,
+        fontColor: "#222222",
+        textPos: { x: 540, y: 760 },
+
+        stickers: [
+            { id: 1, symbol: "⭐", x: 180, y: 180, scale: 1.0, rotation: 0 },
+            { id: 2, symbol: "❤️", x: 900, y: 720, scale: 1.0, rotation: 0 },
+            { id: 3, symbol: "🌀", x: 880, y: 200, scale: 1.0, rotation: 0 }
+        ],
+
+        canvasMode: 'drag', // 'drag' or 'draw'
+        brushSize: 6,
+        brushColor: '#222222',
+        doodles: [], // 存储自由手绘路径 [[{x,y},...], ...]
+
+        // 交互拖拽状态
+        draggingItem: null, // { type: 'animal'|'text'|'sticker', index: number }
+        isDragging: false,
+        isScaling: false,
+        isRotating: false,
+        dragStart: { x: 0, y: 0 }
+    };
+
+    // 初始化 DOM 元素
+    const canvas = document.getElementById('stampCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 生成颜色网格
+    function initColorGrid() {
+        const grid = document.getElementById('paper-color-grid');
+        grid.innerHTML = '';
+        paperColors.forEach((item, idx) => {
+            const dot = document.createElement('div');
+            dot.className = `color-dot ${idx === state.paperColorIndex ? 'active' : ''}`;
+            dot.style.background = item.bg;
+            dot.title = item.name;
+            dot.onclick = () => {
+                state.paperColorIndex = idx;
+                if(item.textColor && state.fontColor === '#222222') {
+                    state.fontColor = item.textColor;
+                    document.getElementById('fontColorPicker').value = item.textColor;
+                }
+                document.getElementById('color-name-display').innerText = item.name;
+                document.querySelectorAll('#paper-color-grid .color-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                drawCanvas();
+            };
+            grid.appendChild(dot);
+        });
+    }
+
+    // 生成动物网格
+    function initAnimalGrid() {
+        const grid = document.getElementById('animal-grid');
+        grid.innerHTML = '';
+        animals.forEach(anim => {
+            const item = document.createElement('div');
+            item.className = `selector-item ${anim.id === state.selectedAnimal ? 'active' : ''}`;
+            item.innerHTML = `${anim.symbol}<span>${anim.name}</span>`;
+            item.onclick = () => {
+                state.selectedAnimal = anim.id;
+                document.querySelectorAll('#animal-grid .selector-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                drawCanvas();
+            };
+            grid.appendChild(item);
+        });
+    }
+
+    // 生成贴纸网格
+    function initStickerGrid() {
+        const grid = document.getElementById('sticker-grid');
+        grid.innerHTML = '';
+        stickerSymbols.forEach(sym => {
+            const item = document.createElement('div');
+            item.className = `selector-item`;
+            item.innerHTML = `${sym}`;
+            item.onclick = () => {
+                // 在画面中心偏上随机位置添加贴纸
+                state.stickers.push({
+                    id: Date.now(),
+                    symbol: sym,
+                    x: 400 + Math.random() * 280,
+                    y: 400 + Math.random() * 280,
+                    scale: 1.0,
+                    rotation: (Math.random() - 0.5) * 0.4
+                });
+                drawCanvas();
+            };
+            grid.appendChild(item);
+        });
+    }
+
+    // 核心：绘制邮票函数 (1080 x 1080 像素高清)
+    function drawCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (state.activeTab === 'single') {
+            drawSingleStamp(ctx, 0, 0, 1080, 1080, state);
+        } else {
+            // 四宫格灵感墙
+            const size = 520;
+            const gap = 40;
+            const startX = 20;
+            const startY = 20;
+            
+            // 四张模拟不同配置
+            const configs = [
+                { ...state, selectedAnimal: 'dog', paperColorIndex: 0, text: "I CAN'T TAKE THIS CUTENESS" },
+                { ...state, selectedAnimal: 'cat', paperColorIndex: 1, text: "PURR-FECTLY ADORABLE" },
+                { ...state, selectedAnimal: 'bunny', paperColorIndex: 2, text: "MY HEART CAN'T HANDLE" },
+                { ...state, selectedAnimal: 'tiger', paperColorIndex: 3, text: "THIS MAKES ME HAPPY!" }
+            ];
+
+            let idx = 0;
+            for (let r = 0; r < 2; r++) {
+                for (let c = 0; c < 2; c++) {
+                    let x = startX + c * (size + gap);
+                    let y = startY + r * (size + gap);
+                    drawSingleStamp(ctx, x, y, size, size, configs[idx], true);
+                    idx++;
+                }
+            }
+        }
+    }
+
+    // 绘制单张邮票
+    function drawSingleStamp(c, x, y, w, h, cfg, isGridMini = false) {
+        c.save();
+        c.translate(x, y);
+
+        const pConfig = paperColors[cfg.paperColorIndex] || paperColors[0];
+        const bgColor = pConfig.bg;
+        const borderColor = cfg.customBorderColor !== '#ffffff' ? cfg.customBorderColor : pConfig.border;
+
+        // 1. 绘制邮票锯齿边框 (利用 Clip 路径或挖空圆孔)
+        // 为简化高保真渲染，我们绘制带齿孔外发光或锯齿边框
+        c.save();
+        createStampPath(c, 40, 40, w - 80, h - 80, 24);
+        c.fillStyle = bgColor;
+        c.shadowColor = 'rgba(0, 0, 0, 0.25)';
+        c.shadowBlur = isGridMini ? 10 : 30;
+        c.shadowOffsetX = 0;
+        c.shadowOffsetY = 10;
+        c.fill();
+        c.restore();
+
+        // 裁剪在邮票内部区域
+        c.save();
+        createStampPath(c, 40, 40, w - 80, h - 80, 24);
+        c.clip();
+
+        // 2. 纸张底色与底纹
+        c.fillStyle = bgColor;
+        c.fillRect(0, 0, w, h);
+
+        // 绘制底纹
+        if (cfg.patternType !== 'solid') {
+            c.save();
+            c.fillStyle = cfg.patternColor;
+            c.strokeStyle = cfg.patternColor;
+            c.globalAlpha = cfg.patternOpacity;
+            
+            if (cfg.patternType === 'dots') {
+                const step = 48;
+                for (let px = 40; px < w; px += step) {
+                    for (let py = 40; py < h; py += step) {
+                        c.beginPath();
+                        c.arc(px, py, 6, 0, Math.PI * 2);
+                        c.fill();
+                    }
+                }
+            } else if (cfg.patternType === 'v-stripe') {
+                const step = 36;
+                c.lineWidth = 12;
+                for (let px = 0; px < w * 1.5; px += step) {
+                    c.beginPath();
+                    c.moveTo(px, 0);
+                    c.lineTo(px - h, h);
+                    c.stroke();
+                }
+            } else if (cfg.patternType === 'd-stripe') {
+                const step = 40;
+                c.lineWidth = 14;
+                for (let px = -w; px < w * 2; px += step) {
+                    c.beginPath();
+                    c.moveTo(px, 0);
+                    c.lineTo(px + h, h);
+                    c.stroke();
+                }
+            }
+            c.restore();
+        }
+
+        // 缩放比例适配（如果是四宫格，等比缩小坐标）
+        let scaleFactor = isGridMini ? (520 / 1080) : 1.0;
+
+        // 3. 绘制手绘自由画笔涂鸦
+        if (!isGridMini && cfg.doodles && cfg.doodles.length > 0) {
+            c.save();
+            cfg.doodles.forEach(path => {
+                if (path.length < 2) return;
+                c.beginPath();
+                c.strokeStyle = cfg.brushColor;
+                c.lineWidth = cfg.brushSize;
+                c.lineCap = 'round';
+                c.lineJoin = 'round';
+                c.moveTo(path[0].x, path[0].y);
+                for (let i = 1; i < path.length; i++) {
+                    c.lineTo(path[i].x, path[i].y);
+                }
+                c.stroke();
+            });
+            c.restore();
+        }
+
+        // 4. 绘制小动物图案
+        if (cfg.selectedAnimal !== 'none') {
+            c.save();
+            let animObj = animals.find(a => a.id === cfg.selectedAnimal) || animals[0];
+            let pos = isGridMini ? { x: 260, y: 220 } : cfg.animalPos;
+            let scale = (isGridMini ? 0.5 : 1.0) * cfg.animalScale;
+            
+            c.translate(pos.x, pos.y);
+            c.scale(scale, scale);
+            
+            // 绘制手绘插图底衬或小圆盘
+            c.beginPath();
+            c.arc(0, 0, 110, 0, Math.PI * 2);
+            c.fillStyle = "rgba(255, 255, 255, 0.6)";
+            c.fill();
+            c.lineWidth = 4;
+            c.strokeStyle = "#333";
+            c.stroke();
+
+            // 动物 Emoji / 符号渲染
+            c.font = "90px sans-serif";
+            c.textAlign = "center";
+            c.textBaseline = "middle";
+            c.fillText(animObj.symbol, 0, 4);
+
+            c.restore();
+        }
+
+        // 5. 绘制印花贴纸
+        if (!isGridMini && cfg.stickers) {
+            cfg.stickers.forEach(st => {
+                c.save();
+                c.translate(st.x, st.y);
+                c.rotate(st.rotation || 0);
+                c.scale(st.scale || 1.0, st.scale || 1.0);
+                c.font = "52px sans-serif";
+                c.textAlign = "center";
+                c.textBaseline = "middle";
+                c.fillText(st.symbol, 0, 0);
+                c.restore();
+            });
+        }
+
+        // 6. 绘制手写文案
+        if (cfg.text) {
+            c.save();
+            let tPos = isGridMini ? { x: 260, y: 420 } : cfg.textPos;
+            c.translate(tPos.x, tPos.y);
+            
+            c.font = `700 ${isGridMini ? 22 : cfg.fontSize}px "${cfg.fontFamily}", cursive, sans-serif`;
+            c.fillStyle = cfg.fontColor;
+            c.textAlign = cfg.textAlign;
+            c.textBaseline = "middle";
+            
+            // 多行文本支持
+            let lines = cfg.text.split('\n');
+            let lineHeight = (isGridMini ? 26 : cfg.fontSize * 1.2);
+            lines.forEach((line, lIdx) => {
+                let offsetX = 0;
+                if (cfg.textAlign === 'left') offsetX = -w * 0.35;
+                if (cfg.textAlign === 'right') offsetX = w * 0.35;
+                c.fillText(line, offsetX, lIdx * lineHeight - (lines.length - 1) * lineHeight / 2);
+            });
+            c.restore();
+        }
+
+        // 7. 绘制边框线条与复古齿孔剪裁描边
+        c.restore(); // 结束裁剪
+        c.save();
+        createStampPath(c, 40, 40, w - 80, h - 80, 24);
+        c.lineWidth = isGridMini ? 3 : 6;
+        c.strokeStyle = '#222';
+        c.stroke();
+        c.restore();
+
+        // 绘制齿孔阴影雕刻感
+        c.save();
+        createStampPath(c, 40, 40, w - 80, h - 80, 24);
+        c.lineWidth = isGridMini ? 1.5 : 3;
+        c.strokeStyle = borderColor;
+        c.stroke();
+        c.restore();
+
+        // 如果是单张模式且处于拖拽排版状态，绘制选中/操作提示框
+        if (!isGridMini && state.activeTab === 'single' && state.canvasMode === 'drag' && state.draggingItem) {
+            drawSelectionGizmo(c, state.draggingItem, cfg);
+        }
+
+        c.restore();
+    }
+
+    // 创建邮票齿边路径函数
+    function createStampPath(ctx, x, y, w, h, toothSize) {
+        ctx.beginPath();
+        let teethX = Math.round(w / (toothSize * 2));
+        let teethY = Math.round(h / (toothSize * 2));
+        let actualToothX = w / (teethX * 2);
+        let actualToothY = h / (teethY * 2);
+
+        // Top edge
+        ctx.moveTo(x, y);
+        for (let i = 0; i < teethX * 2; i++) {
+            let cx = x + i * actualToothX + actualToothX / 2;
+            let cy = y - (i % 2 === 0 ? actualToothX * 0.5 : 0);
+            if(i % 2 === 1) {
+                cy = y;
+            }
+            // 使用贝塞尔曲线模拟半圆齿孔
+            ctx.arc(x + (i + 0.5) * actualToothX, y, actualToothX / 2, Math.PI, 0, false);
+        }
+        ctx.lineTo(x + w, y);
+
+        // Right edge
+        for (let i = 0; i < teethY * 2; i++) {
+            ctx.arc(x + w, y + (i + 0.5) * actualToothY, actualToothY / 2, -Math.PI / 2, Math.PI / 2, false);
+        }
+        ctx.lineTo(x + w, y + h);
+
+        // Bottom edge
+        for (let i = 0; i < teethX * 2; i++) {
+            ctx.arc(x + w - (i + 0.5) * actualToothX, y + h, actualToothX / 2, 0, Math.PI, false);
+        }
+        ctx.lineTo(x, y + h);
+
+        // Left edge
+        for (let i = 0; i < teethY * 2; i++) {
+            ctx.arc(x, y + h - (i + 0.5) * actualToothY, Math.PI / 2, Math.PI / 2, -Math.PI / 2, false);
+        }
+        ctx.closePath();
+    }
+
+    // 绘制选中元素的辅助控制框
+    function drawSelectionGizmo(c, item, cfg) {
+        c.save();
+        c.strokeStyle = '#ff3366';
+        c.lineWidth = 2;
+        c.setLineDash([6, 6]);
+
+        let px = 0, py = 0, radius = 80;
+        if (item.type === 'animal') {
+            px = cfg.animalPos.x;
+            py = cfg.animalPos.y;
+            radius = 110 * cfg.animalScale;
+            c.strokeRect(px - radius, py - radius, radius * 2, radius * 2);
+        } else if (item.type === 'text') {
+            px = cfg.textPos.x;
+            py = cfg.textPos.y;
+            c.strokeRect(px - 180, py - 35, 360, 70);
+        } else if (item.type === 'sticker') {
+            let st = cfg.stickers[item.index];
+            if (st) {
+                px = st.x;
+                py = st.y;
+                c.strokeRect(px - 35, py - 35, 70, 70);
+            }
+        }
+        c.restore();
+    }
+
+    // 交互事件监听：画布上的点击与拖拽
+    function getCanvasCoordinates(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        // 映射到 1080x1080 画布坐标系
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    let isDrawing = false;
+    let currentPath = [];
+
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('touchstart', handleStart);
+
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('touchmove', handleMove);
+
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchend', handleEnd);
+
+    function handleStart(e) {
+        if (state.activeTab !== 'single') return;
+        e.preventDefault();
+        const pos = getCanvasCoordinates(e);
+
+        if (state.canvasMode === 'draw') {
+            isDrawing = true;
+            currentPath = [pos];
+            state.doodles.push(currentPath);
+            drawCanvas();
+            return;
+        }
+
+        // 拖拽排版模式：检测点中了哪个元素
+        // 1. 检查动物
+        if (state.selectedAnimal !== 'none') {
+            let dx = pos.x - state.animalPos.x;
+            let dy = pos.y - state.animalPos.y;
+            if (Math.sqrt(dx*dx + dy*dy) < 120 * state.animalScale) {
+                state.draggingItem = { type: 'animal' };
+                state.isDragging = true;
+                state.dragStart = { x: pos.x - state.animalPos.x, y: pos.y - state.animalPos.y };
+                drawCanvas();
+                return;
+            }
+        }
+
+        // 2. 检查文字
+        let tdx = pos.x - state.textPos.x;
+        let tdy = pos.y - state.textPos.y;
+        if (Math.abs(tdx) < 200 && Math.abs(tdy) < 40) {
+            state.draggingItem = { type: 'text' };
+            state.isDragging = true;
+            state.dragStart = { x: pos.x - state.textPos.x, y: pos.y - state.textPos.y };
+            drawCanvas();
+            return;
+        }
+
+        // 3. 检查贴纸
+        for (let i = state.stickers.length - 1; i >= 0; i--) {
+            let st = state.stickers[i];
+            let sdx = pos.x - st.x;
+            let sdy = pos.y - st.y;
+            if (Math.sqrt(sdx*sdx + sdy*sdy) < 45) {
+                state.draggingItem = { type: 'sticker', index: i };
+                state.isDragging = true;
+                state.dragStart = { x: pos.x - st.x, y: pos.y - st.y };
+                drawCanvas();
+                return;
+            }
+        }
+
+        // 没点中任何元素则取消选中
+        state.draggingItem = null;
+        drawCanvas();
+    }
+
+    function handleMove(e) {
+        if (state.activeTab !== 'single') return;
+        e.preventDefault();
+        const pos = getCanvasCoordinates(e);
+
+        if (state.canvasMode === 'draw' && isDrawing) {
+            currentPath.push(pos);
+            drawCanvas();
+            return;
+        }
+
+        if (state.isDragging && state.draggingItem) {
+            if (state.draggingItem.type === 'animal') {
+                state.animalPos.x = pos.x - state.dragStart.x;
+                state.animalPos.y = pos.y - state.dragStart.y;
+            } else if (state.draggingItem.type === 'text') {
+                state.textPos.x = pos.x - state.dragStart.x;
+                state.textPos.y = pos.y - state.dragStart.y;
+            } else if (state.draggingItem.type === 'sticker') {
+                let st = state.stickers[state.draggingItem.index];
+                if (st) {
+                    st.x = pos.x - state.dragStart.x;
+                    st.y = pos.y - state.dragStart.y;
+                }
+            }
+            drawCanvas();
+        }
+    }
+
+    function handleEnd(e) {
+        isDrawing = false;
+        state.isDragging = false;
+    }
+
+    // 绑定各类 UI 控制器事件
+    document.querySelectorAll('.stage-tab').forEach(tab => {
+        tab.onclick = (e) => {
+            document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            state.activeTab = tab.dataset.mode;
+            document.getElementById('canvas-tip-text').innerText = state.activeTab === 'single' ? 
+                "✨ 提示：点击画布中的动物、文字或贴纸可直接拖拽" : "✨ 四宫格灵感墙模式（支持批量欣赏与直接导出）";
+            drawCanvas();
+        };
+    });
+
+    document.querySelectorAll('#pattern-type-group .pill-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('#pattern-type-group .pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.patternType = btn.dataset.pattern;
+            document.getElementById('pattern-color-container').style.display = state.patternType === 'solid' ? 'none' : 'flex';
+            drawCanvas();
+        };
+    });
+
+    document.getElementById('customBorderColor').oninput = (e) => {
+        state.customBorderColor = e.target.value;
+        drawCanvas();
+    };
+
+    document.getElementById('patternColorPicker').oninput = (e) => {
+        state.patternColor = e.target.value;
+        drawCanvas();
+    };
+
+    document.getElementById('patternOpacityRange').oninput = (e) => {
+        state.patternOpacity = parseFloat(e.target.value);
+        drawCanvas();
+    };
+
+    document.getElementById('animalScaleRange').oninput = (e) => {
+        state.animalScale = parseFloat(e.target.value);
+        drawCanvas();
+    };
+
+    document.getElementById('stampTextInput').oninput = (e) => {
+        state.text = e.target.value;
+        drawCanvas();
+    };
+
+    document.getElementById('fontFamilySelect').onchange = (e) => {
+        state.fontFamily = e.target.value;
+        drawCanvas();
+    };
+
+    document.querySelectorAll('#textAlignGroup .pill-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('#textAlignGroup .pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.textAlign = btn.dataset.align;
+            drawCanvas();
+        };
+    });
+
+    document.getElementById('fontSizeRange').oninput = (e) => {
+        state.fontSize = parseInt(e.target.value);
+        drawCanvas();
+    };
+
+    document.getElementById('fontColorPicker').oninput = (e) => {
+        state.fontColor = e.target.value;
+        drawCanvas();
+    };
+
+    document.querySelectorAll('#canvasModeGroup .pill-btn').forEach(btn => {
+        if(btn.id === 'clearDoodlesBtn') return;
+        btn.onclick = () => {
+            document.querySelectorAll('#canvasModeGroup .pill-btn').forEach(b => {
+                if(b.id !== 'clearDoodlesBtn') b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            state.canvasMode = btn.dataset.mode;
+            document.getElementById('draw-tools-panel').style.display = state.canvasMode === 'draw' ? 'flex' : 'none';
+        };
+    });
+
+    document.getElementById('clearDoodlesBtn').onclick = () => {
+        state.doodles = [];
+        drawCanvas();
+    };
+
+    document.getElementById('brushSizeRange').oninput = (e) => {
+        state.brushSize = parseInt(e.target.value);
+    };
+
+    document.getElementById('brushColorPicker').oninput = (e) => {
+        state.brushColor = e.target.value;
+    };
+
+    // 一键随机生成灵感
+    document.getElementById('generate-random-btn').onclick = () => {
+        state.paperColorIndex = Math.floor(Math.random() * paperColors.length);
+        state.selectedAnimal = animals[Math.floor(Math.random() * (animals.length - 1))].id;
+        state.text = sampleQuotes[Math.floor(Math.random() * sampleQuotes.length)];
+        const patterns = ['solid', 'dots', 'v-stripe', 'd-stripe'];
+        state.patternType = patterns[Math.floor(Math.random() * patterns.length)];
+        
+        // 随机动物位置
+        state.animalPos = { x: 400 + Math.random() * 280, y: 380 + Math.random() * 160 };
+        state.textPos = { x: 540, y: 720 + (Math.random() - 0.5) * 80 };
+
+        // 更新UI状态
+        initColorGrid();
+        initAnimalGrid();
+        document.getElementById('stampTextInput').value = state.text;
+        document.getElementById('color-name-display').innerText = paperColors[state.paperColorIndex].name;
+        
+        document.querySelectorAll('#pattern-type-group .pill-btn').forEach(b => {
+            if(b.dataset.pattern === state.patternType) b.click();
+        });
+
+        drawCanvas();
+    };
+
+    // 保存 PNG 动作
+    function saveImage() {
+        // 临时取消选中框再导出
+        let oldDrag = state.draggingItem;
+        state.draggingItem = null;
+        drawCanvas();
+
+        const link = document.createElement('a');
+        link.download = `stamp-art-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        state.draggingItem = oldDrag;
+        drawCanvas();
+    }
+
+    document.getElementById('save-top-btn').onclick = saveImage;
+
+    // 复制到剪贴板
+    document.getElementById('share-top-btn').onclick = async () => {
+        try {
+            canvas.toBlob(async (blob) => {
+                await navigator.clipboard.writeText("快来看看我用 STAMP STUDIO 制作的手绘治愈邮票！");
+                alert("✨ 邮票图片已准备就绪，或可直接点击上方保存按钮下载高清 PNG！");
+            });
+        } catch(e) {
+            saveImage();
+        }
+    };
+
+    // 初始化渲染
+    initColorGrid();
+    initAnimalGrid();
+    initStickerGrid();
+    drawCanvas();
+</script>
+
+</body>
+</html>
