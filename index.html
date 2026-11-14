@@ -2953,12 +2953,16 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.arc(0, 76, 6, 0, Math.PI * 2);
                 ctx.fill();
 
-                // 腮红改为线稿椭圆，不使用粉色
-                ctx.strokeStyle = '#231F20';
+                // 左腮红：粉色实心椭圆，独立绘制
+                ctx.fillStyle = '#F9A8D4';
                 ctx.beginPath();
                 ctx.ellipse(-48, -35, 12, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 右腮红：与左侧完全一致
+                ctx.beginPath();
                 ctx.ellipse(48, -35, 12, 8, 0, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.fill();
             }
         } // 结束 drawCharacterIllustration 函数
 
