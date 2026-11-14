@@ -323,6 +323,65 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
   opacity: 0; pointer-events: none; transition: 0.25s; z-index: 99;
 }
 .toast.show { opacity: 1; }
+
+/* Mobile layout corrections */
+@media (max-width: 600px) {
+  body {
+    padding: 5px;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+  .app-shell {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+  .top-nav {
+    padding: 9px 10px;
+    gap: 7px;
+  }
+  .brand { min-width: 0; }
+  .brand-title { font-size: 11px; }
+  .brand-sub { font-size: 9px; }
+  .mode-tabs { max-width: 100%; }
+  .mode-btn { padding: 7px 9px; font-size: 11px; white-space: nowrap; }
+  .btn-export { padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+  .stage-col {
+    padding: 10px 9px;
+    gap: 8px;
+  }
+  .stage-top-bar { align-items: flex-start; }
+  .ratio-btn { padding: 6px 7px; font-size: 10px; white-space: nowrap; }
+  .stage-hint {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.4;
+    font-size: 10px;
+  }
+  .canvas-holder {
+    width: 100%;
+    min-width: 0;
+    padding: 2px 0;
+  }
+  #aspect-box {
+    width: min(100%, 42svh);
+    max-width: 42svh;
+    max-height: 42svh;
+    flex: 0 1 auto;
+  }
+  .stage-footer { padding-top: 8px; }
+  .btn-export-big { max-width: 100%; padding: 9px 14px; font-size: 11px; }
+  .ctrl-col { padding: 10px 9px; }
+  .card-box { padding: 9px; }
+  .animal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 360px) {
+  .top-nav { justify-content: center; }
+  .mode-tabs { order: 3; width: 100%; justify-content: center; }
+  .btn-export { margin-left: auto; }
+  .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 </style>
 </head>
 <body>
@@ -1629,6 +1688,141 @@ ctx.stroke();
         // ==========================================
         // 7. 图标缩略图渲染
         // ==========================================
+
+  function drawSticker(ctx, st, ink) {
+    ctx.save();
+    ctx.translate(st.x, st.y);
+    ctx.rotate(st.rot);
+    ctx.scale(st.scale, st.scale);
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 4.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const t = st.type;
+    if (t === 'swirl') {
+      // 参考图1中的手绘螺旋小圈圈
+      ctx.beginPath();
+      for (let a = 0; a < Math.PI * 4.3; a += 0.25) {
+        const r = a * 2.1;
+        const x = Math.cos(a) * r, y = Math.sin(a) * r;
+        a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    } else if (t === 'sparkle') {
+      // 参考图1中的手绘小星芒
+      ctx.beginPath();
+      ctx.moveTo(0, -18); ctx.lineTo(0, 18);
+      ctx.moveTo(-16, 0); ctx.lineTo(16, 0);
+      ctx.moveTo(-10, -10); ctx.lineTo(10, 10);
+      ctx.moveTo(10, -10); ctx.lineTo(-10, 10);
+      ctx.stroke();
+    } else if (t === 'heart') {
+      ctx.fillStyle = '#F7B2C8';
+      ctx.beginPath(); ctx.moveTo(0, 18); ctx.bezierCurveTo(-28, 0, -22, -24, 0, -8); ctx.bezierCurveTo(22, -24, 28, 0, 0, 18); ctx.fill(); ctx.stroke();
+    } else if (t === 'daisy') {
+      ctx.fillStyle = '#FFFFFF';
+      for (let i = 0; i < 5; i++) {
+        const a = (i * Math.PI * 2) / 5;
+        ctx.beginPath(); ctx.arc(Math.cos(a)*13, Math.sin(a)*13, 8.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      }
+      ctx.fillStyle = '#F7C948'; ctx.beginPath(); ctx.arc(0, 0, 7.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    } else if (t === 'clover') {
+      ctx.fillStyle = '#A7DFB2';
+      [[-10,-10],[10,-10],[-10,10],[10,10]].forEach(([x,y]) => { ctx.beginPath(); ctx.arc(x, y, 10.5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); });
+    } else if (t === 'cloud') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(-13, 4, 13, 0, Math.PI*2); ctx.arc(0, -4, 15, 0, Math.PI*2); ctx.arc(14, 4, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    } else if (t === 'bow') {
+      ctx.fillStyle = '#F7B2C8';
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-22,-12); ctx.lineTo(-22,12); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(22,-12); ctx.lineTo(22,12); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    } else if (t === 'berry') {
+      ctx.fillStyle = '#F27486';
+      ctx.beginPath(); ctx.moveTo(-16,-8); ctx.quadraticCurveTo(0, 28, 0, 25); ctx.quadraticCurveTo(0, 28, 16, -8); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#8FD19E'; ctx.beginPath(); ctx.ellipse(0, -10, 14, 5.5, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    } else if (t === 'moon') {
+      ctx.fillStyle = '#FCE38A';
+      ctx.beginPath(); ctx.arc(0, 0, 21, 0.2*Math.PI, 1.8*Math.PI); ctx.quadraticCurveTo(4, 0, 16, 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    } else if (t === 'paw') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.ellipse(0, 7, 14, 10, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      [[-13,-7],[-4,-14],[4,-14],[13,-7]].forEach(([x,y]) => { ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); });
+    }
+    ctx.restore();
+  }
+
+  // 绘制手绘马克笔不规则文字（复刻参考图1的 "I CAN'T TAKE THIS CUTENESS" 手写灵魂）
+
+  function drawHandLetteredText(ctx, h) {
+    if (!h.text || !h.text.trim()) return;
+    ctx.save();
+    ctx.translate(h.textX, h.textY);
+    ctx.rotate(h.textRot);
+    const fs = Math.round(52 * (h.fontScale / 100));
+    const lines = h.text.split('\n');
+    const lh = fs * 1.24;
+    const sy = -((lines.length - 1) * lh) / 2;
+
+    const fontMap = {
+      marker: '"Comic Sans MS", "Chalkboard SE", "Marker Felt", "PingFang SC", cursive, sans-serif',
+      round: '"PingFang SC", "Hiragino Maru Gothic ProN", "YouYuan", sans-serif',
+      kaiti: '"KaiTi", "STKaiti", "BiauKai", cursive, serif',
+      serif: '"Songti SC", "SimSun", Georgia, serif',
+      pixel: '"Courier New", Consolas, monospace'
+    };
+    ctx.font = `700 ${fs}px ${fontMap[h.fontStyle] || fontMap.marker}`;
+    ctx.fillStyle = h.textColor;
+    ctx.strokeStyle = h.textColor;
+    ctx.textBaseline = 'middle';
+
+    if (h.fontStyle === 'marker') {
+      // 逐字微幅旋转+高低错落，呈现真实手写马克笔感
+      lines.forEach((line, li) => {
+        const chars = Array.from(line);
+        const widths = chars.map(ch => ctx.measureText(ch).width * 1.03);
+        const totalW = widths.reduce((a, b) => a + b, 0);
+        let curX = h.textAlign === 'center' ? -totalW / 2 : (h.textAlign === 'right' ? -totalW : 0);
+        chars.forEach((ch, ci) => {
+          const seed = (li * 31 + ci * 17) % 11;
+          const dy = (seed - 5) * 0.9;
+          const ang = ((seed - 5) * 0.016);
+          ctx.save();
+          ctx.translate(curX + widths[ci] / 2, sy + li * lh + dy);
+          ctx.rotate(ang);
+          ctx.textAlign = 'center';
+          ctx.lineWidth = Math.max(1.2, fs * 0.025);
+          ctx.strokeText(ch, 0, 0);
+          ctx.fillText(ch, 0, 0);
+          ctx.restore();
+          curX += widths[ci];
+        });
+      });
+    } else {
+      ctx.textAlign = h.textAlign;
+      lines.forEach((line, li) => {
+        ctx.fillText(line, 0, sy + li * lh);
+      });
+    }
+    ctx.restore();
+  }
+
+  function traceStampRect(ctx, x, y, w, h, r) {
+    const step = r * 3.15;
+    const nx = Math.max(4, Math.floor(w / step));
+    const ny = Math.max(4, Math.floor(h / step));
+    const dx = w / nx, dy = h / ny;
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let i = 0; i < nx; i++) { const cx = x + (i + 0.5) * dx; ctx.lineTo(cx - r, y); ctx.arc(cx, y, r, Math.PI, 0, true); }
+    ctx.lineTo(x + w, y);
+    for (let j = 0; j < ny; j++) { const cy = y + (j + 0.5) * dy; ctx.lineTo(x + w, cy - r); ctx.arc(x + w, cy, r, -Math.PI / 2, Math.PI / 2, true); }
+    ctx.lineTo(x + w, y + h);
+    for (let i = nx - 1; i >= 0; i--) { const cx = x + (i + 0.5) * dx; ctx.lineTo(cx + r, y + h); ctx.arc(cx, y + h, r, 0, Math.PI, true); }
+    ctx.lineTo(x, y + h);
+    for (let j = ny - 1; j >= 0; j--) { const cy = y + (j + 0.5) * dy; ctx.lineTo(x, cy + r); ctx.arc(x, cy, r, Math.PI / 2, -Math.PI / 2, true); }
+    ctx.closePath();
+  }
 
   function drawChibiWhiteAnimal(ctx, type, ink) {
     if (type === 'none' || type === 'photo') return;
