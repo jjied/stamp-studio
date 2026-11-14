@@ -2903,6 +2903,37 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.fill();
                 ctx.stroke();
 
+                // 冬日毛线帽：帽顶
+                ctx.fillStyle = '#FFFFFF';
+                ctx.strokeStyle = '#231F20';
+                ctx.lineWidth = 8;
+
+                ctx.beginPath();
+                ctx.moveTo(-57, -108);
+                ctx.quadraticCurveTo(-58, -157, -12, -166);
+                ctx.quadraticCurveTo(0, -183, 12, -166);
+                ctx.quadraticCurveTo(58, -157, 57, -108);
+                ctx.quadraticCurveTo(0, -94, -57, -108);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 帽檐：独立绘制
+                ctx.beginPath();
+                ctx.moveTo(-58, -112);
+                ctx.quadraticCurveTo(0, -99, 58, -112);
+                ctx.lineTo(55, -126);
+                ctx.quadraticCurveTo(0, -113, -55, -126);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+ 
+                // 帽顶小毛球
+                ctx.beginPath();
+                ctx.arc(0, -177, 11, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
                 // 眼睛
                 ctx.fillStyle = '#231F20';
                 ctx.beginPath();
@@ -2926,22 +2957,23 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.arc(0, -31, 17, 0.2, Math.PI - 0.2);
                 ctx.stroke();
 
-                // 围巾：下移至脖子位置，不再横穿脸部
+                // 围巾：上移一点，贴合脖子
+                ctx.fillStyle = '#FFFFFF';
                 ctx.beginPath();
-                ctx.moveTo(-58, 23);
-                ctx.quadraticCurveTo(0, 34, 58, 23);
-                ctx.lineTo(55, 43);
-                ctx.quadraticCurveTo(0, 54, -55, 43);
+                ctx.moveTo(-58, 15);
+                ctx.quadraticCurveTo(0, 27, 58, 15);
+                ctx.lineTo(55, 35);
+                ctx.quadraticCurveTo(0, 47, -55, 35);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
 
-                // 围巾垂下的部分
+                // 围巾垂下部分
                 ctx.beginPath();
-                ctx.moveTo(31, 37);
-                ctx.lineTo(48, 83);
-                ctx.lineTo(23, 78);
-                ctx.lineTo(13, 37);
+                ctx.moveTo(31, 29);
+                ctx.lineTo(48, 75);
+                ctx.lineTo(23, 70);
+                ctx.lineTo(13, 29);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
