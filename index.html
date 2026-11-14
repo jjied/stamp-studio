@@ -1,589 +1,3639 @@
 <!DOCTYPE html>
-<html lang="ZH-CN">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Architects+Daughter&family=Caveat:wght@400;500;600;700&family=Comic+Neue:wght@400;700&family=Gaegu:wght@400;700&family=Gloria+Hallelujah&family=Gochi+Hand&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Ma+Shan+Zheng&family=Nanum+Pen+Script&family=Patrick+Hand&family=Permanent+Marker&family=Reenie+Beanie&family=Shadows+Into+Light&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-<title>Stamp Studio · 法式蕾丝邮票工坊 v2.8</title>
+<title>Stamp Studio · 邮票工坊 v3.0</title>
 <style>
 :root {
-    --bg-desk: #f4e9df;
-    --bg-card: #fff9f2;
-    --bg-sub: #fbf1e9;
-    --ink: #795c52;
-    --ink-soft: #a18478;
-    --line: #e8cfc1;
-    --pink: #d99aa0;
-    --pink-dark: #c9828c;
+  --bg-desk: #F4EFE6;
+  --bg-card: #FFFDF9;
+  --bg-sub: #FAF6EE;
+  --ink: #231F20;
+  --ink-soft: #6E635C;
+  --line: #E3D9C8;
+  --pink: #E58C9E;
+  --pink-dark: #D47286;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 body {
-    background-color: var(--bg-desk);
-    background-image: radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.82), transparent 42%), radial-gradient(ellipse at 85% 85%, rgba(225,183,170,.22), transparent 40%), repeating-linear-gradient(0deg, rgba(153,118,94,.025) 0 1px, transparent 1px 4px);
-    color: var(--ink);
-    padding: 14px;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    font-family: 'Caveat', 'Comic Neue', 'Patrick Hand', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    font-size: 16px;
-    user-select: none;
+  background-color: var(--bg-desk);
+  background-image: radial-gradient(#DFD6C7 1px, transparent 1px), radial-gradient(#E8E0D2 1px, #F4EFE6 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang TC", "Hiragino Sans GB", "Hiragino Kaku Gothic ProN", "Apple SD Gothic Neo", "Microsoft YaHei", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  user-select: none;
 }
 .app-shell {
-    width: 100%;
-    max-width: 1280px;
-    background: var(--bg-card);
-    border: 1px solid #e4c7b8;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    box-shadow: 0 18px 48px rgba(119,83,68,.14), inset 0 0 5px rgba(255,255,255,.58);
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.credit-bar {
-    background: #EFE7DA;
-    border-bottom: 1px solid #E1D6C5;
-    padding: 7px 12px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 800;
-    color: #3B322C;
-    letter-spacing: 0.4px;
+  width: 100%;
+  max-width: 1140px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 16px 36px -12px rgba(44, 38, 35, 0.14);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .top-nav {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    background: var(--bg-card);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-card);
+  z-index: 2;
 }
 .brand { display: flex; align-items: center; gap: 8px; }
 .brand-badge {
-    width: 36px; height: 36px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    background: var(--ink); color: #FFF;
-    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--ink); color: #FFF;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px;
 }
-.brand-title { font-size: 18px; font-weight: 900; letter-spacing: 0.8px; }
-.brand-sub { font-size: 12px; color: var(--ink-soft); }
+.brand-title { font-size: 12px; font-weight: 900; letter-spacing: 0.8px; }
+.brand-sub { font-size: 10px; color: var(--ink-soft); }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.lang-select {
+  background: #F5EAE6;
+  border: 1px solid #E5D0CA;
+  color: #654F4B;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+.lang-select:focus { outline: none; border-color: #B98289; }
 .mode-tabs {
-    display: flex; background: #F1EBE0; padding: 3px;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; border: 1px solid #E1D6C5;
+  display: flex; background: #F1EBE0; padding: 3px;
+  border-radius: 14px; border: 1px solid #E1D6C5;
 }
 .mode-btn {
-    border: none; background: transparent; color: var(--ink-soft);
-    padding: 6px 13px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 13px; font-weight: 800;
-    cursor: pointer; transition: 0.15s;
+  border: none; background: transparent; color: var(--ink-soft);
+  padding: 6px 13px; border-radius: 11px; font-size: 12px; font-weight: 800;
+  cursor: pointer; transition: 0.15s;
 }
 .mode-btn.active { background: var(--ink); color: #FFF; }
 .btn-export {
-    border: none; background: var(--pink); color: #FFF;
-    padding: 7px 14px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 13px; font-weight: 800;
-    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  border: none; background: var(--pink); color: #FFF;
+  padding: 7px 14px; border-radius: 12px; font-size: 12px; font-weight: 800;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
 }
 .btn-export:active { transform: scale(0.96); background: var(--pink-dark); }
+
 .workspace {
-    display: grid;
-    grid-template-columns: 1fr;
+  display: grid;
+  grid-template-columns: 1fr;
+  position: relative;
+  z-index: 1;
 }
 @media (min-width: 960px) {
-    .workspace { grid-template-columns: 1fr 1fr; }
+  .workspace { grid-template-columns: 1fr 1fr; }
 }
+
 .stage-col {
-    background: var(--bg-sub);
-    border-bottom: 1px solid var(--line);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+  background: var(--bg-sub);
+  border-bottom: 1px solid var(--line);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 @media (min-width: 960px) {
-    .stage-col { border-bottom: none; border-right: 1px solid var(--line); }
+  .stage-col { border-bottom: none; border-right: 1px solid var(--line); }
 }
 .stage-top-bar {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
 }
 .ratio-group {
-    display: inline-flex; background: #ECE4D6; padding: 2px;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; border: 1px solid #DDD2C0;
+  display: inline-flex; background: #ECE4D6; padding: 2px;
+  border-radius: 10px; border: 1px solid #DDD2C0;
 }
 .ratio-btn {
-    border: none; background: transparent; color: var(--ink-soft);
-    padding: 4px 9px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 12px; font-weight: 800; cursor: pointer;
+  border: none; background: transparent; color: var(--ink-soft);
+  padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;
 }
 .ratio-btn.active { background: var(--ink); color: #FFF; }
 .mini-act-btn {
-    border: 1px solid #D9CEBC; background: #FFFDF9; color: var(--ink);
-    padding: 4px 10px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 12px; font-weight: 800; cursor: pointer;
+  border: 1px solid #D9CEBC; background: #FFFDF9; color: var(--ink);
+  padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;
+  transition: 0.12s;
 }
+.mini-act-btn:disabled { opacity: 0.42; cursor: not-allowed; }
 .mini-act-btn.danger { background: #FDE8EC; border-color: #F3B8C5; color: #B84A58; }
 .stage-hint {
-    background: #EFE7DA; color: #5E544E;
-    padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; text-align: center;
+  background: #EFE7DA; color: #5E544E;
+  padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; text-align: center;
 }
 .canvas-holder {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
 }
-.aspect-1-1 { width: 100%; max-width: 395px; aspect-ratio: 1 / 1; }
-.aspect-3-4 { width: 80%; max-width: 320px; aspect-ratio: 3 / 4; }
-.aspect-4-3 { width: 100%; max-width: 420px; aspect-ratio: 4 / 3; }
+.aspect-1-1 { width: 100%; max-width: 375px; aspect-ratio: 1 / 1; }
+.aspect-3-4 { width: 80%; max-width: 300px; aspect-ratio: 3 / 4; }
+.aspect-4-3 { width: 100%; max-width: 400px; aspect-ratio: 4 / 3; }
 #stampCanvas {
-    width: 100%; height: 100%; display: block; touch-action: none;
-    filter: drop-shadow(0 12px 22px rgba(35, 31, 32, 0.16));
+  width: 100%; height: 100%; display: block; touch-action: none;
+  filter: drop-shadow(0 12px 22px rgba(35, 31, 32, 0.16));
 }
 .stage-footer {
-    width: 100%; padding-top: 12px; border-top: 1px solid var(--line);
-    display: flex; justify-content: center;
+  width: 100%; padding-top: 10px; border-top: 1px solid var(--line);
+  display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 .btn-export-big {
-    border: none; background: var(--ink); color: #FFF;
-    padding: 10px 20px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 13px; font-weight: 800; cursor: pointer;
+  border: none; background: var(--ink); color: #FFF;
+  padding: 9px 18px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;
 }
+.hd-toggle-lbl {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 800; color: var(--ink-soft);
+  background: #F4EAE4; border: 1px solid #E4D0CA;
+  padding: 6px 10px; border-radius: 999px; cursor: pointer;
+}
+
 .ctrl-col {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 @media (min-width: 960px) {
-    .ctrl-col { max-height: 84vh; overflow-y: auto; }
+  .ctrl-col { max-height: 84vh; overflow-y: auto; }
 }
+.ctrl-col::-webkit-scrollbar, .no-scroll::-webkit-scrollbar { display: none; }
+
 .card-box {
-    background: var(--bg-sub);
-    border: 1px dashed var(--pink);
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
+  background: var(--bg-sub);
+  border: 1px solid #E5DCCD;
+  border-radius: 16px;
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .card-head {
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
 }
-.card-title { font-size: 13px; font-weight: 900; color: var(--ink); }
+.card-title { font-size: 12px; font-weight: 900; color: var(--ink); }
 .row-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-.sub-lbl { font-size: 12px; font-weight: 700; color: #5E544E; }
+.sub-lbl { font-size: 11px; font-weight: 700; color: #5E544E; }
 .divider { height: 1px; background: #E5DCCD; width: 100%; }
 
-/* Animal / Stamp Selection grid with irregular hand-drawn borders */
 .animal-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
 }
 @media (min-width: 520px) {
-    .animal-grid { grid-template-columns: repeat(6, 1fr); }
+  .animal-grid { grid-template-columns: repeat(6, 1fr); }
 }
 .animal-btn {
-    border: 1px solid var(--pink);
-    background: #FFFDF9;
-    color: #4A413C;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    padding: 6px 3px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.12s;
+  border: 1px solid #E1D7C7;
+  background: #FFFDF9;
+  color: #4A413C;
+  border-radius: 10px;
+  padding: 5px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.12s;
 }
 .animal-btn.active {
-    background: var(--ink);
-    color: #FFF;
-    border-color: var(--ink);
-}
-.animal-thumb {
-    width: 40px; height: 40px; display: block; flex: 0 0 auto;
-}
-.animal-none-icon, .animal-photo-icon {
-    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;
-}
-.animal-btn span {
-    font-size: 11px; line-height: 1.15; margin-top: 3px; font-weight: 700; white-space: nowrap;
+  background: var(--ink);
+  color: #FFF;
+  border-color: var(--ink);
 }
 
-/* General UI Controls & Sliders */
-.swatch-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.animal-thumb {
+  width: 38px;
+  height: 38px;
+  display: block;
+  flex: 0 0 auto;
+}
+.animal-none-icon, .animal-photo-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+}
+.animal-btn span {
+  font-size: 10px;
+  line-height: 1.15;
+  margin-top: 2px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.swatch-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .swatch-dot {
-    width: 22px; height: 22px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    border: 1.5px solid #C8BCAE; cursor: pointer; transition: 0.12s;
+  width: 20px; height: 20px; border-radius: 999px;
+  border: 1.5px solid #C8BCAE; cursor: pointer; transition: 0.12s;
 }
 .swatch-dot.active {
-    transform: scale(1.12);
-    box-shadow: 0 0 2px #FFFDF9, 0 0 4px var(--ink);
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px #FFFDF9, 0 0 0 3.5px var(--ink);
 }
 .color-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 3px 8px 3px 4px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    background: #F4EFE6; border: 1px solid #D8CEBE;
-    font-size: 11px; font-family: monospace; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px 2px 3px; border-radius: 999px;
+  background: #F4EFE6; border: 1px solid #D8CEBE; cursor: pointer;
+  font-size: 10px; font-family: monospace; font-weight: 800;
 }
 .color-pill input[type="color"] {
-    -webkit-appearance: none; appearance: none;
-    width: 18px; height: 18px; border: none; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; padding: 0; background: transparent; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  width: 17px; height: 17px; border: none; border-radius: 999px; padding: 0; background: transparent; cursor: pointer;
 }
-input[type="range"] { -webkit-appearance: none; background: transparent; vertical-align: middle; height: 4px; background: #DDD3C3; border-radius: 999px; width: 100%; }
+.color-pill input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.color-pill input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(0,0,0,0.2); border-radius: 999px; }
+
+input[type="range"] { -webkit-appearance: none; background: transparent; vertical-align: middle; }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; background: #DDD3C3; border-radius: 999px;
+}
 input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    background: var(--ink); border: 2px solid #FFF; cursor: pointer;
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 999px;
+  background: var(--ink); border: 2px solid #FFF; margin-top: -5px; cursor: pointer;
 }
+
+.pill-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.pill-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.pill-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
 .opt-btn {
-    border: 1px solid var(--pink); background: #FFFDF9; color: var(--ink-soft);
-    padding: 6px 6px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 12px; font-weight: 800; cursor: pointer;
+  border: 1px solid #E1D7C7; background: #FFFDF9; color: var(--ink-soft);
+  padding: 5px 4px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;
 }
 .opt-btn.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
 
 .txt-input, .sel-input {
-    background: #FFFDF9; border: 1px solid #D8CEBE; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    padding: 8px 10px; font-size: 13px; font-weight: 700; color: var(--ink); font-family: inherit; width: 100%;
+  background: #FFFDF9; border: 1px solid #D8CEBE; border-radius: 10px;
+  padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--ink);
+  font-family: inherit;
 }
 .txt-input:focus, .sel-input:focus { outline: none; border-color: var(--ink); }
-textarea.txt-input { resize: none; line-height: 1.35; }
+textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
 
-/* Pixel perler beads specific tabs & grids */
-.bead-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 3px; }
+.bead-tabs {
+  display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px;
+}
 .bead-tab {
-    border: 1px solid var(--pink); background: #FFFDF9; color: var(--ink-soft);
-    padding: 5px 10px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer;
+  border: 1px solid #E1D7C7; background: #FFFDF9; color: var(--ink-soft);
+  padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800;
+  white-space: nowrap; cursor: pointer;
 }
 .bead-tab.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
 .bead-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 220px; overflow-y: auto; padding: 2px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
+  max-height: 210px; overflow-y: auto; padding: 2px;
 }
-@media (min-width: 520px) { .bead-grid { grid-template-columns: repeat(7, 1fr); } }
+@media (min-width: 520px) {
+  .bead-grid { grid-template-columns: repeat(7, 1fr); }
+}
 .bead-cell-btn {
-    border: 1px solid var(--pink); background: #FFFDF9; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    padding: 6px 3px; display: flex; flex-direction: column; align-items: center; cursor: pointer; font-size: 10px; font-family: monospace; font-weight: 800; color: var(--ink);
+  border: 1px solid #E1D7C7; background: #FFFDF9; border-radius: 9px;
+  padding: 4px 2px; display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; font-size: 9px; font-family: monospace; font-weight: 800; color: var(--ink);
 }
 .bead-cell-btn.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
-.bead-circle { width: 20px; height: 20px; border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; border: 1px solid #B8AAA0; margin-bottom: 3px; box-shadow: inset 0 0 1px rgba(255,255,255,0.65); }
-
+.bead-circle {
+  width: 18px; height: 18px; border-radius: 999px; border: 1px solid #B8AAA0; margin-bottom: 2px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.65);
+}
+.legend-preview {
+  width: 100%; background: #FFFDF9; border: 1px solid #E1D7C7; border-radius: 12px;
+  padding: 7px 9px; display: flex; flex-wrap: wrap; gap: 5px; max-height: 76px; overflow-y: auto;
+}
+.legend-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #FAF6EE; border: 1px solid #E3D9C8; border-radius: 7px;
+  padding: 2px 6px; font-size: 11px; font-family: monospace; font-weight: 800;
+}
+.hidden { display: none !important; }
 .toast {
-    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: #FFF; padding: 10px 20px; border-radius: 999px;
-    font-size: 13px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-    opacity: 0; pointer-events: none; transition: 0.25s; z-index: 99;
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #FFF; padding: 8px 18px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+  opacity: 0; pointer-events: none; transition: 0.25s; z-index: 99;
 }
 .toast.show { opacity: 1; }
+
+/* Mobile layout corrections */
+@media (max-width: 600px) {
+  body {
+    padding: 5px;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+  .app-shell {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+  .top-nav {
+    padding: 9px 10px;
+    gap: 7px;
+  }
+  .brand { min-width: 0; }
+  .brand-title { font-size: 11px; }
+  .brand-sub { font-size: 9px; }
+  .mode-tabs { max-width: 100%; }
+  .mode-btn { padding: 7px 9px; font-size: 11px; white-space: nowrap; }
+  .btn-export { padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+  .stage-col {
+    padding: 10px 9px;
+    gap: 8px;
+  }
+  .stage-top-bar { align-items: flex-start; }
+  .ratio-btn { padding: 6px 7px; font-size: 10px; white-space: nowrap; }
+  .stage-hint {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.4;
+    font-size: 10px;
+  }
+  .canvas-holder {
+    width: 100%;
+    min-width: 0;
+    padding: 2px 0;
+  }
+  #aspect-box {
+    width: min(86vw, 350px);
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+  .stage-col { justify-content: flex-start; }
+  .stage-footer { margin-top: 4px; flex: 0 0 auto; padding-top: 8px; }
+  .btn-export-big { max-width: 100%; padding: 9px 14px; font-size: 11px; }
+  .ctrl-col { padding: 10px 9px; }
+  .card-box { padding: 9px; }
+  .animal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 360px) {
+  .top-nav { justify-content: center; }
+  .mode-tabs { order: 3; width: 100%; justify-content: center; }
+  .btn-export { margin-left: auto; }
+  .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Mobile layout safeguards */
+@media (max-width: 600px) {
+  .app-shell, .main-shell, .workspace, .editor-layout { width:100%; max-width:100%; min-width:0; }
+  .card-box { min-width:0; }
+  .row-flex { flex-wrap:wrap; }
+  .pill-grid-5 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .pill-grid-3, .pill-grid-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .txt-input, .sel-input { min-width:0; max-width:100%; }
+  #stampCanvas { display:block; width:100%; height:100%; max-height:none; object-fit:fill; }
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  .app-shell, .workspace, .ctrl-col, #panel-pixel, #panel-hand, .card-box { min-width: 0; max-width: 100%; }
+  .workspace { display: flex; flex-direction: column; }
+  .stage-col { width: 100%; padding: 10px 8px; }
+  .ctrl-col { width: 100%; padding: 9px 7px; overflow: visible; }
+  .canvas-holder { width: 100%; padding: 2px 0; }
+  #aspect-box { width: min(88vw, 360px) !important; max-width: 100%; }
+  .bead-tabs { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .bead-grid { width: 100%; max-width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .bead-cell-btn { min-width: 0; padding: 4px 1px; font-size: 8px; }
+  .bead-circle { width: 15px; height: 15px; }
+  .pill-grid-4, .pill-grid-5, .pill-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-head > * { min-width: 0; }
+  .row-flex { min-width: 0; }
+  .color-pill { max-width: 100%; }
+  #pixel-legend-box { width: 100%; }
+  #rng-grid-size { min-width: 0; }
+}
+@media (max-width: 380px) {
+  .bead-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ratio-btn { padding: 4px 6px; font-size: 10px; }
+  .stage-top-bar { justify-content: center; }
+}
+
+/* V2.1 editor controls and mobile-safe aspect sizing */
+#aspect-box { position:relative; flex:0 0 auto; }
+#stampCanvas { width:100%; height:100%; touch-action:none; display:block; }
+.stage-col { justify-content:flex-start; }
+.stage-footer { margin-top:6px; flex:0 0 auto; }
+#btn-convert-image:disabled { opacity:.45; cursor:not-allowed; }
+@media (max-width:600px) {
+  .stage-col { height:auto; min-height:0; }
+  .canvas-holder { flex:0 0 auto; }
+  #aspect-box.aspect-1-1 { width:min(86vw,350px) !important; aspect-ratio:1 / 1; }
+  #aspect-box.aspect-3-4 { width:min(86vw,350px) !important; aspect-ratio:3 / 4; }
+  #aspect-box.aspect-4-3 { width:min(92vw,390px) !important; aspect-ratio:4 / 3; }
+  .stage-footer { position:static; width:100%; }
+}
+
+/* V2.3 · French lace stationery visual skin */
+:root {
+  --bg-desk: #F5EEE9;
+  --bg-card: #FFFCF8;
+  --bg-sub: #FBF5F1;
+  --ink: #51413F;
+  --ink-soft: #8A7470;
+  --line: #E6D2CC;
+  --pink: #C98F98;
+  --pink-dark: #B77B86;
+}
+.top-nav {
+  background: linear-gradient(180deg,#FFFCF8,#FBF4F0);
+  border-bottom: 1px solid #E7D4CE;
+  position: relative;
+}
+.top-nav::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -4px; height: 7px;
+  background: radial-gradient(circle at 5px 0, transparent 4px, #E5CFC9 4.5px, #E5CFC9 5px, transparent 5.5px) repeat-x;
+  background-size: 10px 7px; opacity: .72; pointer-events: none;
+}
+.brand-badge {
+  background: #B98289; color: #FFF9F6; border-radius: 50%;
+  box-shadow: 0 0 0 3px #F8EAE6, 0 0 0 4px #DABCB7;
+}
+.brand-title { color: #654F4B; letter-spacing: 1.25px; }
+.brand-sub { color: #9A817A; }
+.mode-tabs { background: #F5EAE6; border-color: #E5D0CA; border-radius: 999px; }
+.mode-btn { border-radius: 999px; }
+.mode-btn.active { background: #B98289; color: #FFF; box-shadow: 0 2px 6px rgba(120,76,78,.16); }
+.btn-export { background: #B98289; border-radius: 999px; box-shadow: 0 3px 8px rgba(120,76,78,.13); }
+.btn-export:active { background: #A96F79; }
+.stage-col { background: #F9F1ED; }
+.ratio-group { background: #F2E6E1; border-color: #E4D0CA; border-radius: 999px; }
+.ratio-btn { border-radius: 999px; }
+.ratio-btn.active { background: #80666A; }
+.stage-hint {
+  color: #866F6B; background: #F2E5E1; border: 1px solid #E7D1CB;
+  border-radius: 999px;
+}
+#stampCanvas { filter: drop-shadow(0 12px 20px rgba(107,76,72,.13)); }
+.card-box {
+  position: relative;
+  background: linear-gradient(145deg,#FFFCF9,#FBF4F0);
+  border: 1px solid #E4CEC8;
+  border-radius: 17px;
+  box-shadow: 0 3px 10px rgba(120,87,80,.045), inset 0 0 0 3px rgba(255,255,255,.72);
+}
+.card-box::before {
+  content: ""; position: absolute; inset: 5px; border: 1px dotted rgba(190,143,145,.42);
+  border-radius: 12px; pointer-events: none;
+}
+.card-head, .row-flex, .animal-grid, .swatch-row, .divider, .pill-grid-3, .pill-grid-4, .pill-grid-5,
+.card-box > textarea, .card-box > .txt-input, .card-box > .bead-tabs, .card-box > .bead-grid { position: relative; }
+.card-title { color: #715A56; letter-spacing: .25px; }
+.sub-lbl { color: #907A74; }
+.divider { background: #EAD9D3; }
+.animal-btn, .opt-btn, .mini-act-btn, .txt-input, .sel-input, .bead-tab, .bead-cell-btn {
+  border-color: #E4D1CB; background-color: #FFFCF9; color: #725D59;
+}
+.animal-btn { border-radius: 13px; }
+.animal-btn.active, .opt-btn.active, .bead-tab.active, .bead-cell-btn.active {
+  background: #80666A; color: #FFF9F6; border-color: #80666A;
+}
+.opt-btn, .mini-act-btn, .txt-input, .sel-input { border-radius: 12px; }
+.color-pill { background: #F7ECE8; border-color: #E4D0CA; color: #806A65; }
+.swatch-dot.active { box-shadow: 0 0 0 2px #FFFCF9, 0 0 0 3.5px #B98289; }
+input[type="range"]::-webkit-slider-runnable-track { background: #E7D4CE; }
+input[type="range"]::-webkit-slider-thumb { background: #B98289; }
+.bead-grid { scrollbar-color: #D8B9B4 #F8EFEB; }
+.legend-preview { background: #FFFCF9; border-color: #E4D1CB; }
+.legend-chip { background: #F8EFEB; border-color: #EAD8D2; }
+.btn-export-big { background: #80666A; border-radius: 999px; box-shadow: 0 3px 9px rgba(107,76,72,.12); }
+.stage-footer { border-top-color: #E7D4CE; }
+.toast { background: #80666A; }
+@media (max-width: 600px) {
+  .app-shell { border-radius: 20px; }
+  .card-box::before { inset: 4px; }
+}
+
+/* v3.0 · French vintage lace atelier skin */
+:root {
+  --bg-desk:#f4e9df; --bg-card:#fff9f2; --bg-sub:#fbf1e9;
+  --ink:#795c52; --ink-soft:#a18478; --line:#e8cfc1;
+  --pink:#d99aa0; --pink-dark:#c9828c;
+}
+body {
+  background-color:#f4e9df;
+  background-image:radial-gradient(ellipse at 15% 10%,rgba(255,255,255,.82),transparent 42%),radial-gradient(ellipse at 85% 85%,rgba(225,183,170,.22),transparent 40%),repeating-linear-gradient(0deg,rgba(153,118,94,.025) 0 1px,transparent 1px 4px);
+  color:var(--ink); padding:14px;
+}
+.app-shell {
+  position:relative; isolation:isolate; max-width:1280px; border:1px solid #e4c7b8; border-radius:22px;
+  background:linear-gradient(145deg,#fffaf4 0%,#fff6ef 48%,#fffaf5 100%);
+  box-shadow:0 18px 48px rgba(119,83,68,.14),inset 0 0 0 5px rgba(255,255,255,.58);
+}
+/* Decorative floral scalloped lace trim (pure vector SVG data URI) */
+.app-shell::after {
+  content:""; display:block; height:14px; width:100%; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='14' viewBox='0 0 36 14'%3E%3Cpath d='M0 0 Q9 13 18 0 Q27 13 36 0' fill='none' stroke='%23d9b5ae' stroke-width='1.2'/%3E%3Ccircle cx='9' cy='4.5' r='1.4' fill='%23d9b5ae'/%3E%3Ccircle cx='27' cy='4.5' r='1.4' fill='%23d9b5ae'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;
+  background-position:center bottom;
+  opacity:0.65;
+}
 </style>
 </head>
 <body>
+
 <div class="app-shell">
-  <div class="credit-bar">Stamp Studio · 法式蕾丝邮票工坊 v2.8 (手绘异形版)</div>
-  <div class="top-nav">
+  <!-- 顶部栏 -->
+  <header class="top-nav">
     <div class="brand">
-      <div class="brand-badge">S</div>
+      <div class="brand-badge">♡</div>
       <div>
         <div class="brand-title">Stamp Studio</div>
-        <div class="brand-sub">法式复古邮票与像素拼豆工坊</div>
+        <div class="brand-sub" data-i18n="brandSub">法式蕾丝邮票工坊 · v3.0</div>
       </div>
     </div>
-    <div class="mode-tabs">
-      <button class="mode-btn active" data-mode="stamp">邮票创作</button>
-      <button class="mode-btn" data-mode="beads">像素拼豆</button>
-    </div>
-    <button class="btn-export" id="topExportBtn">📥 导出作品</button>
-  </div>
 
+    <div class="mode-tabs">
+      <button class="mode-btn active" id="tab-hand" onclick="switchMode('hand')" data-i18n="tabHand">可爱邮票</button>
+      <button class="mode-btn" id="tab-pixel" onclick="switchMode('pixel')" data-i18n="tabPixel">像素拼豆</button>
+    </div>
+
+    <div class="nav-right">
+      <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" aria-label="Language">
+        <option value="zh-CN">简体中文</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+      <button class="btn-export" onclick="exportPNG()" data-i18n="btnExportTop">导出高清 PNG</button>
+    </div>
+  </header>
+
+  <!-- 主工作区 -->
   <div class="workspace">
-    <!-- 左侧预览区 -->
-    <div class="stage-col">
+    <!-- 左侧画布舞台 -->
+    <section class="stage-col">
       <div class="stage-top-bar">
-        <div class="ratio-group" id="ratioGroup">
-          <button class="ratio-btn active" data-ratio="1-1">1:1 正方形</button>
-          <button class="ratio-btn" data-ratio="3-4">3:4 竖版</button>
-          <button class="ratio-btn" data-ratio="4-3">4:3 横版</button>
+        <div class="ratio-group">
+          <button class="ratio-btn active" data-r="1:1" onclick="setRatio('1:1')" data-i18n="ratio11">1:1 正方</button>
+          <button class="ratio-btn" data-r="3:4" onclick="setRatio('3:4')" data-i18n="ratio34">3:4 竖版</button>
+          <button class="ratio-btn" data-r="4:3" onclick="setRatio('4:3')" data-i18n="ratio43">4:3 横版</button>
         </div>
-        <div class="sub-lbl" id="canvasInfo">尺寸: 800 × 800 px</div>
+
+        <div id="hand-stage-btns" style="display:flex;gap:5px;flex-wrap:wrap;">
+          <button class="mini-act-btn" id="btn-hand-undo" onclick="undoHand()" disabled data-i18n="btnUndo">↶ 撤销</button>
+          <button class="mini-act-btn" id="btn-hand-redo" onclick="redoHand()" disabled data-i18n="btnRedo">↷ 重做</button>
+          <button class="mini-act-btn" onclick="resetPositions()" data-i18n="btnResetPos">一键归位</button>
+          <button class="mini-act-btn danger" onclick="resetAllStudio()" data-i18n="btnResetAll">重置</button>
+        </div>
       </div>
-      <div class="stage-hint" id="stageHint">点击下方动物或自定义上传来妆点您的作品</div>
+
+      <div class="stage-hint" id="stage-hint" data-i18n="hintHand">点选对象后拖动移动：左上角删除 · 左下角缩放 · 右下角旋转</div>
+
       <div class="canvas-holder">
         <div id="aspect-box" class="aspect-1-1">
-          <canvas id="stampCanvas" width="800" height="800"></canvas>
+          <canvas id="stampCanvas" width="1080" height="1080"></canvas>
         </div>
       </div>
+
+      <!-- 拼豆色号统计条 -->
+      <div id="pixel-legend-box" class="legend-preview hidden"></div>
+
       <div class="stage-footer">
-        <button class="btn-export-big" id="bottomExportBtn">✨ 生成高清图像并下载</button>
+        <label class="hd-toggle-lbl" title="2x Ultra HD Export">
+          <input type="checkbox" id="chk-uhd" checked style="accent-color:#B98289;">
+          <span data-i18n="chkUhd">2× 超清导出</span>
+        </label>
+        <button class="btn-export-big" onclick="exportPNG()" data-i18n="btnExportBig">保存无水印高清 PNG 图片</button>
       </div>
-    </div>
+    </section>
 
-    <!-- 右侧控制区 -->
-    <div class="ctrl-col" id="ctrlCol">
-      <!-- 邮票模式控制区 -->
-      <div id="panelStamp" class="card-box">
-        <div class="card-head">
-          <div class="card-title">🐾 核心小动物与花边元素</div>
-          <div class="sub-lbl">点击切换主题</div>
-        </div>
-        <div class="animal-grid" id="animalGrid">
-          <!-- 动态生成动物选项 -->
+    <!-- 右侧控制面板 -->
+    <section class="ctrl-col">
+      <!-- ==================== 模式 A：手绘治愈邮票 ==================== -->
+      <div id="panel-hand" style="display:flex;flex-direction:column;gap:10px;">
+        <!-- 1. 15款原版手绘小动物 & 照片 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c1Title">1. 选择手绘小动物 (15款) 或上传照片</span>
+            <span style="font-size:11px;color:#8A7B70;" data-i18n="c1Sub">在画布控制框上调整大小与角度</span>
+          </div>
+
+          <div class="animal-grid" id="animal-grid"></div>
+
+          <div class="divider"></div>
+          <div class="row-flex">
+            <span class="sub-lbl" data-i18n="lblInkColor">描边线条色:</span>
+            <div class="swatch-row" id="sw-ink"></div>
+            <label class="color-pill"><input type="color" id="pk-ink" value="#231F20" onchange="pushHandHistory()" oninput="setColor('inkColor', this.value, 'hx-ink')"><span id="hx-ink">#231F20</span></label>
+          </div>
+
+          <div class="divider"></div>
+          <div class="row-flex">
+            <label class="mini-act-btn" style="background:#231F20;color:#FFF;border-color:#231F20;">
+              <span data-i18n="btnUploadPhoto">上传相册照片</span>
+              <input type="file" accept="image/*" onchange="onUploadPhoto(event)" style="display:none;">
+            </label>
+            <label style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;cursor:pointer;">
+              <input type="checkbox" id="chk-sketch" checked onchange="pushHandHistory(); setHand('sketchFilter', this.checked)" style="width:15px;height:15px;accent-color:#231F20;">
+              <span data-i18n="lblSketchFilter">黑白手绘线稿滤镜</span>
+            </label>
+          </div>
         </div>
 
-        <div class="divider"></div>
-        <div class="card-title">📤 自定义图片上传</div>
-        <div class="row-flex">
-          <input type="file" id="customImgUpload" accept="image/*" style="display:none">
-          <button class="opt-btn" id="uploadImgBtn" style="flex:1">📁 选择本地图片</button>
-          <button class="opt-btn danger" id="clearImgBtn">清除图片</button>
+        <!-- 2. 纸张底色、外齿框色与底纹 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c2Title">2. 邮票纸张色与底纹</span>
+            <label class="color-pill"><input type="color" id="pk-paper" value="#F8D8F0" onchange="pushHandHistory()" oninput="setColor('paperColor', this.value, 'hx-paper')"><span id="hx-paper">#F8D8F0</span></label>
+          </div>
+          <div class="swatch-row" id="sw-paper"></div>
+
+          <div class="divider"></div>
+          <div class="row-flex">
+            <span class="sub-lbl" data-i18n="lblBorderColor">外齿白边色:</span>
+            <div class="swatch-row" id="sw-border"></div>
+            <label class="color-pill"><input type="color" id="pk-border" value="#FFFFFF" onchange="pushHandHistory()" oninput="setColor('borderColor', this.value, 'hx-border')"><span id="hx-border">#FFFFFF</span></label>
+          </div>
+
+          <div class="divider"></div>
+          <div class="pill-grid-5">
+            <button class="opt-btn" data-pat="none" onclick="setPattern('none')" data-i18n="patNone">纯色无纹</button>
+            <button class="opt-btn active" data-pat="dots" onclick="setPattern('dots')" data-i18n="patDots">波点</button>
+            <button class="opt-btn" data-pat="stripes" onclick="setPattern('stripes')" data-i18n="patStripes">斜条纹</button>
+            <button class="opt-btn" data-pat="vertical" onclick="setPattern('vertical')" data-i18n="patVertical">竖条纹</button>
+            <button class="opt-btn" data-pat="grid" onclick="setPattern('grid')" data-i18n="patGrid">方格本</button>
+          </div>
+          <div class="row-flex">
+            <div class="swatch-row" id="sw-pat"></div>
+            <label class="color-pill"><input type="color" id="pk-pat" value="#FFFFFF" onchange="pushHandHistory()" oninput="setColor('patternColor', this.value, 'hx-pat')"><span id="hx-pat">#FFFFFF</span></label>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6E635C;">
+              <span data-i18n="lblOpacity">浓度</span><input type="range" id="rng-pat-op" min="15" max="100" value="75" onchange="pushHandHistory()" oninput="setHand('patternOpacity', +this.value)" style="width:55px;">
+            </div>
+          </div>
         </div>
 
-        <!-- 像素拼豆区 / 上传图片调整大小面板 -->
-        <div class="divider"></div>
-        <div class="card-title">🎚️ 图片缩放与位置调整</div>
-        <div class="row-flex">
-          <span class="sub-lbl">缩放大小 (Scale)</span>
-          <span id="scaleVal" class="sub-lbl">100%</span>
-        </div>
-        <input type="range" id="imgScaleRange" min="20" max="300" value="100">
+        <!-- 3. 手绘马克笔文字与免费商用安全字体 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c3Title">3. 治愈文字与手绘字体</span>
+            <select class="sel-input" id="sel-font" onchange="pushHandHistory(); setHand('fontStyle', this.value)">
+              <option value="Gaegu" data-i18n="fontGaegu">呆萌手写体</option>
+              <option value="Indie Flower" data-i18n="fontIndie">随笔涂鸦体</option>
+              <option value="Caveat" data-i18n="fontCaveat">连笔手写体</option>
+              <option value="Amatic SC" data-i18n="fontAmatic">窄体手绘字</option>
+              <option value="Architects Daughter" data-i18n="fontArch">建筑师手写体</option>
+              <option value="Comic Neue" data-i18n="fontComic">圆润漫画体</option>
+              <option value="Gloria Hallelujah" data-i18n="fontGloria">随性笔记体</option>
+              <option value="Gochi Hand" data-i18n="fontGochi">活泼手写体</option>
+              <option value="Kalam" data-i18n="fontKalam">自然笔迹体</option>
+              <option value="Nanum Pen Script" data-i18n="fontNanum">韩系手写体</option>
+              <option value="Patrick Hand" data-i18n="fontPatrick">清爽手写体</option>
+              <option value="Permanent Marker" data-i18n="fontMarker">马克笔粗体</option>
+              <option value="Reenie Beanie" data-i18n="fontReenie">细线潦草体</option>
+              <option value="Shadows Into Light" data-i18n="fontShadows">轻盈手写体</option>
+              <option value="Ma Shan Zheng" data-i18n="fontMaShan">中文毛笔体</option>
+              <option value="ZCOOL KuaiLe" data-i18n="fontZcool">中文快乐体</option>
+            </select>
+          </div>
 
-        <div class="divider"></div>
-        <div class="card-title">✍️ 邮票齿孔与边框样式</div>
-        <div class="row-flex">
-          <span class="sub-lbl">齿孔密度</span>
-          <input type="range" id="perforationsRange" min="10" max="60" value="28" style="width: 140px;">
+          <div class="row-flex">
+            <div class="ratio-group">
+              <button class="ratio-btn" data-al="left" onclick="setAlign('left')" data-i18n="alignLeft">左对齐</button>
+              <button class="ratio-btn active" data-al="center" onclick="setAlign('center')" data-i18n="alignCenter">居中</button>
+              <button class="ratio-btn" data-al="right" onclick="setAlign('right')" data-i18n="alignRight">右对齐</button>
+            </div>
+            <span style="font-size:11px;color:#8A7B70;" data-i18n="c3Sub">在画布控制框上拖动圆点即可缩放、旋转</span>
+          </div>
+
+          <textarea class="txt-input" id="txt-stamp-text" rows="2" maxlength="60" onfocus="pushHandHistory()" oninput="setHand('text', this.value)">I CAN'T TAKE
+THIS CUTENESS</textarea>
+
+          <div class="row-flex">
+            <span class="sub-lbl" data-i18n="lblTextColor">文字颜色:</span>
+            <div class="swatch-row" id="sw-text"></div>
+            <label class="color-pill"><input type="color" id="pk-text" value="#231F20" onchange="pushHandHistory()" oninput="setColor('textColor', this.value, 'hx-text')"><span id="hx-text">#231F20</span></label>
+          </div>
+        </div>
+
+        <!-- 4. 手绘涂鸦线条贴纸（精选十款） -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c4Title">4. 手绘线条贴纸（精选 10 款，点击添加后可拖动）</span>
+            <span style="font-size:11px;color:#8A7B70;" data-i18n="c4Sub">大小与角度在画布控制框上调整</span>
+          </div>
+          <div class="pill-grid-5" id="sticker-grid"></div>
+        </div>
+
+        <!-- 5. 复古日期邮戳 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c5Title">5. 复古日期邮戳</span>
+            <button class="opt-btn active" id="btn-tog-pm" onclick="toggleSub('postmark')">已开启 ON</button>
+          </div>
+          <div class="pill-grid-3">
+            <button class="opt-btn active" data-pm="wave" onclick="setPmType('wave')" data-i18n="pmWave">波浪邮戳</button>
+            <button class="opt-btn" data-pm="round" onclick="setPmType('round')" data-i18n="pmRound">双环圆戳</button>
+            <button class="opt-btn" data-pm="star" onclick="setPmType('star')" data-i18n="pmStar">星星邮戳</button>
+          </div>
+          <div class="pill-grid-3">
+            <input class="txt-input" id="inp-pm-top" value="CUTE MAIL" maxlength="16" onfocus="pushHandHistory()" oninput="setSub('postmark','top',this.value)">
+            <input class="txt-input" id="inp-pm-date" value="2026.11.14" maxlength="14" onfocus="pushHandHistory()" oninput="setSub('postmark','date',this.value)" style="text-align:center;">
+            <input class="txt-input" id="inp-pm-bot" value="LOVE POST" maxlength="16" onfocus="pushHandHistory()" oninput="setSub('postmark','bot',this.value)">
+          </div>
+          <div class="row-flex">
+            <div class="swatch-row" id="sw-pm"></div>
+            <label class="color-pill"><input type="color" id="pk-pm" value="#B84A58" onchange="pushHandHistory()" oninput="setSubColor('postmark','color',this.value,'hx-pm')"><span id="hx-pm">#B84A58</span></label>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6E635C;">
+              <span data-i18n="lblSize">大小</span><input type="range" id="rng-pm-scale" min="55" max="145" value="88" onchange="pushHandHistory()" oninput="setSub('postmark','scale',+this.value/100)" style="width:52px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. 趣味面值角标 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c6Title">6. 趣味面值角标</span>
+            <button class="opt-btn active" id="btn-tog-bg" onclick="toggleSub('badge')">已开启 ON</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="display:flex;flex-direction:column;gap:5px;min-width:0;">
+              <select class="sel-input" id="sel-badge-preset" onchange="if(this.value) { pushHandHistory(); document.getElementById('badge-custom').value=this.value; setSub('badge','text',this.value); }">
+                <option value="" data-i18n="badgePresetPlaceholder">选择面值预设</option>
+                <option>100% CUTE</option>
+                <option>LOVE 2026</option>
+                <option>HAPPY MAIL</option>
+                <option data-i18n="badgePreset1">小小心意</option>
+                <option data-i18n="badgePreset2">特别投递</option>
+                <option data-i18n="badgePreset3">限量珍藏</option>
+                <option>JUST FOR YOU</option>
+              </select>
+              <input id="badge-custom" class="txt-input" value="100% CUTE" maxlength="20" data-i18n-placeholder="badgeCustomPlaceholder" placeholder="也可以自己输入" onfocus="pushHandHistory()" oninput="setSub('badge','text',this.value)">
+            </div>
+            <div class="pill-grid-3">
+              <button class="opt-btn" data-bs="none" onclick="setBgShape('none')" data-i18n="bsNone">无框</button>
+              <button class="opt-btn active" data-bs="box" onclick="setBgShape('box')" data-i18n="bsBox">方框</button>
+              <button class="opt-btn" data-bs="oval" onclick="setBgShape('oval')" data-i18n="bsOval">椭圆</button>
+            </div>
+          </div>
+          <div class="row-flex">
+            <span class="sub-lbl" data-i18n="lblBadgeColor">角标颜色:</span>
+            <div class="swatch-row" id="sw-bg"></div>
+            <label class="color-pill"><input type="color" id="pk-bg" value="#231F20" onchange="pushHandHistory()" oninput="setSubColor('badge','color',this.value,'hx-bg')"><span id="hx-bg">#231F20</span></label>
+          </div>
+        </div>
+
+        <!-- 7. 自由手绘涂鸦笔 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="c7Title">7. 自由手绘涂鸦画笔</span>
+            <button class="opt-btn" id="btn-doodle" onclick="toggleDoodle()">涂鸦画笔: OFF</button>
+          </div>
+          <div class="row-flex">
+            <div class="swatch-row" id="sw-brush"></div>
+            <label class="color-pill"><input type="color" id="pk-brush" value="#231F20" oninput="setColor('brushColor', this.value, 'hx-brush')"><span id="hx-brush">#231F20</span></label>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6E635C;">
+              <span data-i18n="lblThickness">粗细</span><input type="range" id="rng-brush-sz" min="3" max="20" value="6" oninput="setHand('brushSize', +this.value)" style="width:52px;">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <button class="opt-btn" onclick="undoDoodle()" data-i18n="btnUndoDoodle">撤销上一步涂鸦</button>
+            <button class="opt-btn" style="background:#FDE8EC;color:#B84A58;border-color:#F3B8C5;" onclick="clearDoodle()" data-i18n="btnClearDoodle">清空涂鸦</button>
+          </div>
         </div>
       </div>
 
-      <!-- 像素拼豆模式控制区 -->
-      <div id="panelBeads" class="card-box" style="display:none;">
-        <div class="card-head">
-          <div class="card-title">🎨 像素拼豆转换区</div>
-          <div class="sub-lbl">支持任意图片转拼豆图纸</div>
+      <!-- ==================== 模式 B：拼豆像素 DIY ==================== -->
+      <div id="panel-pixel" class="hidden" style="flex-direction:column;gap:10px;">
+        <!-- 1. 格子数与图纸切换 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="p1Title">1. 自定义格子数量 (8×8 ~ 52×52)</span>
+            <span id="lbl-grid-dim" style="font-size:12px;font-family:monospace;font-weight:900;color:#B84A58;">24 × 24 格</span>
+          </div>
+          <input type="range" id="rng-grid-size" min="8" max="52" value="24" oninput="resizePixelGrid(+this.value)" style="width:100%;">
+          <div class="row-flex" style="justify-content:space-between;gap:8px;flex-wrap:wrap;margin:8px 0;">
+            <span class="sub-lbl" data-i18n="lblPixelBorder">像素邮票齿孔边框颜色</span>
+            <label class="color-pill"><input type="color" id="pk-pixel-border" value="#FFFFFF" oninput="setPixelBorder(this.value)"><span id="hx-pixel-border">#FFFFFF</span></label>
+            <span class="sub-lbl" data-i18n="lblPixelInner">内框颜色</span>
+            <label class="color-pill"><input type="color" id="pk-pixel-inner" value="#F8D8F0" oninput="setPixelInner(this.value)"><span id="hx-pixel-inner">#F8D8F0</span></label>
+          </div>
+          <button class="opt-btn active" id="btn-tog-grid" onclick="togglePixelGrid()" style="padding:8px;font-size:12px;">
+            显示网格、色号与底部统计: ON (关闭即变像素邮票)
+          </button>
         </div>
-        <div class="row-flex">
-          <span class="sub-lbl">拼豆网格密度</span>
-          <input type="range" id="beadGridSize" min="16" max="64" value="32" style="width: 140px;">
-        </div>
-        <div class="bead-tabs" id="beadPaletteTabs">
-          <button class="bead-tab active" data-palette="perler">Perler 经典色系</button>
-          <button class="bead-tab" data-palette="artkal">Artkal 莫兰迪色</button>
-        </div>
-        <div class="sub-lbl">点击色块可进行点阵微调修补</div>
-      </div>
 
-    </div>
+        <!-- 2. 上传图片，一键转换为拼豆图纸 -->
+        <div class="card-box" id="image-to-beads-card">
+          <div class="card-head">
+            <span class="card-title" data-i18n="p2Title">2. 上传图片转换拼豆图纸</span>
+            <span style="font-size:10px;color:#6E635C;font-weight:700;" data-i18n="p2Sub">本地处理，不上传</span>
+          </div>
+          <label class="mini-act-btn" style="display:flex;align-items:center;justify-content:center;padding:9px;cursor:pointer;">
+            <span data-i18n="btnChoosePixelImg">选择图片（PNG / JPG / WEBP）</span>
+            <input id="pixel-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;" onchange="choosePixelImage(event)">
+          </label>
+          <div id="pixel-image-status" style="font-size:11px;color:#6E635C;line-height:1.45;" data-i18n="p2Hint">上传后先在右侧画布上拖动照片调整位置，再按当前格子数量和 221 色 MARD 色卡自动配色；透明区域会保留为空格。</div>
+          <button class="opt-btn active" id="btn-convert-image" onclick="convertImageToBeads()" disabled style="padding:9px;font-size:12px;" data-i18n="btnConvertBeads">一键转换成拼豆图纸</button>
+        </div>
+
+        <!-- 3. 填色工具 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="p3Title">3. 拼豆格子涂鸦工具</span>
+            <button class="opt-btn" id="btn-mirror" onclick="toggleMirror()">左右对称画笔: OFF</button>
+          </div>
+          <div class="pill-grid-4">
+            <button class="opt-btn active" data-tl="brush" onclick="setPixelTool('brush')" data-i18n="tlBrush">画笔点涂</button>
+            <button class="opt-btn" data-tl="bucket" onclick="setPixelTool('bucket')" data-i18n="tlBucket">油漆桶</button>
+            <button class="opt-btn" data-tl="eraser" onclick="setPixelTool('eraser')" data-i18n="tlEraser">橡皮擦</button>
+            <button class="opt-btn" data-tl="picker" onclick="setPixelTool('picker')" data-i18n="tlPicker">吸管取色</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <button class="opt-btn" onclick="undoPixel()" data-i18n="btnUndoPixel">撤销上一步</button>
+            <button class="opt-btn" style="background:#FDE8EC;color:#B84A58;border-color:#F3B8C5;" onclick="clearPixel()" data-i18n="btnClearPixel">清空所有格子</button>
+          </div>
+        </div>
+
+        <!-- 4. 完整 221 色 MARD 色卡 -->
+        <div class="card-box">
+          <div class="card-head">
+            <span class="card-title" data-i18n="p4Title">4. 完整 221 色 MARD 色卡</span>
+            <div style="display:flex;align-items:center;gap:5px;">
+              <span id="cur-bead-badge" style="font-size:11px;font-weight:900;background:#EFE7DA;padding:2px 8px;border-radius:7px;">H2 #FFFFFF</span>
+              <label class="color-pill"><input type="color" id="pk-bead" value="#FFFFFF" oninput="setCustomBead(this.value)"><span id="hx-bead">#FFFFFF</span></label>
+            </div>
+          </div>
+          <input class="txt-input" id="inp-search-bead" data-i18n-placeholder="searchBeadPlaceholder" placeholder="输入色号快速查找，例如 F4 / H1 / C24 / E8..." oninput="searchBeads(this.value)">
+          <div class="bead-tabs no-scroll" id="bead-tabs"></div>
+          <div class="bead-grid no-scroll" id="bead-grid"></div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
-<div class="toast" id="toastMsg">操作成功</div>
+<div class="toast" id="toast">已保存</div>
 
 <script>
-// 基础逻辑框架
-const canvas = document.getElementById('stampCanvas');
-const ctx = canvas.getContext('2d');
-let currentMode = 'stamp';
-let currentRatio = '1-1';
-let currentAnimal = 'rabbit';
-let customImage = null;
-let imgScale = 1;
-let imgX = 0, imgY = 0;
-let perfCount = 28;
-
-// 动物列表与SVG小图标/路径定义
-const animals = [
-  { id: 'rabbit', name: '小兔', icon: '🐰' },
-  { id: 'cat', name: '小猫', icon: '🐱' },
-  { id: 'bear', name: '小熊', icon: '🐻' },
-  { id: 'fox', name: '小狐', icon: '🦊' },
-  { id: 'deer', name: '小鹿', icon: '🦌' },
-  { id: 'duck', name: '小鸭', icon: '🦆' },
-  { id: 'bird', name: '小鸟', icon: '🐦' },
-  { id: 'custom', name: '自定义', icon: '📁' },
-  { id: 'none', name: '无动物', icon: '✨' }
-];
-
-function initAnimalGrid() {
-  const grid = document.getElementById('animalGrid');
-  grid.innerHTML = '';
-  animals.forEach(a => {
-    const btn = document.createElement('button');
-    btn.className = `animal-btn ${a.id === currentAnimal ? 'active' : ''}`;
-    btn.innerHTML = `<div class="animal-none-icon">${a.icon}</div><span>${a.name}</span>`;
-    btn.onclick = () => {
-      document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentAnimal = a.id;
-      if (a.id === 'custom') {
-        document.getElementById('customImgUpload').click();
-      } else {
-        drawCanvas();
+(function() {
+  // ==================== 5-Language I18N Dictionary ====================
+  const I18N = {
+    'zh-CN': {
+      brandSub: '法式蕾丝邮票工坊 · v3.0',
+      tabHand: '可爱邮票',
+      tabPixel: '像素拼豆',
+      btnExportTop: '导出高清 PNG',
+      ratio11: '1:1 正方',
+      ratio34: '3:4 竖版',
+      ratio43: '4:3 横版',
+      btnUndo: '↶ 撤销',
+      btnRedo: '↷ 重做',
+      btnResetPos: '一键归位',
+      btnResetAll: '重置',
+      hintHand: '点选对象后拖动移动：左上角删除 · 左下角缩放 · 右下角旋转',
+      hintPixel: '上传照片后可直接在画布上拖动调整位置，再转换为拼豆图纸',
+      chkUhd: '2× 超清导出',
+      btnExportBig: '保存无水印高清 PNG 图片',
+      c1Title: '1. 选择手绘小动物 (15款) 或上传照片',
+      c1Sub: '在画布控制框上调整大小与角度',
+      lblInkColor: '描边线条色:',
+      btnUploadPhoto: '上传相册照片',
+      lblSketchFilter: '黑白手绘线稿滤镜',
+      c2Title: '2. 邮票纸张色与底纹',
+      lblBorderColor: '外齿白边色:',
+      patNone: '纯色无纹',
+      patDots: '波点',
+      patStripes: '斜条纹',
+      patVertical: '竖条纹',
+      patGrid: '方格本',
+      lblOpacity: '浓度',
+      c3Title: '3. 治愈文字与手绘字体',
+      c3Sub: '在画布控制框上拖动圆点即可缩放、旋转',
+      alignLeft: '左对齐',
+      alignCenter: '居中',
+      alignRight: '右对齐',
+      lblTextColor: '文字颜色:',
+      c4Title: '4. 手绘线条贴纸（精选 10 款，点击添加后可拖动）',
+      c4Sub: '大小与角度在画布控制框上调整',
+      c5Title: '5. 复古日期邮戳',
+      pmWave: '波浪邮戳',
+      pmRound: '双环圆戳',
+      pmStar: '星星邮戳',
+      lblSize: '大小',
+      c6Title: '6. 趣味面值角标',
+      badgePresetPlaceholder: '选择面值预设',
+      badgePreset1: '小小心意',
+      badgePreset2: '特别投递',
+      badgePreset3: '限量珍藏',
+      badgeCustomPlaceholder: '也可以自己输入',
+      bsNone: '无框',
+      bsBox: '方框',
+      bsOval: '椭圆',
+      lblBadgeColor: '角标颜色:',
+      c7Title: '7. 自由手绘涂鸦画笔',
+      lblThickness: '粗细',
+      btnUndoDoodle: '撤销上一步涂鸦',
+      btnClearDoodle: '清空涂鸦',
+      p1Title: '1. 自定义格子数量 (8×8 ~ 52×52)',
+      lblPixelBorder: '像素邮票齿孔边框颜色',
+      lblPixelInner: '内框颜色',
+      p2Title: '2. 上传图片转换拼豆图纸',
+      p2Sub: '本地处理，不上传',
+      btnChoosePixelImg: '选择图片（PNG / JPG / WEBP）',
+      p2Hint: '上传后先在画布上拖动照片调整位置，再按当前格子数量和 221 色 MARD 色卡自动配色；透明区域会保留为空格。',
+      btnConvertBeads: '一键转换成拼豆图纸',
+      p3Title: '3. 拼豆格子涂鸦工具',
+      tlBrush: '画笔点涂',
+      tlBucket: '油漆桶',
+      tlEraser: '橡皮擦',
+      tlPicker: '吸管取色',
+      btnUndoPixel: '撤销上一步',
+      btnClearPixel: '清空所有格子',
+      p4Title: '4. 完整 221 色 MARD 色卡',
+      searchBeadPlaceholder: '输入色号快速查找，例如 F4 / H1 / C24 / E8...',
+      togOn: '已开启 ON',
+      togOff: '已隐藏 OFF',
+      doodleOn: '涂鸦画笔: ON (可手绘)',
+      doodleOff: '涂鸦画笔: OFF',
+      gridOn: '显示网格、色号与底部统计: ON (关闭即变像素邮票)',
+      gridOff: '显示网格、色号与底部统计: OFF (当前为纯净像素邮票)',
+      mirrorOn: '左右对称画笔: ON',
+      mirrorOff: '左右对称画笔: OFF',
+      gridUnit: '格',
+      totalBeads: '总计 {n} 颗:',
+      exportBeadTitle: 'MARD 拼豆色号统计 (共 {n} 颗)',
+      dragImgHint: '拖动照片调整位置',
+      toastExported: '高清无水印 PNG 已保存！',
+      toastDeleted: '已删除选中元素',
+      toastResetPos: '已恢复默认布局',
+      toastResetAll: '已重置为初始默认状态',
+      toastUndo: '已撤销上一步',
+      toastRedo: '已重做上一步',
+      toastClearDoodle: '已清空涂鸦',
+      toastPhotoLoaded: '照片已放入邮票！',
+      toastClearBoard: '已清空画板',
+      toastAddedSticker: '已添加「{name}」',
+      toastPickedColor: '已吸取色号 {code}',
+      toastConverted: '转换完成：{c} × {r} 格',
+      toastSelectImgFirst: '请先选择一张图片',
+      toastRestored: '已自动恢复上次编辑进度',
+      animals: {
+        cat:'猫咪', puppy:'小狗', bunny:'长耳兔', bear:'小熊', fox:'小狐',
+        hamster:'小仓鼠', ferret:'雪貂', fish:'小鱼', tiger:'小老虎', pig:'小猪',
+        penguin:'企鹅', frog:'青蛙', chick:'小鸡', deer:'小鹿', snowman:'小雪人', none:'纯文字'
+      },
+      stickers: {
+        sparkle:'星星', heart:'爱心', swirl:'卷卷', sun:'太阳线稿', music:'音符',
+        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑脸', lightning:'闪电'
+      },
+      beadGroups: { A:'A黄橙', B:'B绿色', C:'C蓝色', D:'D紫玫', E:'E红色', F:'F粉色', G:'G肤棕', H:'H黑白灰', M:'M莫兰迪' },
+      fonts: {
+        fontGaegu:'呆萌手写体', fontIndie:'随笔涂鸦体', fontCaveat:'连笔手写体', fontAmatic:'窄体手绘字',
+        fontArch:'建筑师手写体', fontComic:'圆润漫画体', fontGloria:'随性笔记体', fontGochi:'活泼手写体',
+        fontKalam:'自然笔迹体', fontNanum:'韩系手写体', fontPatrick:'清爽手写体', fontMarker:'马克笔粗体',
+        fontReenie:'细线潦草体', fontShadows:'轻盈手写体', fontMaShan:'中文毛笔体', fontZcool:'中文快乐体'
       }
-    };
-    grid.appendChild(btn);
-  });
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toastMsg');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// Canvas 渲染邮票主函数
-function drawCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  // 背景填充
-  ctx.fillStyle = '#fff9f2';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // 邮票内边框与复古装饰
-  ctx.strokeStyle = '#795c52';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-
-  // 如果有自定义图片或动物绘制
-  if (customImgObj) {
-    ctx.save();
-    ctx.translate(canvas.width / 2 + imgX, canvas.height / 2 + imgY);
-    ctx.scale(imgScale, imgScale);
-    let dw = customImgObj.width;
-    let dh = customImgObj.height;
-    ctx.drawImage(customImgObj, -dw/2, -dh/2, dw, dh);
-    ctx.restore();
-  } else {
-    // 绘制可爱动物占位或简笔插画
-    ctx.font = 'bold 120px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    let icon = animals.find(a => a.id === currentAnimal)?.icon || '🐰';
-    ctx.fillText(icon, canvas.width / 2, canvas.height / 2 - 40);
-
-    ctx.font = 'bold 36px "Caveat", cursive';
-    ctx.fillStyle = '#795c52';
-    ctx.fillText('Stamp Studio · 法式蕾丝邮票', canvas.width / 2, canvas.height - 140);
-  }
-
-  // 绘制齿孔效果
-  drawPerforations();
-}
-
-function drawPerforations() {
-  ctx.fillStyle = '#f4e9df';
-  let stepW = canvas.width / perfCount;
-  let stepH = canvas.height / perfCount;
-  
-  for(let i=0; i<perfCount; i++) {
-    // 上下齿孔
-    ctx.beginPath();
-    ctx.arc(i * stepW + stepW/2, 20, 8, 0, Math.PI * 2);
-    ctx.arc(i * stepW + stepW/2, canvas.height - 20, 8, 0, Math.PI * 2);
-    ctx.fill();
-    // 左右齿孔
-    ctx.beginPath();
-    ctx.arc(20, i * stepH + stepH/2, 8, 0, Math.PI * 2);
-    ctx.arc(canvas.width - 20, i * stepH + stepH/2, 8, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-let customImgObj = null;
-
-// 上传图片处理与缩放绑定
-document.getElementById('uploadImgBtn').onclick = () => {
-  document.getElementById('customImgUpload').click();
-};
-
-document.getElementById('customImgUpload').onchange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const img = new Image();
-    img.onload = function() {
-      customImgObj = img;
-      imgScale = 1;
-      document.getElementById('imgScaleRange').value = 100;
-      document.getElementById('scaleVal').textContent = '100%';
-      drawCanvas();
-      showToast('图片加载成功，可通过滑块调整大小');
-    };
-    img.src = evt.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-document.getElementById('clearImgBtn').onclick = () => {
-  customImgObj = null;
-  drawCanvas();
-  showToast('已清除自定义图片');
-};
-
-document.getElementById('imgScaleRange').oninput = (e) => {
-  imgScale = e.target.value / 100;
-  document.getElementById('scaleVal').textContent = e.target.value + '%';
-  drawCanvas();
-};
-
-document.getElementById('perforationsRange').oninput = (e) => {
-  perfCount = parseInt(e.target.value);
-  drawCanvas();
-};
-
-// 模式切换
-document.querySelectorAll('.mode-btn').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentMode = btn.dataset.mode;
-    if (currentMode === 'stamp') {
-      document.getElementById('panelStamp').style.display = 'flex';
-      document.getElementById('panelBeads').style.display = 'none';
-    } else {
-      document.getElementById('panelStamp').style.display = 'none';
-      document.getElementById('panelBeads').style.display = 'flex';
+    },
+    'zh-TW': {
+      brandSub: '法式蕾絲郵票工坊 · v3.0',
+      tabHand: '可愛郵票',
+      tabPixel: '像素拼豆',
+      btnExportTop: '匯出高畫質 PNG',
+      ratio11: '1:1 正方',
+      ratio34: '3:4 直版',
+      ratio43: '4:3 橫版',
+      btnUndo: '↶ 復原',
+      btnRedo: '↷ 重做',
+      btnResetPos: '一鍵歸位',
+      btnResetAll: '重置',
+      hintHand: '點選物件後拖曳移動：左上角刪除 · 左下角縮放 · 右下角旋轉',
+      hintPixel: '上傳照片後可直接在畫布上拖曳調整位置，再轉換為拼豆圖紙',
+      chkUhd: '2× 超清匯出',
+      btnExportBig: '儲存無浮水印高畫質 PNG 圖片',
+      c1Title: '1. 選擇手繪小動物 (15款) 或上傳照片',
+      c1Sub: '在畫布控制框上調整大小與角度',
+      lblInkColor: '描邊線條色:',
+      btnUploadPhoto: '上傳相簿照片',
+      lblSketchFilter: '黑白手繪線稿濾鏡',
+      c2Title: '2. 郵票紙張色與底紋',
+      lblBorderColor: '外齒白邊色:',
+      patNone: '純色無紋',
+      patDots: '波點',
+      patStripes: '斜條紋',
+      patVertical: '直條紋',
+      patGrid: '方格本',
+      lblOpacity: '濃度',
+      c3Title: '3. 治癒文字與手繪字體',
+      c3Sub: '在畫布控制框上拖曳圓點即可縮放、旋轉',
+      alignLeft: '靠左對齊',
+      alignCenter: '置中',
+      alignRight: '靠右對齊',
+      lblTextColor: '文字顏色:',
+      c4Title: '4. 手繪線條貼紙（精選 10 款，點擊新增後可拖曳）',
+      c4Sub: '大小與角度在畫布控制框上調整',
+      c5Title: '5. 復古日期郵戳',
+      pmWave: '波浪郵戳',
+      pmRound: '雙環圓戳',
+      pmStar: '星星郵戳',
+      lblSize: '大小',
+      c6Title: '6. 趣味面值角標',
+      badgePresetPlaceholder: '選擇面值預設',
+      badgePreset1: '小小心意',
+      badgePreset2: '特別投遞',
+      badgePreset3: '限量珍藏',
+      badgeCustomPlaceholder: '也可以自己輸入',
+      bsNone: '無框',
+      bsBox: '方框',
+      bsOval: '橢圓',
+      lblBadgeColor: '角標顏色:',
+      c7Title: '7. 自由手繪塗鴉畫筆',
+      lblThickness: '粗細',
+      btnUndoDoodle: '復原上一步塗鴉',
+      btnClearDoodle: '清空塗鴉',
+      p1Title: '1. 自訂格子數量 (8×8 ~ 52×52)',
+      lblPixelBorder: '像素郵票齒孔邊框顏色',
+      lblPixelInner: '內框顏色',
+      p2Title: '2. 上傳圖片轉換拼豆圖紙',
+      p2Sub: '本機處理，不上傳',
+      btnChoosePixelImg: '選擇圖片（PNG / JPG / WEBP）',
+      p2Hint: '上傳後先在畫布上拖曳照片調整位置，再依目前格子數量與 221 色 MARD 色卡自動配色；透明區域會保留為空格。',
+      btnConvertBeads: '一鍵轉換成拼豆圖紙',
+      p3Title: '3. 拼豆格子塗鴉工具',
+      tlBrush: '畫筆點塗',
+      tlBucket: '油漆桶',
+      tlEraser: '橡皮擦',
+      tlPicker: '吸管取色',
+      btnUndoPixel: '復原上一步',
+      btnClearPixel: '清空所有格子',
+      p4Title: '4. 完整 221 色 MARD 色卡',
+      searchBeadPlaceholder: '輸入色號快速搜尋，例如 F4 / H1 / C24 / E8...',
+      togOn: '已開啟 ON',
+      togOff: '已隱藏 OFF',
+      doodleOn: '塗鴉畫筆: ON (可手繪)',
+      doodleOff: '塗鴉畫筆: OFF',
+      gridOn: '顯示網格、色號與底部統計: ON (關閉即變像素郵票)',
+      gridOff: '顯示網格、色號與底部統計: OFF (目前為純淨像素郵票)',
+      mirrorOn: '左右對稱畫筆: ON',
+      mirrorOff: '左右對稱畫筆: OFF',
+      gridUnit: '格',
+      totalBeads: '總計 {n} 顆:',
+      exportBeadTitle: 'MARD 拼豆色號統計 (共 {n} 顆)',
+      dragImgHint: '拖曳照片調整位置',
+      toastExported: '高畫質無浮水印 PNG 已儲存！',
+      toastDeleted: '已刪除選取元素',
+      toastResetPos: '已恢復預設版面',
+      toastResetAll: '已重置為初始預設狀態',
+      toastUndo: '已復原上一步',
+      toastRedo: '已重做上一步',
+      toastClearDoodle: '已清空塗鴉',
+      toastPhotoLoaded: '照片已放入郵票！',
+      toastClearBoard: '已清空畫板',
+      toastAddedSticker: '已新增「{name}」',
+      toastPickedColor: '已吸取色號 {code}',
+      toastConverted: '轉換完成：{c} × {r} 格',
+      toastSelectImgFirst: '請先選擇一張圖片',
+      toastRestored: '已自動恢復上次編輯進度',
+      animals: {
+        cat:'貓咪', puppy:'小狗', bunny:'長耳兔', bear:'小熊', fox:'小狐',
+        hamster:'小倉鼠', ferret:'雪貂', fish:'小魚', tiger:'小老虎', pig:'小豬',
+        penguin:'企鵝', frog:'青蛙', chick:'小雞', deer:'小鹿', snowman:'小雪人', none:'純文字'
+      },
+      stickers: {
+        sparkle:'星星', heart:'愛心', swirl:'捲捲', sun:'太陽線稿', music:'音符',
+        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑臉', lightning:'閃電'
+      },
+      beadGroups: { A:'A黃橙', B:'B綠色', C:'C藍色', D:'D紫玫', E:'E紅色', F:'F粉色', G:'G膚棕', H:'H黑白灰', M:'M莫蘭迪' },
+      fonts: {
+        fontGaegu:'呆萌手寫體', fontIndie:'隨筆塗鴉體', fontCaveat:'連筆手寫體', fontAmatic:'窄體手繪字',
+        fontArch:'建築師手寫體', fontComic:'圓潤漫畫體', fontGloria:'隨性筆記體', fontGochi:'活潑手寫體',
+        fontKalam:'自然筆跡體', fontNanum:'韓系手寫體', fontPatrick:'清爽手寫體', fontMarker:'馬克筆粗體',
+        fontReenie:'細線潦草體', fontShadows:'輕盈手寫體', fontMaShan:'中文毛筆體', fontZcool:'中文快樂體'
+      }
+    },
+    'en': {
+      brandSub: 'French Lace Stamp Atelier · v3.0',
+      tabHand: 'Cute Stamp',
+      tabPixel: 'Pixel Beads',
+      btnExportTop: 'Export PNG',
+      ratio11: '1:1 Square',
+      ratio34: '3:4 Portrait',
+      ratio43: '4:3 Landscape',
+      btnUndo: '↶ Undo',
+      btnRedo: '↷ Redo',
+      btnResetPos: 'Center All',
+      btnResetAll: 'Reset',
+      hintHand: 'Select & drag: Top-Left Delete · Bottom-Left Resize · Bottom-Right Rotate',
+      hintPixel: 'Upload a photo, drag on canvas to position, then convert to bead pattern',
+      chkUhd: '2× Ultra HD',
+      btnExportBig: 'Save Watermark-Free HD PNG',
+      c1Title: '1. Choose Hand-Drawn Animal (15) or Photo',
+      c1Sub: 'Resize & rotate via canvas box',
+      lblInkColor: 'Line Ink:',
+      btnUploadPhoto: 'Upload Photo',
+      lblSketchFilter: 'B&W Sketch Filter',
+      c2Title: '2. Paper Color & Texture Pattern',
+      lblBorderColor: 'Perforation Edge:',
+      patNone: 'Solid',
+      patDots: 'Dots',
+      patStripes: 'Diagonal',
+      patVertical: 'Stripes',
+      patGrid: 'Grid',
+      lblOpacity: 'Opacity',
+      c3Title: '3. Healing Message & Hand Fonts',
+      c3Sub: 'Drag corner handles on canvas to scale or rotate',
+      alignLeft: 'Left',
+      alignCenter: 'Center',
+      alignRight: 'Right',
+      lblTextColor: 'Text Color:',
+      c4Title: '4. Doodle Line Stickers (10 Picks, Click to Add)',
+      c4Sub: 'Adjust size & angle on canvas',
+      c5Title: '5. Vintage Date Postmark',
+      pmWave: 'Wave Stamp',
+      pmRound: 'Double Ring',
+      pmStar: 'Star Stamp',
+      lblSize: 'Size',
+      c6Title: '6. Cute Postage Value Badge',
+      badgePresetPlaceholder: 'Select Preset',
+      badgePreset1: 'LITTLE LOVE',
+      badgePreset2: 'SPECIAL POST',
+      badgePreset3: 'LIMITED ED.',
+      badgeCustomPlaceholder: 'Or type custom text',
+      bsNone: 'No Frame',
+      bsBox: 'Box',
+      bsOval: 'Oval',
+      lblBadgeColor: 'Badge Color:',
+      c7Title: '7. Freehand Doodle Brush',
+      lblThickness: 'Width',
+      btnUndoDoodle: 'Undo Stroke',
+      btnClearDoodle: 'Clear Doodle',
+      p1Title: '1. Custom Grid Size (8×8 ~ 52×52)',
+      lblPixelBorder: 'Stamp Perforation Color',
+      lblPixelInner: 'Inner Paper Color',
+      p2Title: '2. Convert Photo to Bead Pattern',
+      p2Sub: 'Local only, never uploaded',
+      btnChoosePixelImg: 'Choose Image (PNG / JPG / WEBP)',
+      p2Hint: 'Drag the photo on canvas to adjust position, then auto-match with 221 MARD bead colors; transparent areas stay empty.',
+      btnConvertBeads: 'Convert to Bead Pattern',
+      p3Title: '3. Pixel Bead Drawing Tools',
+      tlBrush: 'Brush',
+      tlBucket: 'Fill Bucket',
+      tlEraser: 'Eraser',
+      tlPicker: 'Eyedropper',
+      btnUndoPixel: 'Undo Step',
+      btnClearPixel: 'Clear Grid',
+      p4Title: '4. Full 221 MARD Bead Palette',
+      searchBeadPlaceholder: 'Search code e.g. F4 / H1 / C24 / E8...',
+      togOn: 'Enabled ON',
+      togOff: 'Hidden OFF',
+      doodleOn: 'Doodle Brush: ON (Draw)',
+      doodleOff: 'Doodle Brush: OFF',
+      gridOn: 'Grid, Codes & Legend: ON (Off = Stamp)',
+      gridOff: 'Grid, Codes & Legend: OFF (Pure Stamp)',
+      mirrorOn: 'Mirror Brush: ON',
+      mirrorOff: 'Mirror Brush: OFF',
+      gridUnit: 'cells',
+      totalBeads: 'Total {n} beads:',
+      exportBeadTitle: 'MARD Bead Color Summary ({n} beads)',
+      dragImgHint: 'Drag photo to position',
+      toastExported: 'HD Watermark-Free PNG Saved!',
+      toastDeleted: 'Element deleted',
+      toastResetPos: 'Layout centered',
+      toastResetAll: 'Reset to default studio state',
+      toastUndo: 'Undone',
+      toastRedo: 'Redone',
+      toastClearDoodle: 'Doodles cleared',
+      toastPhotoLoaded: 'Photo added to stamp!',
+      toastClearBoard: 'Grid cleared',
+      toastAddedSticker: 'Added "{name}"',
+      toastPickedColor: 'Picked color {code}',
+      toastConverted: 'Converted: {c} × {r} grid',
+      toastSelectImgFirst: 'Please choose an image first',
+      toastRestored: 'Restored previous session',
+      animals: {
+        cat:'Cat', puppy:'Puppy', bunny:'Bunny', bear:'Bear', fox:'Fox',
+        hamster:'Hamster', ferret:'Ferret', fish:'Fish', tiger:'Tiger', pig:'Pig',
+        penguin:'Penguin', frog:'Frog', chick:'Chick', deer:'Deer', snowman:'Snowman', none:'Text Only'
+      },
+      stickers: {
+        sparkle:'Sparkle', heart:'Heart', swirl:'Swirl', sun:'Sun', music:'Music',
+        star5:'Star', envelope:'Envelope', coffee:'Coffee', smile:'Smile', lightning:'Lightning'
+      },
+      beadGroups: { A:'A Yellow', B:'B Green', C:'C Blue', D:'D Purple', E:'E Red', F:'F Pink', G:'G Brown', H:'H B&W', M:'M Morandi' },
+      fonts: {
+        fontGaegu:'Gaegu Cute', fontIndie:'Indie Flower', fontCaveat:'Caveat Script', fontAmatic:'Amatic SC',
+        fontArch:'Architects', fontComic:'Comic Neue', fontGloria:'Gloria Note', fontGochi:'Gochi Hand',
+        fontKalam:'Kalam Pen', fontNanum:'Nanum Pen', fontPatrick:'Patrick Hand', fontMarker:'Marker Bold',
+        fontReenie:'Reenie Beanie', fontShadows:'Shadows Light', fontMaShan:'Chinese Brush', fontZcool:'ZCOOL Happy'
+      }
+    },
+    'ja': {
+      brandSub: 'フレンチレース切手アトリエ · v3.0',
+      tabHand: 'かわいい切手',
+      tabPixel: 'アイロンビーズ',
+      btnExportTop: '高画質 PNG 保存',
+      ratio11: '1:1 正方形',
+      ratio34: '3:4 縦長',
+      ratio43: '4:3 横長',
+      btnUndo: '↶ 元に戻す',
+      btnRedo: '↷ やり直す',
+      btnResetPos: '配置リセット',
+      btnResetAll: '初期化',
+      hintHand: '選択してドラッグ移動：左上削除・左下拡大縮小・右下回転',
+      hintPixel: '写真をアップロード後、キャンバス上で位置を調整して図案に変換',
+      chkUhd: '2× 超高画質',
+      btnExportBig: '透かしなし高画質 PNG を保存',
+      c1Title: '1. 手描き動物 (15種) または写真を選択',
+      c1Sub: 'キャンバスの枠でサイズと角度を調整',
+      lblInkColor: '主線の色:',
+      btnUploadPhoto: '写真をアップロード',
+      lblSketchFilter: 'モノクロ線画フィルター',
+      c2Title: '2. 切手の紙色と背景パターン',
+      lblBorderColor: '目打ち枠の色:',
+      patNone: '無地',
+      patDots: 'ドット',
+      patStripes: '斜め縞',
+      patVertical: '縦縞',
+      patGrid: '方眼',
+      lblOpacity: '濃さ',
+      c3Title: '3. メッセージと手書きフォント',
+      c3Sub: 'キャンバスの丸ハンドルで拡大・回転できます',
+      alignLeft: '左揃え',
+      alignCenter: '中央揃え',
+      alignRight: '右揃え',
+      lblTextColor: '文字色:',
+      c4Title: '4. 手描きラインステッカー（厳選10種・クリックで追加）',
+      c4Sub: 'サイズと角度はキャンバス上で調整',
+      c5Title: '5. レトロ日付消印',
+      pmWave: '波型消印',
+      pmRound: '二重丸印',
+      pmStar: '星型消印',
+      lblSize: 'サイズ',
+      c6Title: '6. 額面コーナーラベル',
+      badgePresetPlaceholder: 'プリセット選択',
+      badgePreset1: 'ささやかな気持ち',
+      badgePreset2: '特別郵便',
+      badgePreset3: '限定コレクション',
+      badgeCustomPlaceholder: '自由に入力もできます',
+      bsNone: '枠なし',
+      bsBox: '四角枠',
+      bsOval: '楕円枠',
+      lblBadgeColor: 'ラベル色:',
+      c7Title: '7. フリーハンド落書きペン',
+      lblThickness: '太さ',
+      btnUndoDoodle: '一筆戻す',
+      btnClearDoodle: '落書き消去',
+      p1Title: '1. グリッド数設定 (8×8 ~ 52×52)',
+      lblPixelBorder: '切手目打ち枠の色',
+      lblPixelInner: '内枠の背景色',
+      p2Title: '2. 画像からビーズ図案を作成',
+      p2Sub: '端末内処理・送信なし',
+      btnChoosePixelImg: '画像を選択（PNG / JPG / WEBP）',
+      p2Hint: 'アップロード後キャンバス上で写真をドラッグして位置を調整し、221色MARDカラーで自動変換します。透明部分は空白になります。',
+      btnConvertBeads: 'ビーズ図案に変換する',
+      p3Title: '3. ビーズ塗りつぶしツール',
+      tlBrush: 'ペン',
+      tlBucket: 'バケツ',
+      tlEraser: '消しゴム',
+      tlPicker: 'スポイト',
+      btnUndoPixel: '元に戻す',
+      btnClearPixel: 'すべてクリア',
+      p4Title: '4. 全221色 MARD カラーパレット',
+      searchBeadPlaceholder: '色番号を検索 (例: F4 / H1 / C24 / E8...)',
+      togOn: '表示 ON',
+      togOff: '非表示 OFF',
+      doodleOn: '落書きペン: ON (描画可)',
+      doodleOff: '落書きペン: OFF',
+      gridOn: 'グリッド・色番号・集計: ON (OFFで切手風)',
+      gridOff: 'グリッド・色番号・集計: OFF (切手モード)',
+      mirrorOn: '左右対称ペン: ON',
+      mirrorOff: '左右対称ペン: OFF',
+      gridUnit: 'マス',
+      totalBeads: '合計 {n} 粒:',
+      exportBeadTitle: 'MARD ビーズ色番号集計 (計 {n} 粒)',
+      dragImgHint: 'ドラッグして位置を調整',
+      toastExported: '高画質 PNG を保存しました！',
+      toastDeleted: '選択した要素を削除しました',
+      toastResetPos: '初期レイアウトに戻しました',
+      toastResetAll: '初期状態にリセットしました',
+      toastUndo: '元に戻しました',
+      toastRedo: 'やり直しました',
+      toastClearDoodle: '落書きを消去しました',
+      toastPhotoLoaded: '写真を切手に配置しました！',
+      toastClearBoard: 'ボードをクリアしました',
+      toastAddedSticker: '「{name}」を追加しました',
+      toastPickedColor: '色番号 {code} を取得しました',
+      toastConverted: '変換完了：{c} × {r} マス',
+      toastSelectImgFirst: '先に画像を選択してください',
+      toastRestored: '前回の作業内容を自動復元しました',
+      animals: {
+        cat:'ねこ', puppy:'いぬ', bunny:'うさぎ', bear:'くま', fox:'きつね',
+        hamster:'ハムスター', ferret:'フェレット', fish:'おさかな', tiger:'とら', pig:'ぶた',
+        penguin:'ペンギン', frog:'かえる', chick:'ひよこ', deer:'しか', snowman:'ゆきだるま', none:'文字のみ'
+      },
+      stickers: {
+        sparkle:'キラキラ', heart:'ハート', swirl:'ぐるぐる', sun:'おひさま', music:'音符',
+        star5:'星', envelope:'封筒', coffee:'コーヒー', smile:'スマイル', lightning:'いなずま'
+      },
+      beadGroups: { A:'A黄・橙', B:'B緑', C:'C青', D:'D紫', E:'E赤', F:'Fピンク', G:'G茶・肌', H:'H白黒灰', M:'Mくすみ' },
+      fonts: {
+        fontGaegu:'ゆるかわ手書き', fontIndie:'スケッチペン', fontCaveat:'筆記体風', fontAmatic:'細長ハンド',
+        fontArch:'建築家ノート', fontComic:'丸みコミック', fontGloria:'ラフメモ体', fontGochi:'ポップ手書き',
+        fontKalam:'ナチュラルペン', fontNanum:'韓国風手書き', fontPatrick:'すっきり手書き', fontMarker:'太字マーカー',
+        fontReenie:'細線ラフ体', fontShadows:'軽やか手書き', fontMaShan:'毛筆フォント', fontZcool:'ハッピー体'
+      }
+    },
+    'ko': {
+      brandSub: '프렌치 레이스 우표 공방 · v3.0',
+      tabHand: '귀여운 우표',
+      tabPixel: '픽셀 비즈',
+      btnExportTop: '고화질 PNG 저장',
+      ratio11: '1:1 정방형',
+      ratio34: '3:4 세로형',
+      ratio43: '4:3 가로형',
+      btnUndo: '↶ 실행취소',
+      btnRedo: '↷ 다시실행',
+      btnResetPos: '위치 초기화',
+      btnResetAll: '전체 리셋',
+      hintHand: '요소 선택 후 드래그: 좌상단 삭제 · 좌하단 크기 · 우하단 회전',
+      hintPixel: '사진 업로드 후 캔버스에서 위치를 드래그해 맞춘 뒤 비즈 도안으로 변환',
+      chkUhd: '2× 초고화질',
+      btnExportBig: '워터마크 없는 고화질 PNG 저장',
+      c1Title: '1. 손그림 동물 (15종) 또는 사진 선택',
+      c1Sub: '캔버스 조절 박스에서 크기와 각도 조절',
+      lblInkColor: '외곽선 색상:',
+      btnUploadPhoto: '앨범 사진 업로드',
+      lblSketchFilter: '흑백 손그림 스케치 필터',
+      c2Title: '2. 우표 종이 색상 및 배경 패턴',
+      lblBorderColor: '우표 톱니 테두리색:',
+      patNone: '단색',
+      patDots: '도트',
+      patStripes: '사선 줄무늬',
+      patVertical: '세로 줄무늬',
+      patGrid: '모눈종이',
+      lblOpacity: '진하기',
+      c3Title: '3. 감성 문구 및 손글씨 폰트',
+      c3Sub: '캔버스 조절점 드래그로 크기·회전 조절',
+      alignLeft: '왼쪽 정렬',
+      alignCenter: '가운데',
+      alignRight: '오른쪽 정렬',
+      lblTextColor: '글자 색상:',
+      c4Title: '4. 손그림 라인 스티커 (10종, 클릭하여 추가)',
+      c4Sub: '크기와 각도는 캔버스에서 조절',
+      c5Title: '5. 빈티지 날짜 소인',
+      pmWave: '물결 소인',
+      pmRound: '이중 원형 소인',
+      pmStar: '별 모양 소인',
+      lblSize: '크기',
+      c6Title: '6. 귀여운 액면가 라벨',
+      badgePresetPlaceholder: '프리셋 선택',
+      badgePreset1: '작은 마음',
+      badgePreset2: '특별 우편',
+      badgePreset3: '한정판 소장',
+      badgeCustomPlaceholder: '직접 입력 가능',
+      bsNone: '테두리 없음',
+      bsBox: '사각 박스',
+      bsOval: '타원형',
+      lblBadgeColor: '라벨 색상:',
+      c7Title: '7. 자유 손그림 낙서 브러시',
+      lblThickness: '굵기',
+      btnUndoDoodle: '낙서 한 획 취소',
+      btnClearDoodle: '낙서 전체 지우기',
+      p1Title: '1. 그리드 칸 수 설정 (8×8 ~ 52×52)',
+      lblPixelBorder: '픽셀 우표 테두리 색',
+      lblPixelInner: '안쪽 배경색',
+      p2Title: '2. 사진 업로드하여 비즈 도안 변환',
+      p2Sub: '로컬 처리 · 서버 전송 없음',
+      btnChoosePixelImg: '이미지 선택 (PNG / JPG / WEBP)',
+      p2Hint: '업로드 후 캔버스에서 사진을 드래그해 위치를 맞추고 221색 MARD 색상표로 자동 변환합니다. 투명 영역은 빈칸으로 유지됩니다.',
+      btnConvertBeads: '비즈 도안으로 변환하기',
+      p3Title: '3. 비즈 채색 도구',
+      tlBrush: '브러시',
+      tlBucket: '페인트통',
+      tlEraser: '지우개',
+      tlPicker: '스포이드',
+      btnUndoPixel: '실행 취소',
+      btnClearPixel: '모든 칸 지우기',
+      p4Title: '4. 전체 221색 MARD 색상표',
+      searchBeadPlaceholder: '색상 코드 검색 예: F4 / H1 / C24 / E8...',
+      togOn: '켜짐 ON',
+      togOff: '숨김 OFF',
+      doodleOn: '낙서 브러시: ON (그리기)',
+      doodleOff: '낙서 브러시: OFF',
+      gridOn: '격자·코드·통계 표시: ON (끄면 우표 모드)',
+      gridOff: '격자·코드·통계 표시: OFF (순수 픽셀 우표)',
+      mirrorOn: '좌우 대칭 브러시: ON',
+      mirrorOff: '좌우 대칭 브러시: OFF',
+      gridUnit: '칸',
+      totalBeads: '총 {n}개:',
+      exportBeadTitle: 'MARD 비즈 색상 통계 (총 {n}개)',
+      dragImgHint: '사진을 드래그해 위치 조정',
+      toastExported: '고화질 무워터마크 PNG가 저장되었습니다!',
+      toastDeleted: '선택한 요소를 삭제했습니다',
+      toastResetPos: '기본 레이아웃으로 복원되었습니다',
+      toastResetAll: '초기 기본 상태로 리셋되었습니다',
+      toastUndo: '이전 단계로 되돌렸습니다',
+      toastRedo: '다시 실행했습니다',
+      toastClearDoodle: '낙서를 지웠습니다',
+      toastPhotoLoaded: '사진이 우표에 추가되었습니다!',
+      toastClearBoard: '캔버스를 비웠습니다',
+      toastAddedSticker: '「{name}」 추가됨',
+      toastPickedColor: '색상 코드 {code} 선택됨',
+      toastConverted: '변환 완료: {c} × {r} 칸',
+      toastSelectImgFirst: '먼저 이미지를 선택해 주세요',
+      toastRestored: '이전 작업 내용을 자동으로 복원했습니다',
+      animals: {
+        cat:'고양이', puppy:'강아지', bunny:'토끼', bear:'곰돌이', fox:'여우',
+        hamster:'햄스터', ferret:'페럿', fish:'물고기', tiger:'호랑이', pig:'돼지',
+        penguin:'펭귄', frog:'개구리', chick:'병아리', deer:'사슴', snowman:'눈사람', none:'텍스트만'
+      },
+      stickers: {
+        sparkle:'반짝이', heart:'하트', swirl:'소용돌이', sun:'햇님', music:'음표',
+        star5:'별', envelope:'편지봉투', coffee:'커피잔', smile:'스마일', lightning:'번개'
+      },
+      beadGroups: { A:'A노랑/주황', B:'B초록', C:'C파랑', D:'D보라', E:'E빨강', F:'F분홍', G:'G갈색/살구', H:'H흑백회색', M:'M모란디' },
+      fonts: {
+        fontGaegu:'개구 손글씨', fontIndie:'인디 스케치', fontCaveat:'필기체 감성', fontAmatic:'슬림 손글씨',
+        fontArch:'건축가 노트', fontComic:'둥근 만화체', fontGloria:'자유 메모체', fontGochi:'발랄 손글씨',
+        fontKalam:'자연 펜글씨', fontNanum:'나눔 펜글씨', fontPatrick:'깔끔 손글씨', fontMarker:'마카 굵은체',
+        fontReenie:'얇은 펜글씨', fontShadows:'가벼운 손글씨', fontMaShan:'동양 붓글씨', fontZcool:'해피 손글씨'
+      }
     }
   };
-});
 
-// 比例切换
-document.querySelectorAll('.ratio-btn').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentRatio = btn.dataset.ratio;
-    const box = document.getElementById('aspect-box');
-    box.className = `aspect-${currentRatio}`;
-    if (currentRatio === '1-1') { canvas.width = 800; canvas.height = 800; document.getElementById('canvasInfo').textContent = '尺寸: 800 × 800 px'; }
-    else if (currentRatio === '3-4') { canvas.width = 600; canvas.height = 800; document.getElementById('canvasInfo').textContent = '尺寸: 600 × 800 px'; }
-    else if (currentRatio === '4-3') { canvas.width = 800; canvas.height = 600; document.getElementById('canvasInfo').textContent = '尺寸: 800 × 600 px'; }
-    drawCanvas();
+  let curLang = localStorage.getItem('stamp_studio_lang') || 'zh-CN';
+  if (!I18N[curLang]) curLang = 'zh-CN';
+
+  function t(key, vars) {
+    const dict = I18N[curLang] || I18N['zh-CN'];
+    let str = dict[key] !== undefined ? dict[key] : (I18N['zh-CN'][key] || key);
+    if (vars) {
+      Object.keys(vars).forEach(k => { str = str.replace(`{${k}}`, vars[k]); });
+    }
+    return str;
+  }
+
+  // 完整 221 色 MARD 色表
+  const MARD_RAW = {
+    A: 'A1:#F9F0CD,A2:#FBFBD4,A3:#FAFC9F,A4:#FFE953,A5:#F4D738,A6:#FDAD49,A7:#FF7C2F,A8:#EACA49,A9:#FF995A,A10:#FF9D55,A11:#FFDD99,A12:#FCB58F,A13:#FFBB59,A14:#FF6D40,A15:#FDFF44,A16:#FEF9AE,A17:#FFE36E,A18:#FECF98,A19:#FD7B72,A20:#EFCD67,A21:#FFE395,A22:#FFF3A4,A23:#F3D5BF,A24:#FBF8C9,A25:#FFD67D,A26:#FFBB27',
+    B: 'B1:#E6EE32,B2:#5BE419,B3:#7CEE9D,B4:#1EF942,B5:#00BD35,B6:#5AE8BA,B7:#03AC88,B8:#029D26,B9:#26523A,B10:#95D3C2,B11:#5D722A,B12:#156F40,B13:#D9F794,B14:#ADE945,B15:#2E5132,B16:#C6ED9C,B17:#9BB13A,B18:#E6EE49,B19:#25B88C,B20:#C2F0CC,B21:#146A6B,B22:#0B3C43,B23:#303921,B24:#EEFCA5,B25:#4E846D,B26:#8C7A36,B27:#D1DCC1,B28:#9EE5B9,B29:#C5E254,B30:#ECFBD0,B31:#C4E6B5,B32:#9BAB5A',
+    C: 'C1:#E8FFE7,C2:#BCF9F6,C3:#A0E2FB,C4:#42CCFF,C5:#01ACEB,C6:#50A9F0,C7:#0188D3,C8:#1054C0,C9:#314BCA,C10:#3EBCE2,C11:#03B9B9,C12:#1C334D,C13:#CDE8FF,C14:#D5FDFF,C15:#23C4C6,C16:#1757A8,C17:#50D3EC,C18:#1C3344,C19:#1787A2,C20:#0082BE,C21:#BEDDFF,C22:#67B4BE,C23:#C2DCEB,C24:#7DC4FF,C25:#A9E5E5,C26:#2F99B3,C27:#EBF5FC,C28:#BBCFED,C29:#4B5BA3',
+    D: 'D1:#AEB4F2,D2:#858EDD,D3:#3054AF,D4:#182A84,D5:#B843C5,D6:#AC7BDE,D7:#6E399A,D8:#E2D3FF,D9:#D5B9F8,D10:#361B50,D11:#B9BAE1,D12:#DE9AD4,D13:#B90295,D14:#8B279B,D15:#2F1F90,D16:#E2E1EE,D17:#C4D4F6,D18:#A45EC7,D19:#D8C3D7,D20:#9C32B2,D21:#9A009B,D22:#333995,D23:#EADAFC,D24:#7786E5,D25:#484FC7,D26:#E9C3F6',
+    E: 'E1:#FDD3CC,E2:#FECDDF,E3:#FF97C3,E4:#E8649E,E5:#F551A2,E6:#FF346B,E7:#C63578,E8:#FFDBE9,E9:#E970CC,E10:#D33893,E11:#FCDDD2,E12:#FFA1C5,E13:#B6006D,E14:#FFD1BA,E15:#F2CFD0,E16:#FFECDE,E17:#FFE2EA,E18:#FFC9D6,E19:#FFD2E7,E20:#D8C7D1,E21:#BD9DA1,E22:#CC78A7,E23:#937A8D,E24:#F6E4F9',
+    F: 'F1:#FD957B,F2:#FC3D45,F3:#F74941,F4:#FC283C,F5:#D80127,F6:#B0443D,F7:#971937,F8:#BC0127,F9:#E2677A,F10:#A74D22,F11:#6F201F,F12:#FD4D6A,F13:#DD422F,F14:#FFA9AD,F15:#C80020,F16:#FFD9C8,F17:#F79B71,F18:#D37C46,F19:#C1444A,F20:#CD9391,F21:#F4B1B4,F22:#FFD0CB,F23:#F57E66,F24:#FCC1C4,F25:#E54B4F',
+    G: 'G1:#FFE2CE,G2:#FFCAAA,G3:#F4C3A5,G4:#E1B383,G5:#ED9435,G6:#F59734,G7:#9D5B3E,G8:#592A21,G9:#E6B483,G10:#C88135,G11:#E0C593,G12:#EBBB83,G13:#B7714A,G14:#8D614C,G15:#FCF9E0,G16:#F2D9BA,G17:#56403C,G18:#FFE4CC,G19:#E1943A,G20:#A94023,G21:#CB8E77',
+    H: 'H1:#E2E2E2,H2:#FFFFFF,H3:#B3B3B3,H4:#868686,H5:#474747,H6:#2C2C2C,H7:#000000,H8:#E7D6DB,H9:#E4E7E3,H10:#EEE9EA,H11:#CECDD5,H12:#FFF5ED,H13:#F3E1C9,H14:#CFD7D3,H15:#98A6A8,H16:#3B2F23,H17:#F1EDED,H18:#FFFDF0,H19:#F6EFE2,H20:#949FA3,H21:#F7F3E4,H22:#CACAD5,H23:#9A9D94',
+    M: 'M1:#BCC6B8,M2:#8AA385,M3:#697D80,M4:#DACEBE,M5:#D0CCAA,M6:#B0A782,M7:#B4A497,M8:#B38281,M9:#A58767,M10:#C5B1BC,M11:#9F7494,M12:#644749,M13:#D19066,M14:#C77361,M15:#757D7B'
   };
-});
 
-// 导出按钮
-function exportWork() {
-  const link = document.createElement('a');
-  link.download = 'stamp-studio-work.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-  showToast('作品已成功导出');
-}
-document.getElementById('topExportBtn').onclick = exportWork;
-document.getElementById('bottomExportBtn').onclick = exportWork;
+  const BEAD_GROUPS = {};
+  const ALL_BEADS = [];
+  const BEAD_BY_CODE = {};
+  Object.keys(MARD_RAW).forEach(g => {
+    BEAD_GROUPS[g] = MARD_RAW[g].split(',').map(p => {
+      const [code, hex] = p.split(':');
+      const r = parseInt(hex.substr(1,2),16), gg = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+      const lum = 0.299*r + 0.587*gg + 0.114*b;
+      const item = { code, hex, group: g, darkText: lum > 152 };
+      ALL_BEADS.push(item);
+      BEAD_BY_CODE[code] = item;
+      return item;
+    });
+  });
 
-// 初始化
-initAnimalGrid();
-drawCanvas();
+  const ANIMAL_IDS = ['cat','puppy','bunny','bear','fox','hamster','ferret','fish','tiger','pig','penguin','frog','chick','deer','snowman','none'];
+  const STICKER_IDS = ['sparkle','heart','swirl','sun','music','star5','envelope','coffee','smile','lightning'];
+
+  const PALETTES = {
+    paper: ['#F8D8F0', '#FBE3F6', '#FDFBF7', '#FBEED7', '#E3F1FA', '#E3F2E6', '#EDE6FA'],
+    border: ['#FFFFFF', '#FAF1C8', '#FAD8E2', '#DCEFF7', '#E8D5B9'],
+    pat: ['#FFFFFF', '#F2B8D0', '#D8BFA8', '#B9D9EB', '#231F20'],
+    ink: ['#231F20', '#5C4033', '#9E3B46', '#2E4A6B', '#2F5744'],
+    pm: ['#B84A58', '#231F20', '#2F527A', '#7A5238'],
+    brush: ['#231F20', '#E58C9E', '#B84A58', '#5A9BD4', '#F2B841']
+  };
+
+  const RATIOS = {
+    '1:1': { w: 1080, h: 1080, cls: 'aspect-1-1' },
+    '3:4': { w: 900,  h: 1200, cls: 'aspect-3-4' },
+    '4:3': { w: 1200, h: 900,  cls: 'aspect-4-3' }
+  };
+
+  function getDefaultHandState() {
+    return {
+      paperColor: '#F8D8F0',
+      borderColor: '#FFFFFF',
+      pattern: 'dots',
+      patternColor: '#FFFFFF',
+      patternOpacity: 75,
+      inkColor: '#231F20',
+      character: 'puppy',
+      charScale: 100,
+      charX: 540,
+      charY: 365,
+      charRot: 0,
+      photoImg: null,
+      sketchCanvas: null,
+      sketchFilter: true,
+      text: "I CAN'T TAKE\nTHIS CUTENESS",
+      fontStyle: 'Gaegu',
+      textAlign: 'center',
+      textColor: '#231F20',
+      fontScale: 100,
+      textX: 540,
+      textY: 710,
+      textRot: 0,
+      stickers: [
+        { type: 'swirl', x: 775, y: 265, scale: 1, rot: 0 },
+        { type: 'sparkle', x: 255, y: 525, scale: 1, rot: 0 }
+      ],
+      selSticker: -1,
+      postmark: { enabled: false, type: 'wave', top: 'CUTE MAIL', date: '2026.11.14', bot: 'LOVE POST', color: '#B84A58', x: 250, y: 240, scale: 0.88, rot: -0.14 },
+      badge: { enabled: false, text: '100% CUTE', shape: 'box', color: '#231F20', x: 825, y: 875, scale: 0.92, rot: 0 },
+      doodleOn: false,
+      brushColor: '#231F20',
+      brushSize: 6,
+      strokes: []
+    };
+  }
+
+  const state = {
+    mode: 'hand',
+    ratio: '1:1',
+    hand: getDefaultHandState(),
+    handHistory: [],
+    handRedoStack: [],
+    pixel: {
+      borderColor: '#FFFFFF',
+      innerColor: '#F8D8F0',
+      cols: 24,
+      rows: 24,
+      grid: [],
+      history: [],
+      gestureSaved: false,
+      tool: 'brush',
+      bead: ALL_BEADS.find(b => b.code === 'H2'),
+      mirror: false,
+      showGrid: true,
+      geom: null,
+      group: 'H',
+      query: ''
+    }
+  };
+
+  let isDown = false, curStroke = null, lastKey = '';
+  const STORAGE_KEY = 'stamp_studio_v3_autosave';
+  let saveTimer = null;
+
+  function toast(msg) {
+    const tEl = document.getElementById('toast');
+    tEl.textContent = msg;
+    tEl.classList.add('show');
+    clearTimeout(window._tt);
+    window._tt = setTimeout(() => tEl.classList.remove('show'), 1800);
+  }
+
+  // ==================== Undo / Redo for Hand Mode ====================
+  function cloneHandSnapshot() {
+    const h = state.hand;
+    return JSON.stringify({
+      paperColor: h.paperColor, borderColor: h.borderColor, pattern: h.pattern,
+      patternColor: h.patternColor, patternOpacity: h.patternOpacity, inkColor: h.inkColor,
+      character: h.character === 'photo' ? 'puppy' : h.character,
+      charScale: h.charScale, charX: h.charX, charY: h.charY, charRot: h.charRot,
+      sketchFilter: h.sketchFilter, text: h.text, fontStyle: h.fontStyle,
+      textAlign: h.textAlign, textColor: h.textColor, fontScale: h.fontScale,
+      textX: h.textX, textY: h.textY, textRot: h.textRot,
+      stickers: h.stickers, postmark: h.postmark, badge: h.badge,
+      brushColor: h.brushColor, brushSize: h.brushSize, strokes: h.strokes
+    });
+  }
+
+  function applyHandSnapshot(snapStr) {
+    const data = JSON.parse(snapStr);
+    const keepPhoto = state.hand.photoImg;
+    const keepSketch = state.hand.sketchCanvas;
+    const keepDoodleOn = state.hand.doodleOn;
+    Object.assign(state.hand, data);
+    state.hand.photoImg = keepPhoto;
+    state.hand.sketchCanvas = keepSketch;
+    state.hand.doodleOn = keepDoodleOn;
+    state.hand.selSticker = -1;
+    selectedObject = null;
+    syncAllHandControls();
+    render();
+  }
+
+  function updateUndoRedoButtons() {
+    const uBtn = document.getElementById('btn-hand-undo');
+    const rBtn = document.getElementById('btn-hand-redo');
+    if (uBtn) uBtn.disabled = state.handHistory.length === 0;
+    if (rBtn) rBtn.disabled = state.handRedoStack.length === 0;
+  }
+
+  window.pushHandHistory = function() {
+    const snap = cloneHandSnapshot();
+    if (state.handHistory.length && state.handHistory[state.handHistory.length - 1] === snap) return;
+    state.handHistory.push(snap);
+    if (state.handHistory.length > 40) state.handHistory.shift();
+    state.handRedoStack = [];
+    updateUndoRedoButtons();
+  };
+
+  window.undoHand = function() {
+    if (!state.handHistory.length) return;
+    state.handRedoStack.push(cloneHandSnapshot());
+    const prev = state.handHistory.pop();
+    applyHandSnapshot(prev);
+    updateUndoRedoButtons();
+    scheduleAutoSave();
+    toast(t('toastUndo'));
+  };
+
+  window.redoHand = function() {
+    if (!state.handRedoStack.length) return;
+    state.handHistory.push(cloneHandSnapshot());
+    const next = state.handRedoStack.pop();
+    applyHandSnapshot(next);
+    updateUndoRedoButtons();
+    scheduleAutoSave();
+    toast(t('toastRedo'));
+  };
+
+  // ==================== LocalStorage Auto-Save & Restore ====================
+  function scheduleAutoSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try {
+        const payload = {
+          mode: state.mode,
+          ratio: state.ratio,
+          hand: JSON.parse(cloneHandSnapshot()),
+          pixel: {
+            borderColor: state.pixel.borderColor,
+            innerColor: state.pixel.innerColor,
+            cols: state.pixel.cols,
+            rows: state.pixel.rows,
+            showGrid: state.pixel.showGrid,
+            gridCodes: state.pixel.grid.map(row => row.map(cell => cell ? cell.code : null))
+          }
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {}
+    }, 350);
+  }
+
+  function tryRestoreAutoSave() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      if (saved.ratio && RATIOS[saved.ratio]) {
+        state.ratio = saved.ratio;
+        const m = RATIOS[state.ratio];
+        document.querySelectorAll('.ratio-btn[data-r]').forEach(b => b.classList.toggle('active', b.dataset.r === state.ratio));
+        document.getElementById('aspect-box').className = m.cls;
+        const cv = document.getElementById('stampCanvas');
+        cv.width = m.w; cv.height = m.h;
+      }
+      if (saved.hand) {
+        Object.assign(state.hand, saved.hand);
+      }
+      if (saved.pixel && Array.isArray(saved.pixel.gridCodes)) {
+        state.pixel.borderColor = saved.pixel.borderColor || '#FFFFFF';
+        state.pixel.innerColor = saved.pixel.innerColor || '#F8D8F0';
+        state.pixel.cols = saved.pixel.cols || 24;
+        state.pixel.rows = saved.pixel.rows || 24;
+        state.pixel.showGrid = saved.pixel.showGrid !== false;
+        state.pixel.grid = saved.pixel.gridCodes.map(row =>
+          row.map(code => (code && BEAD_BY_CODE[code]) ? BEAD_BY_CODE[code] : null)
+        );
+      }
+      if (saved.mode === 'pixel' || saved.mode === 'hand') {
+        state.mode = saved.mode;
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function syncAllHandControls() {
+    const h = state.hand;
+    document.querySelectorAll('.animal-btn').forEach(el => el.classList.toggle('active', el.dataset.id === h.character));
+    document.getElementById('pk-ink').value = h.inkColor; document.getElementById('hx-ink').textContent = h.inkColor;
+    document.getElementById('pk-paper').value = h.paperColor; document.getElementById('hx-paper').textContent = h.paperColor;
+    document.getElementById('pk-border').value = h.borderColor; document.getElementById('hx-border').textContent = h.borderColor;
+    document.getElementById('pk-pat').value = h.patternColor; document.getElementById('hx-pat').textContent = h.patternColor;
+    document.getElementById('rng-pat-op').value = h.patternOpacity;
+    document.querySelectorAll('.opt-btn[data-pat]').forEach(b => b.classList.toggle('active', b.dataset.pat === h.pattern));
+    document.getElementById('sel-font').value = h.fontStyle;
+    document.querySelectorAll('.ratio-btn[data-al]').forEach(b => b.classList.toggle('active', b.dataset.al === h.textAlign));
+    document.getElementById('txt-stamp-text').value = h.text;
+    document.getElementById('pk-text').value = h.textColor; document.getElementById('hx-text').textContent = h.textColor;
+    syncToggleUI('postmark', 'btn-tog-pm');
+    document.querySelectorAll('.opt-btn[data-pm]').forEach(b => b.classList.toggle('active', b.dataset.pm === h.postmark.type));
+    document.getElementById('inp-pm-top').value = h.postmark.top;
+    document.getElementById('inp-pm-date').value = h.postmark.date;
+    document.getElementById('inp-pm-bot').value = h.postmark.bot;
+    document.getElementById('pk-pm').value = h.postmark.color; document.getElementById('hx-pm').textContent = h.postmark.color;
+    document.getElementById('rng-pm-scale').value = Math.round(h.postmark.scale * 100);
+    syncToggleUI('badge', 'btn-tog-bg');
+    document.getElementById('badge-custom').value = h.badge.text;
+    document.querySelectorAll('.opt-btn[data-bs]').forEach(b => b.classList.toggle('active', b.dataset.bs === h.badge.shape));
+    document.getElementById('pk-bg').value = h.badge.color; document.getElementById('hx-bg').textContent = h.badge.color;
+    document.getElementById('chk-sketch').checked = !!h.sketchFilter;
+  }
+
+  window.resetAllStudio = function() {
+    pushHandHistory();
+    localStorage.removeItem(STORAGE_KEY);
+    state.ratio = '1:1';
+    document.querySelectorAll('.ratio-btn[data-r]').forEach(b => b.classList.toggle('active', b.dataset.r === '1:1'));
+    document.getElementById('aspect-box').className = 'aspect-1-1';
+    const cv = document.getElementById('stampCanvas');
+    cv.width = 1080; cv.height = 1080;
+    state.hand = getDefaultHandState();
+    selectedObject = null;
+    syncAllHandControls();
+    initPixelBoard(24, 24);
+    document.getElementById('rng-grid-size').value = 24;
+    render();
+    toast(t('toastResetAll'));
+  };
+
+  // ==================== Language Switcher ====================
+  window.setLanguage = function(lang) {
+    if (!I18N[lang]) return;
+    curLang = lang;
+    localStorage.setItem('stamp_studio_lang', lang);
+    document.documentElement.lang = lang;
+    document.getElementById('lang-select').value = lang;
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.getAttribute('data-i18n');
+      el.textContent = t(k);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const k = el.getAttribute('data-i18n-placeholder');
+      el.placeholder = t(k);
+    });
+
+    // Update dynamic buttons
+    syncToggleUI('postmark', 'btn-tog-pm');
+    syncToggleUI('badge', 'btn-tog-bg');
+
+    const dBtn = document.getElementById('btn-doodle');
+    if (dBtn) dBtn.textContent = state.hand.doodleOn ? t('doodleOn') : t('doodleOff');
+
+    const gBtn = document.getElementById('btn-tog-grid');
+    if (gBtn) gBtn.textContent = state.pixel.showGrid ? t('gridOn') : t('gridOff');
+
+    const mBtn = document.getElementById('btn-mirror');
+    if (mBtn) mBtn.textContent = state.pixel.mirror ? t('mirrorOn') : t('mirrorOff');
+
+    const hintEl = document.getElementById('stage-hint');
+    if (hintEl) hintEl.textContent = state.mode === 'hand' ? t('hintHand') : t('hintPixel');
+
+    const dimEl = document.getElementById('lbl-grid-dim');
+    if (dimEl) dimEl.textContent = `${state.pixel.cols} × ${state.pixel.rows} ${t('gridUnit')}`;
+
+    // Re-render animal names, sticker names, bead tabs, and legend
+    buildAnimalButtons();
+    buildStickerButtons();
+    renderBeadTabs();
+    updateBeadLegend();
+    render();
+  };
+
+  function buildAnimalButtons() {
+    const aGrid = document.getElementById('animal-grid');
+    aGrid.innerHTML = '';
+    const dictAnimals = (I18N[curLang] && I18N[curLang].animals) || I18N['zh-CN'].animals;
+    ANIMAL_IDS.forEach(id => {
+      const b = document.createElement('button');
+      b.className = 'animal-btn' + (id === state.hand.character ? ' active' : '');
+      b.dataset.id = id;
+      b.innerHTML = `${getMiniSVG(id)}<span>${dictAnimals[id] || id}</span>`;
+      b.onclick = () => {
+        pushHandHistory();
+        state.hand.character = id;
+        document.querySelectorAll('.animal-btn').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+        render();
+        scheduleAutoSave();
+      };
+      aGrid.appendChild(b);
+    });
+    aGrid.querySelectorAll('canvas[data-character-thumbnail]').forEach(canvas => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2 + 1);
+      ctx.scale(0.13, 0.13);
+      drawCharacterIllustration(ctx, canvas.dataset.characterThumbnail, '#4A413C');
+      ctx.restore();
+    });
+  }
+
+  function buildStickerButtons() {
+    const sGrid = document.getElementById('sticker-grid');
+    sGrid.innerHTML = '';
+    const dictStickers = (I18N[curLang] && I18N[curLang].stickers) || I18N['zh-CN'].stickers;
+    STICKER_IDS.forEach(id => {
+      const label = dictStickers[id] || id;
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.textContent = label;
+      b.onclick = () => {
+        pushHandHistory();
+        const m = RATIOS[state.ratio];
+        state.hand.stickers.push({
+          type: id,
+          x: Math.round(m.w * (0.28 + Math.random() * 0.44)),
+          y: Math.round(m.h * (0.24 + Math.random() * 0.52)),
+          scale: 1,
+          rot: 0
+        });
+        state.hand.selSticker = state.hand.stickers.length - 1;
+        selectedObject = { type: 'sticker', index: state.hand.selSticker };
+        render();
+        scheduleAutoSave();
+        toast(t('toastAddedSticker', { name: label }));
+      };
+      sGrid.appendChild(b);
+    });
+  }
+
+  function initUI() {
+    const mkSw = (id, arr, cb) => {
+      const box = document.getElementById(id);
+      arr.forEach((hex, idx) => {
+        const b = document.createElement('button');
+        b.className = 'swatch-dot' + (idx === 0 ? ' active' : '');
+        b.style.background = hex;
+        b.onclick = () => {
+          pushHandHistory();
+          Array.from(box.children).forEach(c => c.classList.remove('active'));
+          b.classList.add('active');
+          cb(hex);
+          scheduleAutoSave();
+        };
+        box.appendChild(b);
+      });
+    };
+    mkSw('sw-paper', PALETTES.paper, h => setColor('paperColor', h, 'hx-paper', 'pk-paper'));
+    mkSw('sw-border', PALETTES.border, h => setColor('borderColor', h, 'hx-border', 'pk-border'));
+    mkSw('sw-pat', PALETTES.pat, h => setColor('patternColor', h, 'hx-pat', 'pk-pat'));
+    mkSw('sw-ink', PALETTES.ink, h => setColor('inkColor', h, 'hx-ink', 'pk-ink'));
+    mkSw('sw-text', PALETTES.ink, h => setColor('textColor', h, 'hx-text', 'pk-text'));
+    mkSw('sw-pm', PALETTES.pm, h => setSubColor('postmark', 'color', h, 'hx-pm', 'pk-pm'));
+    mkSw('sw-bg', PALETTES.ink, h => setSubColor('badge', 'color', h, 'hx-bg', 'pk-bg'));
+    mkSw('sw-brush', PALETTES.brush, h => setColor('brushColor', h, 'hx-brush', 'pk-brush'));
+
+    initPixelBoard(24, 24);
+    const restored = tryRestoreAutoSave();
+    syncAllHandControls();
+
+    // Sync pixel controls if restored
+    document.getElementById('rng-grid-size').value = state.pixel.cols;
+    document.getElementById('pk-pixel-border').value = state.pixel.borderColor;
+    document.getElementById('hx-pixel-border').textContent = state.pixel.borderColor.toUpperCase();
+    document.getElementById('pk-pixel-inner').value = state.pixel.innerColor;
+    document.getElementById('hx-pixel-inner').textContent = state.pixel.innerColor.toUpperCase();
+
+    renderBeadTabs();
+    renderBeadGrid();
+    setLanguage(curLang);
+    if (state.mode === 'pixel') switchMode('pixel');
+    bindCanvasEvents();
+    render();
+    if (restored) toast(t('toastRestored'));
+
+    // Keyboard shortcuts Ctrl+Z / Ctrl+Y
+    window.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+        e.preventDefault();
+        if (state.mode === 'hand') undoHand(); else undoPixel();
+      } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+        if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+        e.preventDefault();
+        if (state.mode === 'hand') redoHand();
+      }
+    });
+  }
+
+  // Stamp Studio 原版动物绘制函数
+  function drawCharacterIllustration(ctx, type, outlineColor = '#231F20') {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = outlineColor || '#231F20';
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 7.4;
+    if ('filter' in ctx) ctx.filter = 'none';
+
+    if (type === 'cat') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(-115, -35);
+      ctx.quadraticCurveTo(-125, -125, -108, -135);
+      ctx.quadraticCurveTo(-85, -125, -52, -88);
+      ctx.quadraticCurveTo(0, -102, 52, -88);
+      ctx.quadraticCurveTo(85, -125, 108, -135);
+      ctx.quadraticCurveTo(125, -125, 115, -35);
+      ctx.bezierCurveTo(145, 35, 95, 105, 0, 105);
+      ctx.bezierCurveTo(-95, 105, -145, 35, -115, -35);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-98, -75); ctx.lineTo(-95, -105); ctx.lineTo(-72, -82);
+      ctx.moveTo(98, -75); ctx.lineTo(95, -105); ctx.lineTo(72, -82);
+      ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-68, 22, 18, 11, 0, 0, Math.PI * 2);
+      ctx.ellipse(68, 22, 18, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-45, 4, 8.5, 0, Math.PI * 2);
+      ctx.arc(45, 4, 8.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 6.5;
+      ctx.beginPath(); ctx.ellipse(0, 14, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-22, 26); ctx.quadraticCurveTo(-11, 38, 0, 24);
+      ctx.quadraticCurveTo(11, 38, 22, 26);
+      ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-105, -2); ctx.lineTo(-148, -10);
+      ctx.moveTo(-108, 16); ctx.lineTo(-152, 18);
+      ctx.moveTo(-102, 34); ctx.lineTo(-142, 44);
+      ctx.moveTo(105, -2); ctx.lineTo(148, -10);
+      ctx.moveTo(108, 16); ctx.lineTo(152, 18);
+      ctx.moveTo(102, 34); ctx.lineTo(142, 44);
+      ctx.stroke();
+
+    } else if (type === 'puppy') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(-110, -40);
+      ctx.quadraticCurveTo(0, -110, 110, -40);
+      ctx.bezierCurveTo(145, 45, 95, 100, 0, 100);
+      ctx.bezierCurveTo(-95, 100, -145, 45, -110, -40);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-88, -72);
+      ctx.bezierCurveTo(-165, -45, -195, 45, -142, 62);
+      ctx.bezierCurveTo(-105, 70, -82, 15, -75, -15);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(88, -72);
+      ctx.bezierCurveTo(165, -45, 195, 45, 142, 62);
+      ctx.bezierCurveTo(105, 70, 82, 15, 75, -15);
+      ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(-25, -42); ctx.quadraticCurveTo(-20, -28, -28, -22);
+      ctx.moveTo(-8, -45); ctx.quadraticCurveTo(-3, -30, -11, -24);
+      ctx.moveTo(10, -44); ctx.quadraticCurveTo(15, -29, 7, -23);
+      ctx.moveTo(26, -40); ctx.quadraticCurveTo(31, -26, 23, -20);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FBCFE8';
+      ctx.beginPath();
+      ctx.arc(-44, 62, 13, 0, Math.PI * 2);
+      ctx.arc(44, 62, 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(-36, 26); ctx.lineTo(-22, 21);
+      ctx.moveTo(36, 26); ctx.lineTo(22, 21);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(-28, 44, 7.5, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(28, 44, 7.5, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(0, 62, 9, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else if (type === 'bunny') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.moveTo(-55, -35); ctx.bezierCurveTo(-75, -155, -20, -170, -12, -45); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12, -45); ctx.bezierCurveTo(20, -170, 75, -155, 55, -35); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(-38, -60); ctx.lineTo(-42, -115);
+      ctx.moveTo(38, -60); ctx.lineTo(42, -115);
+      ctx.stroke();
+
+      ctx.lineWidth = 8.5;
+      ctx.beginPath();
+      ctx.moveTo(-55, -38);
+      ctx.quadraticCurveTo(0, -48, 55, -38);
+      ctx.bezierCurveTo(125, -10, 125, 105, 0, 105);
+      ctx.bezierCurveTo(-125, 105, -125, -10, -55, -38);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-34, 42, 7.5, 0, Math.PI * 2);
+      ctx.arc(34, 42, 7.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath(); ctx.ellipse(0, 52, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-22, 62); ctx.quadraticCurveTo(-11, 74, 0, 60);
+      ctx.quadraticCurveTo(11, 74, 22, 62);
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(48, -12);
+      ctx.fillStyle = '#FBCFE8';
+      ctx.lineWidth = 4;
+      for (let a = 0; a < 5; a++) {
+        ctx.rotate((Math.PI * 2) / 5);
+        ctx.beginPath(); ctx.ellipse(0, -13, 7, 10, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      }
+      ctx.fillStyle = '#FDE047';
+      ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+    } else if (type === 'bear') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(-85, -72, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(85, -72, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 5, 118, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(0, 26, 36, 26, 0, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-70, 14, 15, 9, 0, 0, Math.PI * 2);
+      ctx.ellipse(70, 14, 15, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-45, -8, 8, 0, Math.PI * 2);
+      ctx.arc(45, -8, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath(); ctx.ellipse(0, 18, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, 25); ctx.lineTo(0, 38);
+      ctx.moveTo(-12, 36); ctx.quadraticCurveTo(0, 44, 12, 36);
+      ctx.stroke();
+
+    } else if (type === 'fox') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(-115, -15); ctx.lineTo(-95, -125); ctx.lineTo(-42, -78);
+      ctx.quadraticCurveTo(0, -88, 42, -78); ctx.lineTo(95, -125); ctx.lineTo(115, -15);
+      ctx.quadraticCurveTo(135, 45, 0, 95); ctx.quadraticCurveTo(-135, 45, -115, -15);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(-112, 12); ctx.quadraticCurveTo(-55, 8, -25, 45);
+      ctx.moveTo(112, 12); ctx.quadraticCurveTo(55, 8, 25, 45);
+      ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-44, 2, 7.5, 0, Math.PI * 2);
+      ctx.arc(44, 2, 7.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 68, 9, 0, Math.PI * 2); ctx.fill();
+
+    } else if (type === 'hamster') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(-78, -68, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(78, -68, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(-78, -66, 13, Math.PI * 0.8, Math.PI * 1.9); ctx.stroke();
+      ctx.beginPath(); ctx.arc(78, -66, 13, Math.PI * 1.1, Math.PI * 2.2); ctx.stroke();
+
+      ctx.lineWidth = 6.5;
+      ctx.beginPath();
+      ctx.moveTo(-8, -86); ctx.quadraticCurveTo(-20, -116, -4, -120);
+      ctx.moveTo(6, -86); ctx.quadraticCurveTo(22, -114, 14, -98);
+      ctx.stroke();
+
+      ctx.lineWidth = 8.5;
+      ctx.beginPath();
+      ctx.moveTo(0, -88);
+      ctx.bezierCurveTo(75, -88, 105, -35, 118, 15);
+      ctx.bezierCurveTo(132, 68, 88, 102, 0, 102);
+      ctx.bezierCurveTo(-88, 102, -132, 68, -118, 15);
+      ctx.bezierCurveTo(-105, -35, -75, -88, 0, -88);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-76, 18, 20, 13, 0, 0, Math.PI * 2);
+      ctx.ellipse(76, 18, 20, 13, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-42, -10, 8, 0, Math.PI * 2);
+      ctx.arc(42, -10, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath(); ctx.arc(0, 6, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(-14, 15); ctx.quadraticCurveTo(-7, 23, 0, 13);
+      ctx.quadraticCurveTo(7, 23, 14, 15);
+      ctx.stroke();
+
+      ctx.fillStyle = '#E5E7EB';
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(0, 56, 16, 24, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-4, 42); ctx.lineTo(-4, 70);
+      ctx.moveTo(5, 44); ctx.lineTo(5, 68);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(-22, 58, 14, 11, -0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(22, 58, 14, 11, 0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    } else if (type === 'ferret') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8.5;
+      ctx.beginPath();
+      ctx.moveTo(52, 82);
+      ctx.bezierCurveTo(135, 92, 165, 10, 128, -36);
+      ctx.bezierCurveTo(104, -64, 75, -24, 92, 18);
+      ctx.bezierCurveTo(102, 42, 75, 58, 48, 56);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#57534E';
+      ctx.beginPath(); ctx.ellipse(124, -28, 16, 22, -0.5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(-62, -74, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(46, -74, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-72, 96);
+      ctx.bezierCurveTo(-84, 15, -78, -86, -8, -86);
+      ctx.bezierCurveTo(62, -86, 68, 15, 56, 96);
+      ctx.quadraticCurveTo(-8, 106, -72, 96);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#E7E5E4';
+      ctx.beginPath();
+      ctx.ellipse(-36, -24, 22, 15, -0.15, 0, Math.PI * 2);
+      ctx.ellipse(20, -24, 22, 15, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FBCFE8';
+      ctx.beginPath();
+      ctx.ellipse(-48, 0, 13, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(32, 0, 13, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-34, -24, 7, 0, Math.PI * 2);
+      ctx.arc(18, -24, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#F472B6';
+      ctx.beginPath(); ctx.ellipse(-8, -8, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(-22, 2); ctx.quadraticCurveTo(-15, 12, -8, 1);
+      ctx.quadraticCurveTo(-1, 12, 6, 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(-28, 52, 14, 18, 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(12, 52, 14, 18, -0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    } else if (type === 'fish') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8.5;
+      ctx.beginPath(); ctx.moveTo(-36, -62); ctx.quadraticCurveTo(-12, -108, 34, -64); ctx.fill(); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(74, -12);
+      ctx.bezierCurveTo(132, -68, 152, -26, 118, 0);
+      ctx.bezierCurveTo(152, 26, 132, 68, 74, 12);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath(); ctx.ellipse(-12, 0, 96, 72, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(-42, 0, 42, -0.7, 0.7); ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.ellipse(-10, 22, 20, 12, 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath(); ctx.ellipse(-66, 14, 15, 9, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath(); ctx.arc(-68, -12, 8.5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(-106, 2, 10, -0.9, 0.9); ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(-132, -28, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(-148, -58, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    } else if (type === 'tiger') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8.5;
+      ctx.beginPath(); ctx.arc(-84, -68, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(84, -68, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 6, 122, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-22, -66); ctx.lineTo(22, -66);
+      ctx.moveTo(-18, -50); ctx.lineTo(18, -50);
+      ctx.moveTo(-24, -34); ctx.lineTo(24, -34);
+      ctx.moveTo(0, -66); ctx.lineTo(0, -34);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-114, -10); ctx.lineTo(-88, -6);
+      ctx.moveTo(-118, 12); ctx.lineTo(-90, 12);
+      ctx.moveTo(-110, 34); ctx.lineTo(-86, 28);
+      ctx.moveTo(114, -10); ctx.lineTo(88, -6);
+      ctx.moveTo(118, 12); ctx.lineTo(90, 12);
+      ctx.moveTo(110, 34); ctx.lineTo(86, 28);
+      ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-66, 22, 17, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(66, 22, 17, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-44, 0, 8.5, 0, Math.PI * 2);
+      ctx.arc(44, 0, 8.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#F472B6';
+      ctx.beginPath(); ctx.ellipse(0, 14, 10, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-22, 26); ctx.quadraticCurveTo(-11, 38, 0, 24);
+      ctx.quadraticCurveTo(11, 38, 22, 26);
+      ctx.stroke();
+
+    } else if (type === 'pig') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.moveTo(-68, -68); ctx.quadraticCurveTo(-118, -108, -116, -42); ctx.quadraticCurveTo(-92, -35, -75, -45); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(68, -68); ctx.quadraticCurveTo(118, -108, 116, -42); ctx.quadraticCurveTo(92, -35, 75, -45); ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6.5;
+      ctx.beginPath();
+      ctx.moveTo(112, 58);
+      ctx.bezierCurveTo(148, 52, 148, 22, 126, 26);
+      ctx.bezierCurveTo(112, 30, 120, 56, 152, 42);
+      ctx.stroke();
+
+      ctx.lineWidth = 8.5;
+      ctx.beginPath(); ctx.ellipse(0, 8, 122, 98, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-74, 22, 17, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(74, 22, 17, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-48, -6, 8, 0, Math.PI * 2);
+      ctx.arc(48, -6, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FBCFE8';
+      ctx.lineWidth = 6.5;
+      ctx.beginPath(); ctx.ellipse(0, 22, 32, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.ellipse(-11, 22, 4.5, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(11, 22, 4.5, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else if (type === 'penguin') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.ellipse(-102, 24, 22, 46, 0.35, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(102, 24, 22, 46, -0.35, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, -104);
+      ctx.bezierCurveTo(88, -104, 112, 12, 96, 88);
+      ctx.quadraticCurveTo(0, 112, -96, 88);
+      ctx.bezierCurveTo(-112, 12, -88, -104, 0, -104);
+      ctx.fill(); ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-76, -34); ctx.quadraticCurveTo(-36, -68, 0, -36);
+      ctx.quadraticCurveTo(36, -68, 76, -34);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FBCFE8';
+      ctx.beginPath();
+      ctx.ellipse(-56, 2, 14, 9, 0, 0, Math.PI * 2);
+      ctx.ellipse(56, 2, 14, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-36, -14, 7.5, 0, Math.PI * 2);
+      ctx.arc(36, -14, 7.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FDE047';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(-18, -4); ctx.quadraticCurveTo(0, -12, 18, -4);
+      ctx.quadraticCurveTo(0, 18, -18, -4);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(-42, 98, 22, 11, -0.1, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(42, 98, 22, 11, 0.1, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+    } else if (type === 'frog') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(-56, -68, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(56, -68, 36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 16, 126, 86, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-56, -68, 12, 0, Math.PI * 2);
+      ctx.arc(56, -68, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(-60, -72, 4, 0, Math.PI * 2);
+      ctx.arc(52, -72, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath();
+      ctx.ellipse(-78, 18, 18, 11, 0, 0, Math.PI * 2);
+      ctx.ellipse(78, 18, 18, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 6.5;
+      ctx.beginPath(); ctx.moveTo(-48, 14); ctx.quadraticCurveTo(0, 52, 48, 14); ctx.stroke();
+
+    } else if (type === 'chick') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.ellipse(0, 12, 105, 112, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-15, -91);
+      ctx.quadraticCurveTo(-25, -120, -8, -116);
+      ctx.quadraticCurveTo(5, -132, 13, -105);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(-91, 30, 29, 43, -0.35, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(91, 30, 29, 43, 0.35, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath();
+      ctx.arc(-38, -12, 8, 0, Math.PI * 2);
+      ctx.arc(38, -12, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(-13, 9);
+      ctx.lineTo(13, 9);
+      ctx.lineTo(0, 25);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(-30, 116); ctx.lineTo(-30, 132);
+      ctx.moveTo(30, 116); ctx.lineTo(30, 132);
+      ctx.stroke();
+
+    } else if (type === 'deer') {
+      ctx.strokeStyle = outlineColor || '#231F20';
+      ctx.lineWidth = 11;
+      ctx.beginPath();
+      ctx.moveTo(-48, -77); ctx.lineTo(-62, -112); ctx.lineTo(-83, -126);
+      ctx.moveTo(-62, -112); ctx.lineTo(-57, -139);
+      ctx.moveTo(48, -77); ctx.lineTo(62, -112); ctx.lineTo(83, -126);
+      ctx.moveTo(62, -112); ctx.lineTo(57, -139);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.ellipse(0, 18, 105, 112, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 39, 76, 67, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath(); ctx.ellipse(-100, -62, 24, 48, -0.65, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(100, -62, 24, 48, 0.65, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(-100, -62, 12, 30, -0.65, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(100, -62, 12, 30, 0.65, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.beginPath(); ctx.arc(-43, -67, 8, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(-22, -78, 7, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(22, -78, 7, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(43, -67, 8, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath(); ctx.arc(-36, 15, 8, 0, Math.PI * 2); ctx.arc(36, 15, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 43, 8, 0, Math.PI * 2); ctx.fill();
+
+    } else if (type === 'snowman') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.arc(0, 51, 83, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -48, 67, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath(); ctx.arc(-24, -56, 7, 0, Math.PI * 2); ctx.arc(24, -56, 7, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = outlineColor || '#231F20';
+      ctx.beginPath(); ctx.moveTo(0, -43); ctx.lineTo(39, -34); ctx.lineTo(0, -24); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath(); ctx.arc(0, -31, 17, 0.2, Math.PI - 0.2); ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = outlineColor || '#231F20';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(-58, -7); ctx.quadraticCurveTo(0, 5, 58, -7);
+      ctx.lineTo(55, 13); ctx.quadraticCurveTo(0, 25, -55, 13);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(31, 7); ctx.lineTo(46, 57); ctx.lineTo(22, 52); ctx.lineTo(13, 7);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#231F20';
+      ctx.beginPath(); ctx.arc(0, 49, 6, 0, Math.PI * 2); ctx.arc(0, 76, 6, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#F9A8D4';
+      ctx.beginPath(); ctx.ellipse(-48, -35, 12, 8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(48, -35, 12, 8, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawSticker(ctx, st, ink) {
+    ctx.save();
+    ctx.translate(st.x, st.y);
+    ctx.rotate(st.rot);
+    ctx.scale(st.scale, st.scale);
+    ctx.strokeStyle = ink || '#171313';
+    ctx.lineWidth = 4.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const tType = st.type;
+    if (tType === 'swirl') {
+      ctx.beginPath();
+      for (let a = 0; a < Math.PI * 4.3; a += 0.25) {
+        const r = a * 2.1;
+        const x = Math.cos(a) * r, y = Math.sin(a) * r;
+        a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    } else if (tType === 'sparkle') {
+      ctx.beginPath();
+      ctx.moveTo(0, -18); ctx.lineTo(0, 18);
+      ctx.moveTo(-16, 0); ctx.lineTo(16, 0);
+      ctx.moveTo(-10, -10); ctx.lineTo(10, 10);
+      ctx.moveTo(10, -10); ctx.lineTo(-10, 10);
+      ctx.stroke();
+    } else if (tType === 'heart') {
+      ctx.beginPath(); ctx.moveTo(0, 18); ctx.bezierCurveTo(-28, 0, -22, -24, 0, -8); ctx.bezierCurveTo(22, -24, 28, 0, 0, 18); ctx.stroke();
+    } else if (tType === 'sun') {
+      ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.stroke();
+      for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(Math.cos(a)*19,Math.sin(a)*19);ctx.lineTo(Math.cos(a)*29,Math.sin(a)*29);ctx.stroke();}
+    } else if (tType === 'music') {
+      ctx.beginPath();ctx.moveTo(5,-22);ctx.lineTo(5,12);ctx.quadraticCurveTo(-2,5,-9,12);ctx.quadraticCurveTo(-17,23,-5,23);ctx.quadraticCurveTo(8,22,8,12);ctx.lineTo(8,-16);ctx.lineTo(23,-20);ctx.lineTo(23,8);ctx.stroke();
+    } else if (tType === 'star5') {
+      ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2===0?25:11;const x=Math.cos(a)*r,y=Math.sin(a)*r;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();
+    } else if (tType === 'envelope') {
+      ctx.beginPath();ctx.roundRect(-25,-17,50,34,5);ctx.moveTo(-24,-15);ctx.lineTo(0,5);ctx.lineTo(24,-15);ctx.stroke();
+    } else if (tType === 'coffee') {
+      ctx.beginPath();ctx.roundRect(-18,-15,31,31,5);ctx.moveTo(13,-8);ctx.quadraticCurveTo(29,-10,25,3);ctx.quadraticCurveTo(23,10,14,8);ctx.moveTo(-10,-23);ctx.quadraticCurveTo(-18,-31,-10,-36);ctx.moveTo(3,-23);ctx.quadraticCurveTo(-5,-31,3,-36);ctx.stroke();
+    } else if (tType === 'smile') {
+      ctx.beginPath();ctx.arc(0,0,23,0,Math.PI*2);ctx.moveTo(-10,-5);ctx.arc(-10,-5,2,0,Math.PI*2);ctx.moveTo(12,-5);ctx.arc(12,-5,2,0,Math.PI*2);ctx.moveTo(-12,7);ctx.quadraticCurveTo(0,20,13,7);ctx.stroke();
+    } else if (tType === 'lightning') {
+      ctx.beginPath();ctx.moveTo(5,-28);ctx.lineTo(-18,4);ctx.lineTo(-3,4);ctx.lineTo(-8,28);ctx.lineTo(18,-7);ctx.lineTo(3,-7);ctx.closePath();ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawHandLetteredText(ctx, h) {
+    if (!h.text || !h.text.trim()) return;
+    ctx.save();
+    ctx.translate(h.textX, h.textY);
+    ctx.rotate(h.textRot || 0);
+    const fs = Math.round(52 * ((h.fontScale || 100) / 100));
+    const lines = h.text.split('\n');
+    const lineHeight = fs * 1.18;
+    const startY = -((lines.length - 1) * lineHeight) / 2;
+    const allowedFonts = ['Gaegu','Indie Flower','Caveat','Amatic SC','Architects Daughter','Comic Neue','Gloria Hallelujah','Gochi Hand','Kalam','Nanum Pen Script','Patrick Hand','Permanent Marker','Reenie Beanie','Shadows Into Light','Ma Shan Zheng','ZCOOL KuaiLe'];
+    const fontName = allowedFonts.includes(h.fontStyle) ? h.fontStyle : 'Gaegu';
+    ctx.font = `700 ${fs}px "${fontName}", cursive`;
+    ctx.fillStyle = h.textColor || '#231F20';
+    ctx.textAlign = h.textAlign || 'center';
+    ctx.textBaseline = 'middle';
+    lines.forEach((line, i) => {
+      ctx.fillText(line, 0, startY + i * lineHeight);
+    });
+    ctx.restore();
+  }
+
+  function traceStampRect(ctx, x, y, w, h, r) {
+    const step = r * 3.15;
+    const nx = Math.max(4, Math.floor(w / step));
+    const ny = Math.max(4, Math.floor(h / step));
+    const dx = w / nx, dy = h / ny;
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let i = 0; i < nx; i++) { const cx = x + (i + 0.5) * dx; ctx.lineTo(cx - r, y); ctx.arc(cx, y, r, Math.PI, 0, true); }
+    ctx.lineTo(x + w, y);
+    for (let j = 0; j < ny; j++) { const cy = y + (j + 0.5) * dy; ctx.lineTo(x + w, cy - r); ctx.arc(x + w, cy, r, -Math.PI / 2, Math.PI / 2, true); }
+    ctx.lineTo(x + w, y + h);
+    for (let i = nx - 1; i >= 0; i--) { const cx = x + (i + 0.5) * dx; ctx.lineTo(cx + r, y + h); ctx.arc(cx, y + h, r, 0, Math.PI, true); }
+    ctx.lineTo(x, y + h);
+    for (let j = ny - 1; j >= 0; j--) { const cy = y + (j + 0.5) * dy; ctx.lineTo(x, cy + r); ctx.arc(x, cy, r, Math.PI / 2, -Math.PI / 2, true); }
+    ctx.closePath();
+  }
+
+  function drawChibiWhiteAnimal(ctx, type, ink) {
+    if (type === 'none' || type === 'photo') return;
+    ctx.save();
+    ctx.strokeStyle = ink || '#231F20';
+    drawCharacterIllustration(ctx, type, ink || '#231F20');
+    ctx.restore();
+  }
+
+  function getMiniSVG(id) {
+    if (id === 'none') {
+      return '<span class="animal-none-icon">Aa</span>';
+    }
+    return `<canvas class="animal-thumb" width="48" height="48" data-character-thumbnail="${id}" aria-hidden="true"></canvas>`;
+  }
+
+  function renderHandStamp(ctx, W, H) {
+    const h = state.hand;
+    const pad = Math.round(Math.min(W, H) * 0.05);
+    const toothR = Math.round(Math.min(W, H) * 0.017);
+
+    ctx.save();
+    traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
+    ctx.fillStyle = h.borderColor;
+    ctx.fill();
+    ctx.restore();
+
+    const inPad = pad + Math.round(toothR * 2.2);
+    const iW = W - inPad * 2, iH = H - inPad * 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(inPad, inPad, iW, iH);
+    ctx.clip();
+
+    ctx.fillStyle = h.paperColor;
+    ctx.fillRect(inPad, inPad, iW, iH);
+
+    if (h.pattern !== 'none') {
+      ctx.save();
+      ctx.globalAlpha = h.patternOpacity / 100;
+      ctx.fillStyle = h.patternColor;
+      ctx.strokeStyle = h.patternColor;
+      if (h.pattern === 'dots') {
+        for (let r = 0, y = inPad + 18; y < inPad + iH; r++, y += 34) {
+          const offsetX = (r % 2) * 17;
+          for (let x = inPad + 18 + offsetX; x < inPad + iW; x += 34) {
+            ctx.beginPath(); ctx.arc(x, y, 4.2, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+      } else if (h.pattern === 'stripes') {
+        ctx.lineWidth = 18;
+        for (let d = -iH; d < iW + iH; d += 54) {
+          ctx.beginPath(); ctx.moveTo(inPad + d, inPad); ctx.lineTo(inPad + d - iH, inPad + iH); ctx.stroke();
+        }
+      } else if (h.pattern === 'vertical') {
+        ctx.lineWidth = 18;
+        for (let x = inPad + 22; x < inPad + iW; x += 54) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
+      } else if (h.pattern === 'grid') {
+        ctx.lineWidth = 2.5;
+        for (let x = inPad + 38; x < inPad + iW; x += 40) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
+        for (let y = inPad + 38; y < inPad + iH; y += 40) { ctx.beginPath(); ctx.moveTo(inPad, y); ctx.lineTo(inPad + iW, y); ctx.stroke(); }
+      }
+      ctx.restore();
+    }
+
+    if (h.character !== 'none') {
+      ctx.save();
+      ctx.translate(h.charX, h.charY);
+      ctx.rotate(h.charRot);
+      const sc = h.charScale / 100;
+      ctx.scale(sc, sc);
+      if (h.character === 'photo' && h.photoImg) {
+        const src = h.sketchFilter && h.sketchCanvas ? h.sketchCanvas : h.photoImg;
+        ctx.drawImage(src, -145, -145, 290, 290);
+      } else {
+        drawChibiWhiteAnimal(ctx, h.character, h.inkColor);
+      }
+      ctx.restore();
+    }
+
+    h.stickers.forEach(st => drawSticker(ctx, st, h.inkColor));
+    drawHandLetteredText(ctx, h);
+
+    h.strokes.forEach(s => {
+      if (s.pts.length < 2) return;
+      ctx.save();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size * 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(s.pts[0].x, s.pts[0].y);
+      for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i].x, s.pts[i].y);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    if (h.badge.enabled) {
+      const bg = h.badge;
+      ctx.save();
+      ctx.translate(bg.x, bg.y);
+      ctx.rotate(bg.rot);
+      ctx.scale(bg.scale, bg.scale);
+      ctx.font = '800 28px "Comic Sans MS", sans-serif';
+      const bw = Math.max(96, ctx.measureText(bg.text).width + 32);
+      const bh = 48;
+      ctx.strokeStyle = bg.color;
+      ctx.fillStyle = bg.color;
+      ctx.lineWidth = 4.2;
+      if (bg.shape === 'box') { ctx.beginPath(); ctx.roundRect(-bw/2, -bh/2, bw, bh, 10); ctx.stroke(); }
+      else if (bg.shape === 'oval') { ctx.beginPath(); ctx.ellipse(0, 0, bw/2 + 4, bh/2 + 2, 0, 0, Math.PI*2); ctx.stroke(); }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(bg.text, 0, 2);
+      ctx.restore();
+    }
+
+    ctx.restore();
+
+    if (h.postmark.enabled) {
+      const pm = h.postmark;
+      ctx.save();
+      traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
+      ctx.clip();
+      ctx.translate(pm.x, pm.y);
+      ctx.rotate(pm.rot);
+      ctx.scale(pm.scale, pm.scale);
+      ctx.globalAlpha = 0.82;
+      ctx.strokeStyle = pm.color;
+      ctx.fillStyle = pm.color;
+      ctx.lineWidth = 4;
+      if (pm.type === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 132 : 56; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
+        ctx.closePath(); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(0, 0, 98, 0, Math.PI * 2); ctx.stroke();
+        if (pm.type === 'round') { ctx.beginPath(); ctx.arc(0, 0, 84, 0, Math.PI * 2); ctx.stroke(); }
+      }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '800 16px sans-serif'; ctx.fillText(pm.top, 0, -42);
+      ctx.font = '800 21px monospace'; ctx.fillText(pm.date, 0, 1);
+      ctx.font = '800 14px sans-serif'; ctx.fillText(pm.bot, 0, 42);
+      if (pm.type === 'wave') {
+        for (let w = -1; w <= 1; w++) {
+          ctx.beginPath();
+          for (let x = 94; x <= 182; x += 6) {
+            const y = w * 18 + Math.sin(x * 0.16) * 6;
+            x === 94 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+  }
+
+  function renderPixelStamp(ctx, W, H, showGrid) {
+    const { cols, rows, grid } = state.pixel;
+
+    if (!showGrid) {
+      const pad = Math.round(Math.min(W, H) * 0.048);
+      const toothR = Math.round(Math.min(W, H) * 0.016);
+      ctx.save();
+      traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
+      ctx.fillStyle = state.pixel.borderColor || '#FFFFFF';
+      ctx.fill();
+      ctx.restore();
+
+      const inPad = pad + Math.round(toothR * 2.1);
+      const cell = Math.floor(Math.min((W - inPad * 2) / cols, (H - inPad * 2) / rows));
+      const gW = cell * cols, gH = cell * rows;
+      const ox = Math.floor((W - gW) / 2), oy = Math.floor((H - gH) / 2);
+      state.pixel.geom = { ox, oy, cell, cols, rows };
+
+      ctx.fillStyle = state.pixel.innerColor || '#F8D8F0';
+      ctx.fillRect(ox, oy, gW, gH);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const b = grid[r][c];
+          if (b) {
+            ctx.fillStyle = b.hex;
+            ctx.fillRect(ox + c * cell, oy + r * cell, cell + 0.6, cell + 0.6);
+          }
+        }
+      }
+      return;
+    }
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, W, H);
+    const margin = 56;
+    const cell = Math.floor(Math.min((W - margin * 2) / cols, (H - margin * 2) / rows));
+    const gW = cell * cols, gH = cell * rows;
+    const ox = Math.floor((W - gW) / 2), oy = Math.floor((H - gH) / 2);
+    state.pixel.geom = { ox, oy, cell, cols, rows };
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const cx = ox + c * cell, cy = oy + r * cell;
+        const b = grid[r][c];
+        if (b) {
+          ctx.fillStyle = b.hex;
+          ctx.fillRect(cx, cy, cell, cell);
+          ctx.fillStyle = b.darkText ? '#231F20' : '#FFFFFF';
+          const fs = Math.max(7, Math.floor(cell * (b.code.length >= 3 ? 0.31 : 0.36)));
+          ctx.font = `800 ${fs}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.code, cx + cell / 2, cy + cell / 2 + 0.5);
+        } else {
+          ctx.fillStyle = (r + c) % 2 === 0 ? '#FAF7F2' : '#F3EFE8';
+          ctx.fillRect(cx, cy, cell, cell);
+        }
+      }
+    }
+
+    for (let r = 0; r <= rows; r++) {
+      ctx.strokeStyle = r % 5 === 0 ? '#9E9488' : '#DCD3C4';
+      ctx.lineWidth = r % 5 === 0 ? 1.6 : 0.8;
+      ctx.beginPath(); ctx.moveTo(ox, oy + r * cell); ctx.lineTo(ox + gW, oy + r * cell); ctx.stroke();
+    }
+    for (let c = 0; c <= cols; c++) {
+      ctx.strokeStyle = c % 5 === 0 ? '#9E9488' : '#DCD3C4';
+      ctx.lineWidth = c % 5 === 0 ? 1.6 : 0.8;
+      ctx.beginPath(); ctx.moveTo(ox + c * cell, oy); ctx.lineTo(ox + c * cell, oy + gH); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#3B322C';
+    const numFs = Math.max(10, Math.min(16, Math.floor(cell * 0.42)));
+    ctx.font = `800 ${numFs}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const step = cols > 36 ? 2 : 1;
+    for (let c = 0; c < cols; c += step) {
+      ctx.fillText(String(c + 1), ox + (c + 0.5) * cell, oy - 20);
+      ctx.fillText(String(c + 1), ox + (c + 0.5) * cell, oy + gH + 20);
+    }
+    for (let r = 0; r < rows; r += step) {
+      ctx.fillText(String(r + 1), ox - 22, oy + (r + 0.5) * cell);
+      ctx.fillText(String(r + 1), ox + gW + 22, oy + (r + 0.5) * cell);
+    }
+  }
+
+  let selectedObject = null;
+
+  function getObjectBox(target) {
+    const h = state.hand, cv = document.getElementById('stampCanvas');
+    if (!target) return null;
+    if (target.type === 'character') {
+      const size = 250 * h.charScale / 100;
+      return { x:h.charX, y:h.charY, w:size, h:size };
+    }
+    if (target.type === 'text') {
+      const ctx = cv.getContext('2d');
+      const fs = 42 * h.fontScale / 100;
+      ctx.save(); ctx.font = `700 ${fs}px "${h.fontStyle}", cursive`;
+      const lines = String(h.text || '').split('\n');
+      const width = Math.max(50, ...lines.map(line => ctx.measureText(line || ' ').width)) + 24;
+      ctx.restore();
+      return { x:h.textX, y:h.textY, w:width, h:Math.max(fs*1.35, lines.length*fs*1.18)+18 };
+    }
+    if (target.type === 'sticker') {
+      const st = h.stickers[target.index]; if (!st) return null;
+      const size = 70 * st.scale;
+      return { x:st.x, y:st.y, w:size, h:size };
+    }
+    if (target.type === 'postmark') {
+      const p=h.postmark, size=230*p.scale; return {x:p.x,y:p.y,w:size,h:size};
+    }
+    if (target.type === 'badge') {
+      const b=h.badge, ctx=cv.getContext('2d');
+      ctx.save();ctx.font='800 28px sans-serif';const w=Math.max(110,ctx.measureText(b.text).width+38)*b.scale;ctx.restore();
+      return {x:b.x,y:b.y,w,h:58*b.scale};
+    }
+    return null;
+  }
+
+  function getObjectRotation(target) {
+    const h=state.hand;
+    if(target.type==='character') return h.charRot || 0;
+    if(target.type==='text') return h.textRot || 0;
+    if(target.type==='sticker') return h.stickers[target.index]?.rot || 0;
+    if(target.type==='postmark') return h.postmark.rot || 0;
+    if(target.type==='badge') return h.badge.rot || 0;
+    return 0;
+  }
+  function setObjectRotation(target, value) {
+    const h=state.hand;
+    if(target.type==='character') h.charRot=value;
+    else if(target.type==='text') h.textRot=value;
+    else if(target.type==='sticker' && h.stickers[target.index]) h.stickers[target.index].rot=value;
+    else if(target.type==='postmark') h.postmark.rot=value;
+    else if(target.type==='badge') h.badge.rot=value;
+  }
+  function drawSelectionControls(ctx) {
+    if (state.mode !== 'hand' || !selectedObject) return;
+    const b = getObjectBox(selectedObject); if (!b) return;
+    const x=b.x-b.w/2, y=b.y-b.h/2, right=x+b.w, bottom=y+b.h;
+    ctx.save();
+    ctx.lineWidth=4; ctx.strokeStyle='#4D8DCE'; ctx.setLineDash([12,8]);
+    ctx.strokeRect(x,y,b.w,b.h); ctx.setLineDash([]);
+    const handle=(hx,hy,fill,kind)=>{
+      ctx.fillStyle=fill;ctx.strokeStyle='#FFFFFF';ctx.lineWidth=4;
+      ctx.beginPath();ctx.arc(hx,hy,19,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.strokeStyle='#FFFFFF';ctx.lineWidth=3.5;ctx.lineCap='round';
+      if(kind==='delete'){
+        ctx.beginPath();ctx.moveTo(hx-6,hy-6);ctx.lineTo(hx+6,hy+6);ctx.moveTo(hx+6,hy-6);ctx.lineTo(hx-6,hy+6);ctx.stroke();
+      } else if(kind==='scale'){
+        ctx.beginPath();ctx.moveTo(hx-7,hy+7);ctx.lineTo(hx+7,hy-7);ctx.moveTo(hx-7,hy+1);ctx.lineTo(hx-7,hy+7);ctx.lineTo(hx-1,hy+7);ctx.stroke();
+      } else {
+        ctx.beginPath();ctx.arc(hx,hy,8,-Math.PI*.25,Math.PI*1.35);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(hx+6,hy-8);ctx.lineTo(hx+11,hy-8);ctx.lineTo(hx+9,hy-3);ctx.stroke();
+      }
+    };
+    handle(x,y,'#E56F83','delete');
+    handle(x,bottom,'#4D8DCE','scale');
+    handle(right,bottom,'#6D9B78','rotate');
+    ctx.restore();
+  }
+
+  function deleteObject(target) {
+    if (!target) return;
+    pushHandHistory();
+    const h=state.hand;
+    if (target.type==='sticker') {
+      h.stickers.splice(target.index,1);
+      h.selSticker=-1;
+    } else if (target.type==='character') {
+      h.character='none';
+      document.querySelectorAll('.animal-btn').forEach(el=>el.classList.toggle('active',el.dataset.id==='none'));
+    } else if (target.type==='text') {
+      h.text='';
+      const ta=document.querySelector('#panel-hand textarea.txt-input'); if(ta) ta.value='';
+    } else if (target.type==='postmark') {
+      h.postmark.enabled=false; syncToggleUI('postmark','btn-tog-pm');
+    } else if (target.type==='badge') {
+      h.badge.enabled=false; syncToggleUI('badge','btn-tog-bg');
+    }
+    selectedObject=null;
+    render();
+    scheduleAutoSave();
+    toast(t('toastDeleted'));
+  }
+
+  function render() {
+    const cv = document.getElementById('stampCanvas');
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    if (state.mode === 'hand') {
+      renderHandStamp(ctx, cv.width, cv.height);
+      drawSelectionControls(ctx);
+    } else {
+      renderPixelStamp(ctx, cv.width, cv.height, state.pixel.showGrid);
+      drawPixelImagePreview(ctx);
+    }
+  }
+
+  window.switchMode = function(m) {
+    state.mode = m;
+    document.getElementById('tab-hand').classList.toggle('active', m === 'hand');
+    document.getElementById('tab-pixel').classList.toggle('active', m === 'pixel');
+    document.getElementById('panel-hand').classList.toggle('hidden', m !== 'hand');
+    document.getElementById('panel-pixel').classList.toggle('hidden', m !== 'pixel');
+    if (m === 'pixel') document.getElementById('panel-pixel').style.display = 'flex';
+    document.getElementById('hand-stage-btns').classList.toggle('hidden', m !== 'hand');
+    document.getElementById('pixel-legend-box').classList.toggle('hidden', !(m === 'pixel' && state.pixel.showGrid));
+    document.getElementById('stage-hint').textContent = m === 'hand' ? t('hintHand') : t('hintPixel');
+    if (m === 'pixel') updateBeadLegend();
+    render();
+    scheduleAutoSave();
+  };
+
+  window.setRatio = function(r) {
+    pushHandHistory();
+    state.ratio = r;
+    const m = RATIOS[r];
+    document.querySelectorAll('.ratio-btn[data-r]').forEach(b => b.classList.toggle('active', b.dataset.r === r));
+    document.getElementById('aspect-box').className = m.cls;
+    const cv = document.getElementById('stampCanvas');
+    cv.width = m.w; cv.height = m.h;
+    resetPositions(true);
+    if (state.mode === 'pixel') resizePixelGrid(+document.getElementById('rng-grid-size').value);
+    render();
+    scheduleAutoSave();
+  };
+
+  window.resetPositions = function(silent) {
+    if (!silent) pushHandHistory();
+    const m = RATIOS[state.ratio];
+    state.hand.charX = m.w * 0.5;
+    state.hand.charY = m.h * 0.34;
+    state.hand.charRot = 0;
+    state.hand.textX = m.w * 0.5;
+    state.hand.textY = m.h * 0.67;
+    state.hand.textRot = 0;
+    state.hand.postmark.x = m.w * 0.23;
+    state.hand.postmark.y = m.h * 0.22;
+    state.hand.badge.x = m.w * 0.77;
+    state.hand.badge.y = m.h * 0.82;
+    render();
+    scheduleAutoSave();
+    if (!silent) toast(t('toastResetPos'));
+  };
+
+  window.setHand = function(k, v) { state.hand[k] = v; render(); scheduleAutoSave(); };
+  window.setSub = function(g, k, v) { state.hand[g][k] = v; render(); scheduleAutoSave(); };
+  window.setColor = function(k, hex, hxId, pkId) {
+    const up = hex.toUpperCase();
+    state.hand[k] = up;
+    document.getElementById(hxId).textContent = up;
+    if (pkId) document.getElementById(pkId).value = up;
+    render();
+    scheduleAutoSave();
+  };
+  window.setSubColor = function(g, k, hex, hxId, pkId) {
+    const up = hex.toUpperCase();
+    state.hand[g][k] = up;
+    document.getElementById(hxId).textContent = up;
+    if (pkId) document.getElementById(pkId).value = up;
+    render();
+    scheduleAutoSave();
+  };
+  window.setPattern = function(p) {
+    pushHandHistory();
+    state.hand.pattern = p;
+    document.querySelectorAll('.opt-btn[data-pat]').forEach(b => b.classList.toggle('active', b.dataset.pat === p));
+    render();
+    scheduleAutoSave();
+  };
+  window.setAlign = function(a) {
+    pushHandHistory();
+    state.hand.textAlign = a;
+    document.querySelectorAll('.ratio-btn[data-al]').forEach(b => b.classList.toggle('active', b.dataset.al === a));
+    render();
+    scheduleAutoSave();
+  };
+  function syncToggleUI(g, btnId) {
+    const on = state.hand[g].enabled;
+    const b = document.getElementById(btnId);
+    if (!b) return;
+    b.classList.toggle('active', on);
+    b.textContent = on ? t('togOn') : t('togOff');
+  }
+  window.toggleSub = function(g) {
+    pushHandHistory();
+    state.hand[g].enabled = !state.hand[g].enabled;
+    syncToggleUI(g, g === 'postmark' ? 'btn-tog-pm' : 'btn-tog-bg');
+    render();
+    scheduleAutoSave();
+  };
+  window.setPmType = function(tVal) {
+    pushHandHistory();
+    state.hand.postmark.type = tVal;
+    document.querySelectorAll('.opt-btn[data-pm]').forEach(b => b.classList.toggle('active', b.dataset.pm === tVal));
+    render();
+    scheduleAutoSave();
+  };
+  window.setBgShape = function(s) {
+    pushHandHistory();
+    state.hand.badge.shape = s;
+    document.querySelectorAll('.opt-btn[data-bs]').forEach(b => b.classList.toggle('active', b.dataset.bs === s));
+    render();
+    scheduleAutoSave();
+  };
+  window.toggleDoodle = function() {
+    state.hand.doodleOn = !state.hand.doodleOn;
+    const b = document.getElementById('btn-doodle');
+    b.classList.toggle('active', state.hand.doodleOn);
+    b.textContent = state.hand.doodleOn ? t('doodleOn') : t('doodleOff');
+  };
+  window.undoDoodle = function() {
+    if (state.hand.strokes.length) {
+      pushHandHistory();
+      state.hand.strokes.pop();
+      render();
+      scheduleAutoSave();
+      toast(t('toastUndo'));
+    }
+  };
+  window.clearDoodle = function() {
+    if (!state.hand.strokes.length) return;
+    pushHandHistory();
+    state.hand.strokes = [];
+    render();
+    scheduleAutoSave();
+    toast(t('toastClearDoodle'));
+  };
+
+  window.onUploadPhoto = function(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        pushHandHistory();
+        state.hand.photoImg = img;
+        const sz = 320, c = document.createElement('canvas');
+        c.width = sz; c.height = sz;
+        const cx = c.getContext('2d');
+        const sc = Math.min(sz / img.width, sz / img.height);
+        cx.fillStyle = '#FFF'; cx.fillRect(0, 0, sz, sz);
+        cx.drawImage(img, (sz - img.width*sc)/2, (sz - img.height*sc)/2, img.width*sc, img.height*sc);
+        const id = cx.getImageData(0, 0, sz, sz), d = id.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const g = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+          if (g > 185) d[i+3] = 0;
+          else {
+            const v = g < 95 ? 35 : Math.round((g - 95) * 1.4);
+            d[i] = d[i+1] = d[i+2] = v;
+            d[i+3] = Math.min(255, Math.round((210 - g) * 1.9));
+          }
+        }
+        cx.putImageData(id, 0, 0);
+        state.hand.sketchCanvas = c;
+        state.hand.character = 'photo';
+        document.querySelectorAll('.animal-btn').forEach(el => el.classList.remove('active'));
+        render();
+        toast(t('toastPhotoLoaded'));
+      };
+      img.src = ev.target.result;
+    };
+    rd.readAsDataURL(f);
+  };
+
+  // 拼豆色卡 & 棋盘函数
+  function renderBeadTabs() {
+    const box = document.getElementById('bead-tabs');
+    box.innerHTML = '';
+    const labels = (I18N[curLang] && I18N[curLang].beadGroups) || I18N['zh-CN'].beadGroups;
+    Object.keys(BEAD_GROUPS).forEach(g => {
+      const b = document.createElement('button');
+      b.className = 'bead-tab' + (!state.pixel.query && state.pixel.group === g ? ' active' : '');
+      b.textContent = `${labels[g]}(${BEAD_GROUPS[g].length})`;
+      b.onclick = () => { state.pixel.query = ''; state.pixel.group = g; renderBeadTabs(); renderBeadGrid(); };
+      box.appendChild(b);
+    });
+  }
+  window.searchBeads = function(q) {
+    state.pixel.query = q.trim().toUpperCase();
+    renderBeadTabs();
+    renderBeadGrid();
+  };
+  function renderBeadGrid() {
+    const grid = document.getElementById('bead-grid');
+    grid.innerHTML = '';
+    const q = state.pixel.query;
+    const list = q ? ALL_BEADS.filter(b => b.code.includes(q) || b.hex.includes(q)) : BEAD_GROUPS[state.pixel.group];
+    list.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'bead-cell-btn' + (state.pixel.bead && state.pixel.bead.code === b.code ? ' active' : '');
+      btn.innerHTML = `<span class="bead-circle" style="background:${b.hex}"></span><span>${b.code}</span>`;
+      btn.onclick = () => {
+        state.pixel.bead = b;
+        document.getElementById('cur-bead-badge').textContent = `${b.code} ${b.hex}`;
+        document.getElementById('pk-bead').value = b.hex;
+        document.getElementById('hx-bead').textContent = b.hex;
+        renderBeadGrid();
+      };
+      grid.appendChild(btn);
+    });
+  }
+  window.setCustomBead = function(hex) {
+    const up = hex.toUpperCase();
+    const lum = 0.299*parseInt(up.substr(1,2),16) + 0.587*parseInt(up.substr(3,2),16) + 0.114*parseInt(up.substr(5,2),16);
+    state.pixel.bead = { code: 'DIY', hex: up, darkText: lum > 152 };
+    document.getElementById('cur-bead-badge').textContent = `DIY ${up}`;
+    document.getElementById('hx-bead').textContent = up;
+  };
+
+  let pendingPixelImage = null;
+  let pixelImageOffset = { x: 0, y: 0 };
+  let pixelImagePreviewRect = null;
+
+  function drawPixelImagePreview(ctx) {
+    if(!pendingPixelImage) { pixelImagePreviewRect=null; return; }
+    const g=state.pixel.geom; if(!g) return;
+    const scale=Math.min(g.cols/pendingPixelImage.naturalWidth,g.rows/pendingPixelImage.naturalHeight);
+    const w=pendingPixelImage.naturalWidth*scale*g.cell, h=pendingPixelImage.naturalHeight*scale*g.cell;
+    const x=g.ox+(g.cols* g.cell-w)/2+pixelImageOffset.x*g.cell;
+    const y=g.oy+(g.rows* g.cell-h)/2+pixelImageOffset.y*g.cell;
+    pixelImagePreviewRect={x,y,w,h};
+    ctx.save();ctx.globalAlpha=0.62;ctx.drawImage(pendingPixelImage,x,y,w,h);
+    ctx.globalAlpha=1;ctx.strokeStyle='#D47286';ctx.lineWidth=3;ctx.setLineDash([10,7]);ctx.strokeRect(x,y,w,h);ctx.setLineDash([]);
+    ctx.fillStyle='#D47286';ctx.font='bold 18px sans-serif';ctx.textAlign='left';ctx.fillText(t('dragImgHint'),Math.max(12,x),Math.max(24,y-12));ctx.restore();
+  }
+
+  window.choosePixelImage = function(event) {
+    const file = event.target.files && event.target.files[0];
+    const status = document.getElementById('pixel-image-status');
+    const button = document.getElementById('btn-convert-image');
+    pendingPixelImage = null;
+    button.disabled = true;
+    if (!file) return;
+    if (!file.type || !file.type.startsWith('image/')) { event.target.value=''; return; }
+    if (file.size > 12 * 1024 * 1024) { event.target.value=''; return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      if (img.naturalWidth > 8000 || img.naturalHeight > 8000) return;
+      pendingPixelImage = img;
+      pixelImageOffset = { x: 0, y: 0 };
+      button.disabled = false;
+      render();
+      status.textContent = `${file.name} (${img.naturalWidth} × ${img.naturalHeight})`;
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); };
+    img.src = url;
+  };
+
+  window.convertImageToBeads = function() {
+    if (!pendingPixelImage) { toast(t('toastSelectImgFirst')); return; }
+    const img = pendingPixelImage;
+    const cols = state.pixel.cols, rows = state.pixel.rows;
+    const sample = document.createElement('canvas');
+    sample.width = cols; sample.height = rows;
+    const cx = sample.getContext('2d', { willReadFrequently: true });
+    cx.clearRect(0,0,cols,rows);
+    cx.imageSmoothingEnabled = true;
+    cx.imageSmoothingQuality = 'high';
+    const scale = Math.min(cols / img.naturalWidth, rows / img.naturalHeight);
+    const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+    cx.drawImage(img,(cols-dw)/2+pixelImageOffset.x,(rows-dh)/2+pixelImageOffset.y,dw,dh);
+    let pixels;
+    try { pixels = cx.getImageData(0,0,cols,rows).data; }
+    catch(err) { return; }
+
+    const beadRGB = ALL_BEADS.map(bead => ({
+      bead,
+      r:parseInt(bead.hex.slice(1,3),16),
+      g:parseInt(bead.hex.slice(3,5),16),
+      b:parseInt(bead.hex.slice(5,7),16)
+    }));
+    const nextGrid = Array.from({length:rows},()=>Array(cols).fill(null));
+    for(let r=0;r<rows;r++) {
+      for(let c=0;c<cols;c++) {
+        const i=(r*cols+c)*4, alpha=pixels[i+3]/255;
+        if(alpha < 0.14) continue;
+        const pr=Math.round(pixels[i]*alpha+255*(1-alpha));
+        const pg=Math.round(pixels[i+1]*alpha+255*(1-alpha));
+        const pb=Math.round(pixels[i+2]*alpha+255*(1-alpha));
+        let best=null, bestDist=Infinity;
+        for(const item of beadRGB) {
+          const dr=pr-item.r, dg=pg-item.g, db=pb-item.b;
+          const dist=dr*dr*0.30+dg*dg*0.59+db*db*0.11;
+          if(dist<bestDist){bestDist=dist;best=item.bead;}
+        }
+        nextGrid[r][c]=best;
+      }
+    }
+    state.pixel.history.push(state.pixel.grid.map(row=>row.slice()));
+    if(state.pixel.history.length>50) state.pixel.history.shift();
+    state.pixel.grid=nextGrid;
+    state.pixel.showGrid=true;
+    const toggle=document.getElementById('btn-tog-grid');
+    toggle.classList.add('active');
+    toggle.textContent=t('gridOn');
+    document.getElementById('pixel-legend-box').classList.remove('hidden');
+    updateBeadLegend();
+    pendingPixelImage=null; pixelImagePreviewRect=null;
+    render();
+    scheduleAutoSave();
+    toast(t('toastConverted', { c: cols, r: rows }));
+  };
+
+  function initPixelBoard(cols, rows) {
+    state.pixel.cols = cols;
+    state.pixel.rows = rows;
+    state.pixel.grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+    state.pixel.history = [];
+    document.getElementById('lbl-grid-dim').textContent = `${cols} × ${rows} ${t('gridUnit')}`;
+    updateBeadLegend();
+  }
+  window.resizePixelGrid = function(v) {
+    const m = RATIOS[state.ratio];
+    const cols = Math.max(8, Math.min(52, Math.round(Number(v) || 24)));
+    const rows = Math.max(8, Math.min(52, Math.round(cols * (m.h / m.w))));
+    const oldGrid = state.pixel.grid;
+    const oldRows = state.pixel.rows;
+    const oldCols = state.pixel.cols;
+    if (cols !== oldCols || rows !== oldRows) {
+      const nextGrid = Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => (oldGrid[r] && oldGrid[r][c]) ? oldGrid[r][c] : null)
+      );
+      state.pixel.cols = cols;
+      state.pixel.rows = rows;
+      state.pixel.grid = nextGrid;
+      state.pixel.history = [];
+      document.getElementById('lbl-grid-dim').textContent = `${cols} × ${rows} ${t('gridUnit')}`;
+      updateBeadLegend();
+      scheduleAutoSave();
+    }
+    render();
+  };
+  window.setPixelBorder = function(v) { state.pixel.borderColor = v; const el=document.getElementById('hx-pixel-border'); if(el) el.textContent=v.toUpperCase(); render(); scheduleAutoSave(); };
+  window.setPixelInner = function(v) { state.pixel.innerColor = v; const el=document.getElementById('hx-pixel-inner'); if(el) el.textContent=v.toUpperCase(); render(); scheduleAutoSave(); };
+  window.togglePixelGrid = function() {
+    state.pixel.showGrid = !state.pixel.showGrid;
+    const b = document.getElementById('btn-tog-grid');
+    b.classList.toggle('active', state.pixel.showGrid);
+    b.textContent = state.pixel.showGrid ? t('gridOn') : t('gridOff');
+    document.getElementById('pixel-legend-box').classList.toggle('hidden', !state.pixel.showGrid);
+    render();
+    scheduleAutoSave();
+  };
+  window.toggleMirror = function() {
+    state.pixel.mirror = !state.pixel.mirror;
+    const b = document.getElementById('btn-mirror');
+    b.classList.toggle('active', state.pixel.mirror);
+    b.textContent = state.pixel.mirror ? t('mirrorOn') : t('mirrorOff');
+  };
+  window.setPixelTool = function(tTool) {
+    state.pixel.tool = tTool;
+    document.querySelectorAll('.opt-btn[data-tl]').forEach(b => b.classList.toggle('active', b.dataset.tl === tTool));
+  };
+  function collectBeadStats() {
+    const map = new Map();
+    let total = 0;
+    state.pixel.grid.forEach(row => row.forEach(cell => {
+      if (cell) {
+        total++;
+        if (!map.has(cell.code)) map.set(cell.code, { bead: cell, count: 0 });
+        map.get(cell.code).count++;
+      }
+    }));
+    return { map, total };
+  }
+  function updateBeadLegend() {
+    const box = document.getElementById('pixel-legend-box');
+    const { map, total } = collectBeadStats();
+    box.innerHTML = `<span style="font-size:11px;font-weight:900;color:#231F20;padding:2px 4px;">${t('totalBeads', { n: total })}</span>`;
+    map.forEach(it => {
+      const chip = document.createElement('span');
+      chip.className = 'legend-chip';
+      chip.innerHTML = `<span style="width:12px;height:12px;border-radius:3px;background:${it.bead.hex};border:1px solid rgba(0,0,0,0.25);"></span>${it.bead.code} (${it.count})`;
+      box.appendChild(chip);
+    });
+  }
+  window.undoPixel = function() {
+    if (state.pixel.history.length) {
+      state.pixel.grid = state.pixel.history.pop();
+      updateBeadLegend();
+      render();
+      scheduleAutoSave();
+      toast(t('toastUndo'));
+    }
+  };
+  window.clearPixel = function() {
+    const hasPixels = state.pixel.grid.some(row => row.some(cell => cell));
+    if (!hasPixels) return;
+    state.pixel.history.push(state.pixel.grid.map(r => r.slice()));
+    if (state.pixel.history.length > 50) state.pixel.history.shift();
+    state.pixel.grid = Array.from({ length: state.pixel.rows }, () => Array(state.pixel.cols).fill(null));
+    updateBeadLegend();
+    render();
+    scheduleAutoSave();
+    toast(t('toastClearBoard'));
+  };
+  function paintCell(r, c, first) {
+    const { rows, cols, grid, tool, bead, mirror } = state.pixel;
+    if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+    if (tool === 'picker') {
+      const tgt = grid[r][c];
+      if (tgt) {
+        state.pixel.bead = tgt;
+        document.getElementById('cur-bead-badge').textContent = `${tgt.code} ${tgt.hex}`;
+        setPixelTool('brush');
+        toast(t('toastPickedColor', { code: tgt.code }));
+      }
+      return;
+    }
+    if (tool === 'bucket') {
+      const target = grid[r][c] ? grid[r][c].code : null;
+      if (target === bead.code) return;
+      if (!state.pixel.gestureSaved) {
+        state.pixel.history.push(grid.map(row => row.slice()));
+        if (state.pixel.history.length > 50) state.pixel.history.shift();
+        state.pixel.gestureSaved = true;
+      }
+      const st = [[r, c]], vis = new Set();
+      while (st.length) {
+        const [cr, cc] = st.pop();
+        const k = `${cr},${cc}`;
+        if (vis.has(k) || cr < 0 || cr >= rows || cc < 0 || cc >= cols) continue;
+        if ((grid[cr][cc] ? grid[cr][cc].code : null) !== target) continue;
+        vis.add(k);
+        grid[cr][cc] = bead;
+        st.push([cr+1,cc],[cr-1,cc],[cr,cc+1],[cr,cc-1]);
+      }
+      updateBeadLegend();
+      render();
+      scheduleAutoSave();
+      return;
+    }
+    const val = tool === 'eraser' ? null : bead;
+    const mirrorC = cols - 1 - c;
+    const changesMain = (grid[r][c] ? grid[r][c].code : null) !== (val ? val.code : null);
+    const changesMirror = mirror && mirrorC !== c && (grid[r][mirrorC] ? grid[r][mirrorC].code : null) !== (val ? val.code : null);
+    if (!changesMain && !changesMirror) return;
+    if (!state.pixel.gestureSaved) {
+      state.pixel.history.push(grid.map(row => row.slice()));
+      if (state.pixel.history.length > 50) state.pixel.history.shift();
+      state.pixel.gestureSaved = true;
+    }
+    grid[r][c] = val;
+    if (mirror) grid[r][mirrorC] = val;
+    updateBeadLegend();
+    render();
+    scheduleAutoSave();
+  }
+
+  function bindCanvasEvents() {
+    const cv = document.getElementById('stampCanvas');
+    const ptOf = e => {
+      const rc=cv.getBoundingClientRect();
+      return {x:(e.clientX-rc.left)*(cv.width/rc.width),y:(e.clientY-rc.top)*(cv.height/rc.height)};
+    };
+    const objectTargets = () => {
+      const h=state.hand, arr=[];
+      if(h.badge.enabled) arr.push({type:'badge'});
+      if(h.postmark.enabled) arr.push({type:'postmark'});
+      if(h.character!=='none') arr.push({type:'character'});
+      if(String(h.text||'').trim()) arr.push({type:'text'});
+      for(let i=0;i<h.stickers.length;i++) arr.push({type:'sticker',index:i});
+      return arr.reverse();
+    };
+    const hitObject = (p,target) => {
+      const b=getObjectBox(target); if(!b) return false;
+      return Math.abs(p.x-b.x)<=b.w/2 && Math.abs(p.y-b.y)<=b.h/2;
+    };
+    const hitHandle = (p,b,kind) => {
+      const x=b.x-b.w/2, y=b.y-b.h/2, right=x+b.w, bottom=y+b.h;
+      const hx=kind==='delete'?x:(kind==='scale'?x:right), hy=kind==='delete'?y:bottom;
+      return Math.hypot(p.x-hx,p.y-hy)<34;
+    };
+    let activePointer=null, dragMode=null, dragStart=null, dragCenter=null, startScale=1, startAngle=0, startRotation=0, didMutate=false;
+
+    const down = e => {
+      if(e.pointerType==='mouse' && e.button!==0) return;
+      e.preventDefault();
+      cv.setPointerCapture?.(e.pointerId);
+      activePointer=e.pointerId;
+      const p=ptOf(e);
+      isDown=true;
+      didMutate=false;
+      if(state.mode==='pixel') {
+        const g=state.pixel.geom;
+        if(!g) return;
+        if(pendingPixelImage && pixelImagePreviewRect && p.x>=pixelImagePreviewRect.x-18 && p.x<=pixelImagePreviewRect.x+pixelImagePreviewRect.w+18 && p.y>=pixelImagePreviewRect.y-18 && p.y<=pixelImagePreviewRect.y+pixelImagePreviewRect.h+18) {
+          dragMode='move-image'; dragStart=p; dragCenter={x:pixelImageOffset.x,y:pixelImageOffset.y}; return;
+        }
+        state.pixel.gestureSaved=false;
+        const c=Math.floor((p.x-g.ox)/g.cell), r=Math.floor((p.y-g.oy)/g.cell);
+        lastKey=`${r},${c}`; paintCell(r,c,true); return;
+      }
+      if(state.hand.doodleOn) {
+        pushHandHistory();
+        selectedObject=null;
+        curStroke={color:state.hand.brushColor,size:state.hand.brushSize,pts:[p]};
+        state.hand.strokes.push(curStroke);
+        didMutate=true;
+        render(); return;
+      }
+      if(selectedObject) {
+        const b=getObjectBox(selectedObject);
+        if(b && hitHandle(p,b,'delete')) { deleteObject(selectedObject); return; }
+        if(b && hitHandle(p,b,'scale')) {
+          pushHandHistory();
+          dragMode='resize'; dragStart=p; dragCenter={x:b.x,y:b.y};
+          const obj=selectedObject;
+          startScale=obj.type==='character'?state.hand.charScale/100:
+            obj.type==='text'?state.hand.fontScale/100:
+            obj.type==='sticker'?state.hand.stickers[obj.index].scale:
+            obj.type==='postmark'?state.hand.postmark.scale:state.hand.badge.scale;
+          return;
+        }
+        if(b && hitHandle(p,b,'rotate')) {
+          pushHandHistory();
+          dragMode='rotate'; dragStart=p; dragCenter={x:b.x,y:b.y};
+          startAngle=Math.atan2(p.y-b.y,p.x-b.x); startRotation=getObjectRotation(selectedObject);
+          return;
+        }
+      }
+      let target=objectTargets().find(tObj=>hitObject(p,tObj));
+      if(target) {
+        pushHandHistory();
+        selectedObject=target;
+        if(target.type==='sticker') state.hand.selSticker=target.index;
+        dragMode='move'; dragStart=p;
+        const b=getObjectBox(target); dragCenter={x:b.x,y:b.y};
+        render(); return;
+      }
+      selectedObject=null;
+      render();
+    };
+
+    const move = e => {
+      if(!isDown || (activePointer!==null && e.pointerId!==activePointer)) return;
+      e.preventDefault();
+      const p=ptOf(e);
+      if(state.mode==='pixel') {
+        const g=state.pixel.geom;
+        if(!g) return;
+        if(dragMode==='move-image' && pendingPixelImage) {
+          pixelImageOffset.x=dragCenter.x+(p.x-dragStart.x)/g.cell;
+          pixelImageOffset.y=dragCenter.y+(p.y-dragStart.y)/g.cell;
+          render(); return;
+        }
+        if(state.pixel.tool==='bucket' || state.pixel.tool==='picker') return;
+        const c=Math.floor((p.x-g.ox)/g.cell), r=Math.floor((p.y-g.oy)/g.cell);
+        const k=`${r},${c}`;
+        if(k!==lastKey){lastKey=k;paintCell(r,c,false);}
+        return;
+      }
+      if(state.hand.doodleOn && curStroke){curStroke.pts.push(p);didMutate=true;render();return;}
+      if(!selectedObject || !dragMode) return;
+      didMutate=true;
+      const h=state.hand;
+      if(dragMode==='move') {
+        const nx=dragCenter.x+(p.x-dragStart.x), ny=dragCenter.y+(p.y-dragStart.y);
+        if(selectedObject.type==='character'){h.charX=nx;h.charY=ny;}
+        else if(selectedObject.type==='text'){h.textX=nx;h.textY=ny;}
+        else if(selectedObject.type==='sticker'){h.stickers[selectedObject.index].x=nx;h.stickers[selectedObject.index].y=ny;}
+        else if(selectedObject.type==='postmark'){h.postmark.x=nx;h.postmark.y=ny;}
+        else if(selectedObject.type==='badge'){h.badge.x=nx;h.badge.y=ny;}
+      } else if(dragMode==='rotate') {
+        const angle=Math.atan2(p.y-dragCenter.y,p.x-dragCenter.x);
+        setObjectRotation(selectedObject,startRotation+angle-startAngle);
+      } else if(dragMode==='resize') {
+        const startDist=Math.max(18,Math.hypot(dragStart.x-dragCenter.x,dragStart.y-dragCenter.y));
+        const factor=Math.max(0.35,Math.min(2.8,Math.hypot(p.x-dragCenter.x,p.y-dragCenter.y)/startDist));
+        const next=startScale*factor;
+        if(selectedObject.type==='character') h.charScale=Math.max(40,Math.min(180,next*100));
+        else if(selectedObject.type==='text') h.fontScale=Math.max(50,Math.min(180,next*100));
+        else if(selectedObject.type==='sticker') h.stickers[selectedObject.index].scale=Math.max(0.4,Math.min(2.5,next));
+        else if(selectedObject.type==='postmark') h.postmark.scale=Math.max(0.45,Math.min(1.8,next));
+        else if(selectedObject.type==='badge') h.badge.scale=Math.max(0.45,Math.min(1.8,next));
+      }
+      render();
+    };
+    const up = e => {
+      if(activePointer!==null && e.pointerId!==activePointer) return;
+      if (didMutate) scheduleAutoSave();
+      isDown=false;dragMode=null;dragStart=null;dragCenter=null;curStroke=null;lastKey='';activePointer=null;didMutate=false;
+    };
+    cv.addEventListener('pointerdown',down);
+    window.addEventListener('pointermove',move,{passive:false});
+    window.addEventListener('pointerup',up);
+    window.addEventListener('pointercancel',up);
+  }
+
+  window.exportPNG = function() {
+    const m = RATIOS[state.ratio];
+    const uhd = document.getElementById('chk-uhd')?.checked ? 2 : 1;
+    const out = document.createElement('canvas');
+    if (state.mode === 'hand') {
+      out.width = m.w * uhd; out.height = m.h * uhd;
+      const ctx = out.getContext('2d');
+      ctx.scale(uhd, uhd);
+      renderHandStamp(ctx, m.w, m.h);
+    } else {
+      const { map, total } = collectBeadStats();
+      const showL = state.pixel.showGrid && map.size > 0;
+      const perRow = 6;
+      const rows = showL ? Math.ceil(map.size / perRow) : 0;
+      const extraH = showL ? (56 + rows * 52) : 0;
+      out.width = m.w * uhd; out.height = (m.h + extraH) * uhd;
+      const ctx = out.getContext('2d');
+      ctx.scale(uhd, uhd);
+      if (state.pixel.showGrid) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, m.w, m.h + extraH); }
+      renderPixelStamp(ctx, m.w, m.h, state.pixel.showGrid);
+      if (showL) {
+        const sy = m.h + 10;
+        ctx.fillStyle = '#231F20'; ctx.font = '800 20px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(t('exportBeadTitle', { n: total }), 56, sy + 16);
+        let idx = 0;
+        const iw = Math.floor((m.w - 112) / perRow);
+        map.forEach(it => {
+          const r = Math.floor(idx / perRow), c = idx % perRow;
+          const ix = 56 + c * iw, iy = sy + 36 + r * 48;
+          ctx.fillStyle = it.bead.hex; ctx.fillRect(ix, iy, 30, 30);
+          ctx.strokeStyle = '#CFC5B6'; ctx.lineWidth = 1.5; ctx.strokeRect(ix, iy, 30, 30);
+          ctx.fillStyle = '#231F20'; ctx.font = '800 17px monospace';
+          ctx.fillText(`${it.bead.code} (${it.count})`, ix + 36, iy + 21);
+          idx++;
+        });
+      }
+    }
+    const a = document.createElement('a');
+    a.download = `stamp-studio-${Date.now()}.png`;
+    a.href = out.toDataURL('image/png');
+    a.click();
+    toast(t('toastExported'));
+  };
+
+  initUI();
+})();
 </script>
 </body>
 </html>
