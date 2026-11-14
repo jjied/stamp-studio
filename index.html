@@ -2834,16 +2834,25 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.fill();
                 ctx.stroke();
 
-                // 耳朵
+                // 左耳朵：独立绘制
                 ctx.beginPath();
                 ctx.ellipse(-100, -62, 24, 48, -0.65, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 右耳朵：独立绘制
+                ctx.beginPath();
                 ctx.ellipse(100, -62, 24, 48, 0.65, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                // 耳朵内侧
+                // 左耳朵内侧
                 ctx.beginPath();
                 ctx.ellipse(-100, -62, 12, 30, -0.65, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // 右耳朵内侧
+                ctx.beginPath();
                 ctx.ellipse(100, -62, 12, 30, 0.65, 0, Math.PI * 2);
                 ctx.stroke();
 
@@ -2917,22 +2926,22 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.arc(0, -31, 17, 0.2, Math.PI - 0.2);
                 ctx.stroke();
 
-                // 围巾：自然弯曲的围脖
+                // 围巾：下移至脖子位置，不再横穿脸部
                 ctx.beginPath();
-                ctx.moveTo(-65, 0);
-                ctx.quadraticCurveTo(0, 20, 65, 0);
-                ctx.lineTo(61, 22);
-                ctx.quadraticCurveTo(0, 42, -61, 22);
+                ctx.moveTo(-58, 23);
+                ctx.quadraticCurveTo(0, 34, 58, 23);
+                ctx.lineTo(55, 43);
+                ctx.quadraticCurveTo(0, 54, -55, 43);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
 
                 // 围巾垂下的部分
                 ctx.beginPath();
-                ctx.moveTo(35, 17);
-                ctx.lineTo(55, 77);
-                ctx.lineTo(27, 72);
-                ctx.lineTo(15, 17);
+                ctx.moveTo(31, 37);
+                ctx.lineTo(48, 83);
+                ctx.lineTo(23, 78);
+                ctx.lineTo(13, 37);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
