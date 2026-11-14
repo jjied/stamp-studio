@@ -382,6 +382,18 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
   .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+
+/* Mobile layout safeguards */
+@media (max-width: 600px) {
+  .app-shell, .main-shell, .workspace, .editor-layout { width:100%; max-width:100%; min-width:0; }
+  .card-box { min-width:0; }
+  .row-flex { flex-wrap:wrap; }
+  .pill-grid-5 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .pill-grid-3, .pill-grid-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .txt-input, .sel-input { min-width:0; max-width:100%; }
+  #stampCanvas { display:block; width:100%; height:auto; max-height:58vh; object-fit:contain; }
+}
+
 </style>
 </head>
 <body>
@@ -445,10 +457,10 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
     <section class="ctrl-col">
       <!-- ==================== 模式 A：手绘治愈邮票 ==================== -->
       <div id="panel-hand" style="display:flex;flex-direction:column;gap:10px;">
-        <!-- 1. 18款白团子手绘小动物 & 照片 -->
+        <!-- 1. 14款原版手绘小动物 & 照片 -->
         <div class="card-box">
           <div class="card-head">
-            <span class="card-title">1. 选择手绘小动物 (18款) 或上传照片</span>
+            <span class="card-title">1. 选择手绘小动物 (14款) 或上传照片</span>
             <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6E635C;">
               <span>大小</span><input type="range" id="rng-char-scale" min="50" max="150" value="100" oninput="setHand('charScale', +this.value)" style="width:56px;">
               <span>旋转</span><input type="range" id="rng-char-rot" min="-180" max="180" value="0" oninput="setHand('charRot', +this.value * Math.PI / 180)" style="width:52px;">
@@ -493,10 +505,11 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
           </div>
 
           <div class="divider"></div>
-          <div class="pill-grid-4">
+          <div class="pill-grid-5">
             <button class="opt-btn" data-pat="none" onclick="setPattern('none')">纯色无纹</button>
-            <button class="opt-btn active" data-pat="dots" onclick="setPattern('dots')">小白波点</button>
+            <button class="opt-btn active" data-pat="dots" onclick="setPattern('dots')">波点</button>
             <button class="opt-btn" data-pat="stripes" onclick="setPattern('stripes')">斜条纹</button>
+            <button class="opt-btn" data-pat="vertical" onclick="setPattern('vertical')">竖条纹</button>
             <button class="opt-btn" data-pat="grid" onclick="setPattern('grid')">方格本</button>
           </div>
           <div class="row-flex">
@@ -513,8 +526,8 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
           <div class="card-head">
             <span class="card-title">3. 治愈文字与手绘字体</span>
             <select class="sel-input" onchange="setHand('fontStyle', this.value)">
-              <option value="marker">手绘马克笔体 (推荐)</option>
-              <option value="round">软萌治愈圆体</option>
+              <option value="marker">可爱手写体（推荐）</option>
+              <option value="round">软萌圆润体</option>
               <option value="kaiti">温暖楷体手写</option>
               <option value="serif">复古文艺衬线</option>
               <option value="pixel">复古像素等宽</option>
@@ -586,7 +599,7 @@ THIS CUTENESS</textarea>
             <button class="opt-btn active" id="btn-tog-bg" onclick="toggleSub('badge')">已开启 ON</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <input class="txt-input" value="100% CUTE" maxlength="12" oninput="setSub('badge','text',this.value)">
+            <div style="display:flex;flex-direction:column;gap:5px;min-width:0;"><select class="sel-input" onchange="if(this.value) { document.getElementById('badge-custom').value=this.value; setSub('badge','text',this.value); }"><option value="">选择面值预设</option><option>100% CUTE</option><option>LOVE 2026</option><option>HAPPY MAIL</option><option>小小心意</option><option>特别投递</option><option>限量珍藏</option><option>JUST FOR YOU</option></select><input id="badge-custom" class="txt-input" value="100% CUTE" maxlength="20" placeholder="也可以自己输入" oninput="setSub('badge','text',this.value)"></div>
             <div class="pill-grid-3">
               <button class="opt-btn" data-bs="none" onclick="setBgShape('none')">无框</button>
               <button class="opt-btn active" data-bs="box" onclick="setBgShape('box')">方框</button>
@@ -629,6 +642,7 @@ THIS CUTENESS</textarea>
             <span id="lbl-grid-dim" style="font-size:12px;font-family:monospace;font-weight:900;color:#B84A58;">24 × 24 格</span>
           </div>
           <input type="range" id="rng-grid-size" min="8" max="52" value="24" oninput="resizePixelGrid(+this.value)" style="width:100%;">
+          <div class="row-flex" style="justify-content:space-between;gap:8px;flex-wrap:wrap;margin:8px 0;"><span class="sub-lbl">像素邮票齿孔边框颜色</span><label class="color-pill"><input type="color" id="pk-pixel-border" value="#F52B43" oninput="setPixelBorder(this.value)"><span id="hx-pixel-border">#F52B43</span></label><span class="sub-lbl">内框颜色</span><label class="color-pill"><input type="color" id="pk-pixel-inner" value="#FFFFFF" oninput="setPixelInner(this.value)"><span id="hx-pixel-inner">#FFFFFF</span></label></div>
           <button class="opt-btn active" id="btn-tog-grid" onclick="togglePixelGrid()" style="padding:8px;font-size:12px;">
             显示网格、色号与底部统计: ON (关闭即变像素邮票)
           </button>
@@ -788,6 +802,8 @@ THIS CUTENESS</textarea>
       strokes: []
     },
     pixel: {
+      borderColor: '#F52B43',
+      innerColor: '#FFFFFF',
       cols: 24,
       rows: 24,
       grid: [],
@@ -837,7 +853,7 @@ THIS CUTENESS</textarea>
     mkSw('sw-bg', PALETTES.ink, h => setSubColor('badge', 'color', h, 'hx-bg', 'pk-bg'));
     mkSw('sw-brush', PALETTES.brush, h => setColor('brushColor', h, 'hx-brush', 'pk-brush'));
 
-    // 18款动物按钮
+    // 14款原版动物按钮
     const aGrid = document.getElementById('animal-grid');
     ANIMALS.forEach(a => {
       const b = document.createElement('button');
@@ -1694,7 +1710,7 @@ ctx.stroke();
     ctx.translate(st.x, st.y);
     ctx.rotate(st.rot);
     ctx.scale(st.scale, st.scale);
-    ctx.strokeStyle = ink;
+    ctx.strokeStyle = '#171313';
     ctx.lineWidth = 4.6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -1718,35 +1734,35 @@ ctx.stroke();
       ctx.moveTo(10, -10); ctx.lineTo(-10, 10);
       ctx.stroke();
     } else if (t === 'heart') {
-      ctx.fillStyle = '#F7B2C8';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.moveTo(0, 18); ctx.bezierCurveTo(-28, 0, -22, -24, 0, -8); ctx.bezierCurveTo(22, -24, 28, 0, 0, 18); ctx.fill(); ctx.stroke();
     } else if (t === 'daisy') {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#171313';
       for (let i = 0; i < 5; i++) {
         const a = (i * Math.PI * 2) / 5;
         ctx.beginPath(); ctx.arc(Math.cos(a)*13, Math.sin(a)*13, 8.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
       }
-      ctx.fillStyle = '#F7C948'; ctx.beginPath(); ctx.arc(0, 0, 7.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#171313'; ctx.beginPath(); ctx.arc(0, 0, 7.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     } else if (t === 'clover') {
-      ctx.fillStyle = '#A7DFB2';
+      ctx.fillStyle = '#171313';
       [[-10,-10],[10,-10],[-10,10],[10,10]].forEach(([x,y]) => { ctx.beginPath(); ctx.arc(x, y, 10.5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); });
     } else if (t === 'cloud') {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.arc(-13, 4, 13, 0, Math.PI*2); ctx.arc(0, -4, 15, 0, Math.PI*2); ctx.arc(14, 4, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     } else if (t === 'bow') {
-      ctx.fillStyle = '#F7B2C8';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-22,-12); ctx.lineTo(-22,12); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(22,-12); ctx.lineTo(22,12); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     } else if (t === 'berry') {
-      ctx.fillStyle = '#F27486';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.moveTo(-16,-8); ctx.quadraticCurveTo(0, 28, 0, 25); ctx.quadraticCurveTo(0, 28, 16, -8); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#8FD19E'; ctx.beginPath(); ctx.ellipse(0, -10, 14, 5.5, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#171313'; ctx.beginPath(); ctx.ellipse(0, -10, 14, 5.5, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     } else if (t === 'moon') {
-      ctx.fillStyle = '#FCE38A';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.arc(0, 0, 21, 0.2*Math.PI, 1.8*Math.PI); ctx.quadraticCurveTo(4, 0, 16, 12); ctx.closePath(); ctx.fill(); ctx.stroke();
     } else if (t === 'paw') {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#171313';
       ctx.beginPath(); ctx.ellipse(0, 7, 14, 10, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
       [[-13,-7],[-4,-14],[4,-14],[13,-7]].forEach(([x,y]) => { ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); });
     }
@@ -1766,8 +1782,8 @@ ctx.stroke();
     const sy = -((lines.length - 1) * lh) / 2;
 
     const fontMap = {
-      marker: '"Comic Sans MS", "Chalkboard SE", "Marker Felt", "PingFang SC", cursive, sans-serif',
-      round: '"PingFang SC", "Hiragino Maru Gothic ProN", "YouYuan", sans-serif',
+      marker: '"Comic Sans MS", "Chalkboard SE", "Marker Felt", "Comic Neue", "Kaiti SC", "PingFang SC", cursive, sans-serif',
+      round: '"Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "YouYuan", "PingFang SC", sans-serif',
       kaiti: '"KaiTi", "STKaiti", "BiauKai", cursive, serif',
       serif: '"Songti SC", "SimSun", Georgia, serif',
       pixel: '"Courier New", Consolas, monospace'
@@ -1883,6 +1899,9 @@ function renderHandStamp(ctx, W, H) {
         for (let d = -iH; d < iW + iH; d += 36) {
           ctx.beginPath(); ctx.moveTo(inPad + d, inPad); ctx.lineTo(inPad + d - iH, inPad + iH); ctx.stroke();
         }
+      } else if (h.pattern === 'vertical') {
+        ctx.lineWidth = 7;
+        for (let x = inPad + 18; x < inPad + iW; x += 34) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
       } else if (h.pattern === 'grid') {
         ctx.lineWidth = 2.5;
         for (let x = inPad + 38; x < inPad + iW; x += 40) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
@@ -1963,8 +1982,16 @@ function renderHandStamp(ctx, W, H) {
       ctx.strokeStyle = pm.color;
       ctx.fillStyle = pm.color;
       ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(0, 0, 98, 0, Math.PI * 2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0, 0, 84, 0, Math.PI * 2); ctx.stroke();
+      if (pm.type === 'star') {
+        // 星形邮戳：独立五角星外框与放射短线，不复用双环圆戳
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 108 : 88; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
+        ctx.closePath(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0,0,64,0,Math.PI*2); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(0, 0, 98, 0, Math.PI * 2); ctx.stroke();
+        if (pm.type === 'round') { ctx.beginPath(); ctx.arc(0, 0, 84, 0, Math.PI * 2); ctx.stroke(); }
+      }
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.font = '800 16px sans-serif'; ctx.fillText(pm.top, 0, -42);
       ctx.font = '800 21px monospace'; ctx.fillText(pm.date, 0, 1);
@@ -1993,7 +2020,7 @@ function renderHandStamp(ctx, W, H) {
       const toothR = Math.round(Math.min(W, H) * 0.016);
       ctx.save();
       traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = state.pixel.borderColor || '#F52B43';
       ctx.fill();
       ctx.restore();
 
@@ -2003,7 +2030,7 @@ function renderHandStamp(ctx, W, H) {
       const ox = Math.floor((W - gW) / 2), oy = Math.floor((H - gH) / 2);
       state.pixel.geom = { ox, oy, cell, cols, rows };
 
-      ctx.fillStyle = '#FAF6EE';
+      ctx.fillStyle = state.pixel.innerColor || '#FFFFFF';
       ctx.fillRect(ox, oy, gW, gH);
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -2310,6 +2337,8 @@ function renderHandStamp(ctx, W, H) {
     }
     render();
   };
+  window.setPixelBorder = function(v) { state.pixel.borderColor = v; const el=document.getElementById('hx-pixel-border'); if(el) el.textContent=v.toUpperCase(); render(); };
+  window.setPixelInner = function(v) { state.pixel.innerColor = v; const el=document.getElementById('hx-pixel-inner'); if(el) el.textContent=v.toUpperCase(); render(); };
   window.togglePixelGrid = function() {
     state.pixel.showGrid = !state.pixel.showGrid;
     const b = document.getElementById('btn-tog-grid');
