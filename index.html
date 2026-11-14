@@ -2903,18 +2903,18 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.fill();
                 ctx.stroke();
 
-               // 圆润贝雷帽：低矮、柔软，不带尖顶和毛球
+               // 圆角三角形冬帽：帽尖微微向右弯
 ctx.fillStyle = '#FFFFFF';
 ctx.strokeStyle = '#231F20';
 ctx.lineWidth = 8;
 
 // 帽子主体
 ctx.beginPath();
-ctx.moveTo(-61, -105);
-ctx.quadraticCurveTo(-67, -151, -25, -157);
-ctx.quadraticCurveTo(18, -171, 57, -137);
-ctx.quadraticCurveTo(68, -124, 59, -105);
-ctx.quadraticCurveTo(0, -91, -61, -105);
+ctx.moveTo(-62, -105);
+ctx.quadraticCurveTo(-49, -137, -12, -158);
+ctx.quadraticCurveTo(18, -180, 35, -188);
+ctx.quadraticCurveTo(31, -153, 59, -105);
+ctx.quadraticCurveTo(0, -91, -62, -105);
 ctx.closePath();
 ctx.fill();
 ctx.stroke();
@@ -2948,27 +2948,27 @@ ctx.stroke();
                 ctx.arc(0, -31, 17, 0.2, Math.PI - 0.2);
                 ctx.stroke();
 
-                // 围巾：上移至下巴下方
+               // 围巾：进一步上移，贴近下巴
 ctx.fillStyle = '#FFFFFF';
 ctx.strokeStyle = '#231F20';
 ctx.lineWidth = 8;
 
 // 围巾主体
 ctx.beginPath();
-ctx.moveTo(-58, 3);
-ctx.quadraticCurveTo(0, 15, 58, 3);
-ctx.lineTo(55, 23);
-ctx.quadraticCurveTo(0, 35, -55, 23);
+ctx.moveTo(-58, -7);
+ctx.quadraticCurveTo(0, 5, 58, -7);
+ctx.lineTo(55, 13);
+ctx.quadraticCurveTo(0, 25, -55, 13);
 ctx.closePath();
 ctx.fill();
 ctx.stroke();
 
 // 围巾垂下部分
 ctx.beginPath();
-ctx.moveTo(31, 17);
-ctx.lineTo(46, 65);
-ctx.lineTo(22, 60);
-ctx.lineTo(13, 17);
+ctx.moveTo(31, 7);
+ctx.lineTo(46, 57);
+ctx.lineTo(22, 52);
+ctx.lineTo(13, 7);
 ctx.closePath();
 ctx.fill();
 ctx.stroke();
