@@ -841,6 +841,14 @@ DREAMS</textarea>
             const foundBorder = BORDER_COLORS.find(b => b.hex.toLowerCase() === state.borderColor.toLowerCase());
             document.getElementById('border-color-name').textContent = foundBorder ? foundBorder.name : `自定义 (${state.borderColor.toUpperCase()})`;
             document.querySelectorAll('.border-btn').forEach(btn => {
+                
+const borderPicker = document.querySelector(
+    '#border-swatches input[type="color"]'
+);
+
+if (borderPicker) {
+    borderPicker.value = state.borderColor;
+}
                 const isMatch = btn.dataset.border.toLowerCase() === state.borderColor.toLowerCase();
                 btn.classList.toggle('ring-selected', isMatch);
                 btn.classList.toggle('scale-105', isMatch);
@@ -1582,28 +1590,51 @@ DREAMS</textarea>
             }
         }
 
-        function bindCanvasInteractions() {
-            mainCanvas.addEventListener('mousedown', (e) => handleCanvasDown(e.clientX, e.clientY));
-            window.addEventListener('mousemove', (e) => handleCanvasMove(e.clientX, e.clientY));
-            window.addEventListener('mouseup', handleCanvasUp);
+        
+function bindCanvasInteractions() {
+    // 统一使用 Pointer Events，兼容鼠标、触屏和触控笔
+    if (mainCanvas.dataset.pointerBound === 'true') return;
+    mainCanvas.dataset.pointerBound = 'true';
+    mainCanvas.style.touchAction = 'none';
 
-            mainCanvas.addEventListener('touchstart', (e) => {
-                if (e.touches.length > 0) {
-                    e.preventDefault();
-                    handleCanvasDown(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            }, { passive: false });
+    mainCanvas.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        e.preventDefault();
 
-            mainCanvas.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 0 && interactionState.isPointerDown) {
-                    e.preventDefault();
-                    handleCanvasMove(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            }, { passive: false });
+        try {
+            mainCanvas.setPointerCapture(e.pointerId);
+        } catch (_) {}
 
-            mainCanvas.addEventListener('touchend', handleCanvasUp);
-            mainCanvas.addEventListener('touchcancel', handleCanvasUp);
-    }
+        handleCanvasDown(e.clientX, e.clientY);
+    });
+
+    mainCanvas.addEventListener('pointermove', (e) => {
+        if (!interactionState.isPointerDown) return;
+        e.preventDefault();
+        handleCanvasMove(e.clientX, e.clientY);
+    });
+
+    const finishPointer = (e) => {
+        if (interactionState.isPointerDown) {
+            handleCanvasUp();
+        }
+
+        try {
+            if (mainCanvas.hasPointerCapture(e.pointerId)) {
+                mainCanvas.releasePointerCapture(e.pointerId);
+            }
+        } catch (_) {}
+    };
+
+    mainCanvas.addEventListener('pointerup', finishPointer);
+    mainCanvas.addEventListener('pointercancel', finishPointer);
+
+    mainCanvas.addEventListener('lostpointercapture', () => {
+        if (interactionState.isPointerDown) {
+            handleCanvasUp();
+        }
+    });
+}
 
         // ==========================================
         // 5. Canvas 核心渲染引擎 (1080x1080 正方形)
