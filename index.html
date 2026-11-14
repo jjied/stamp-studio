@@ -1652,6 +1652,64 @@ DREAMS</textarea>
             }
         }
 
+
+// ==========================================
+// 邮票真实齿边轮廓
+// ==========================================
+function tracePerforatedStampPath(ctx, x, y, w, h) {
+    const notches = 13;   // 每条边的齿孔数量
+    const depth = 20;     // 齿孔凹陷深度
+    const corner = 34;    // 四角留白
+
+    function drawEdge(sx, sy, ex, ey, nx, ny) {
+        const dx = ex - sx;
+        const dy = ey - sy;
+        const length = Math.hypot(dx, dy);
+        const step = length / (notches + 1);
+        const notchWidth = step * 0.72;
+
+        for (let i = 1; i <= notches; i++) {
+            const center = step * i;
+            const start = center - notchWidth / 2;
+            const end = center + notchWidth / 2;
+
+            ctx.lineTo(
+                sx + dx * start / length,
+                sy + dy * start / length
+            );
+
+            ctx.quadraticCurveTo(
+                sx + dx * center / length + nx * depth * 2,
+                sy + dy * center / length + ny * depth * 2,
+                sx + dx * end / length,
+                sy + dy * end / length
+            );
+        }
+
+        ctx.lineTo(ex, ey);
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(x + corner, y);
+
+    // 上边：向内凹
+    drawEdge(x + corner, y, x + w - corner, y, 0, 1);
+
+    // 右边：向内凹
+    ctx.lineTo(x + w, y + corner);
+    drawEdge(x + w, y + corner, x + w, y + h - corner, -1, 0);
+
+    // 下边：向内凹
+    ctx.lineTo(x + w - corner, y + h);
+    drawEdge(x + w - corner, y + h, x + corner, y + h, 0, -1);
+
+    // 左边：向内凹
+    ctx.lineTo(x, y + h - corner);
+    drawEdge(x, y + h - corner, x, y + corner, 1, 0);
+
+    ctx.closePath();
+}
+        
         function renderStampToCanvas(targetCanvas, ctx, cfg, isExporting = false) {
             const W = targetCanvas.width;
             const scaleRatio = W / 1080;
@@ -1665,10 +1723,15 @@ DREAMS</textarea>
             const stampSize = baseSize - margin * 2;
             const innerPad = 48;
 
-            // 1. 邮票齿边底框
-            ctx.fillStyle = cfg.borderColor;
-            ctx.beginPath();
-            ctx.roundRect(margin, margin, stampSize, stampSize, 8);
+            // 1. 真正的邮票锯齿边框
+            ctx.fillStyle = cfg.borderColor || '#FFFFFF';
+            tracePerforatedStampPath(
+                ctx,
+                margin,
+                margin,
+                stampSize,
+                stampSize
+            );
             ctx.fill();
 
             // 2. 内部纸张底色与底纹
@@ -1732,10 +1795,7 @@ DREAMS</textarea>
                 ctx.restore();
             }
 
-            // 10. 切割半圆齿孔
-            cutStampPerforations(ctx, margin, margin, stampSize, stampSize);
-
-            // 11. 编辑 gizmos
+            // 10. 编辑 gizmos
             if (!isExporting) {
                 if (cfg.snapGuides && (cfg.snapGuides.x || cfg.snapGuides.y)) {
                     ctx.save();
