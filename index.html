@@ -518,9 +518,10 @@ DREAMS</textarea>
             { id: 'pig', name: '小猪' },
             { id: 'penguin', name: '企鹅' },
             { id: 'frog', name: '青蛙' },
-            { id: 'duck', name: '小鸭' },
-            { id: 'hedgehog', name: '刺猬' },
-            { id: 'photo', name: '本地照片' },
+            { id: 'chick', name: '小鸡' },
+            { id: 'otter', name: '小水獭' },
+            { id: 'deer', name: '小鹿' },
+            { id: 'snowman', name: '小雪人' },
             { id: 'none', name: '纯文字' }
         ];
 
@@ -2737,63 +2738,334 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.lineWidth = 6.5;
                 ctx.beginPath(); ctx.moveTo(-48, 14); ctx.quadraticCurveTo(0, 52, 48, 14); ctx.stroke();
 
-            } else if (type === 'duck') {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.lineWidth = 7;
+                       } else if (type === 'chick') {
+                // =================================
+                // 小鸡：奶油黄圆滚滚身体
+                // =================================
+                ctx.fillStyle = '#FFE9A8';
+                ctx.lineWidth = 8;
+
+                // 身体
                 ctx.beginPath();
-                ctx.moveTo(-6, -86); ctx.quadraticCurveTo(-22, -124, -4, -128);
-                ctx.moveTo(6, -86); ctx.quadraticCurveTo(24, -122, 16, -104);
+                ctx.ellipse(0, 12, 105, 112, 0, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.stroke();
 
-                ctx.lineWidth = 8.5;
-                ctx.beginPath(); ctx.ellipse(0, 8, 114, 94, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-                ctx.fillStyle = '#FBCFE8';
+                // 头顶小羽毛
                 ctx.beginPath();
-                ctx.ellipse(-68, 16, 16, 10, 0, 0, Math.PI * 2);
-                ctx.ellipse(68, 16, 16, 10, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.moveTo(-15, -91);
+                ctx.quadraticCurveTo(-25, -120, -8, -116);
+                ctx.quadraticCurveTo(5, -132, 13, -105);
+                ctx.stroke();
 
+                // 翅膀
+                ctx.fillStyle = '#FFF4D0';
+                ctx.beginPath();
+                ctx.ellipse(-91, 30, 29, 43, -0.35, 0, Math.PI * 2);
+                ctx.ellipse(91, 30, 29, 43, 0.35, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 眼睛
                 ctx.fillStyle = '#231F20';
                 ctx.beginPath();
-                ctx.arc(-42, -6, 8, 0, Math.PI * 2);
-                ctx.arc(42, -6, 8, 0, Math.PI * 2);
+                ctx.arc(-38, -12, 8, 0, Math.PI * 2);
+                ctx.arc(38, -12, 8, 0, Math.PI * 2);
                 ctx.fill();
 
-                ctx.fillStyle = '#FDE047';
-                ctx.lineWidth = 6.5;
+                // 嘴巴
+                ctx.fillStyle = '#F5A623';
                 ctx.beginPath();
-                ctx.moveTo(22, 10); ctx.lineTo(62, 2); ctx.lineTo(24, 30); ctx.closePath();
-                ctx.fill(); ctx.stroke();
+                ctx.moveTo(-17, 8);
+                ctx.lineTo(17, 8);
+                ctx.lineTo(0, 29);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
 
-            } else if (type === 'hedgehog') {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.lineWidth = 8.5;
+                // 腮红
+                ctx.fillStyle = '#F7A6A6';
                 ctx.beginPath();
-                ctx.moveTo(-75, 45);
-                ctx.bezierCurveTo(-115, -65, 35, -115, 95, -15);
-                ctx.bezierCurveTo(125, 45, 45, 95, -75, 45);
-                ctx.fill(); ctx.stroke();
+                ctx.ellipse(-66, 23, 17, 10, 0, 0, Math.PI * 2);
+                ctx.ellipse(66, 23, 17, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
 
+                // 小脚
+                ctx.strokeStyle = '#E89A36';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(-30, 116);
+                ctx.lineTo(-30, 132);
+                ctx.moveTo(30, 116);
+                ctx.lineTo(30, 132);
+                ctx.stroke();
+
+
+            } else if (type === 'otter') {
+                // =================================
+                // 小水獭：奶茶色圆脸，抱着贝壳
+                // =================================
+
+                // 身体
+                ctx.fillStyle = '#A97855';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.ellipse(0, 25, 112, 105, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 脸部奶油色区域
+                ctx.fillStyle = '#F6E4C9';
+                ctx.beginPath();
+                ctx.ellipse(0, 28, 79, 75, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 耳朵
+                ctx.fillStyle = '#A97855';
+                ctx.beginPath();
+                ctx.arc(-78, -65, 24, 0, Math.PI * 2);
+                ctx.arc(78, -65, 24, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#F6B9B5';
+                ctx.beginPath();
+                ctx.arc(-78, -65, 11, 0, Math.PI * 2);
+                ctx.arc(78, -65, 11, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#231F20';
+                ctx.beginPath();
+                ctx.arc(-34, 5, 8, 0, Math.PI * 2);
+                ctx.arc(34, 5, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 鼻子
+                ctx.fillStyle = '#50352C';
+                ctx.beginPath();
+                ctx.ellipse(0, 29, 10, 7, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 嘴巴
+                ctx.strokeStyle = '#50352C';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(0, 36);
+                ctx.quadraticCurveTo(-8, 47, -17, 42);
+                ctx.moveTo(0, 36);
+                ctx.quadraticCurveTo(8, 47, 17, 42);
+                ctx.stroke();
+
+                // 腮红
+                ctx.fillStyle = '#F5B6B1';
+                ctx.beginPath();
+                ctx.ellipse(-60, 37, 15, 9, 0, 0, Math.PI * 2);
+                ctx.ellipse(60, 37, 15, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 抱着的小贝壳
+                ctx.fillStyle = '#F6C7B7';
+                ctx.strokeStyle = '#A97855';
                 ctx.lineWidth = 6;
-                for (let a = 0; a < Math.PI * 2; a += 0.45) {
-                    const sx = Math.cos(a) * 78;
-                    const sy = Math.sin(a) * 58 - 15;
-                    ctx.beginPath();
-                    ctx.moveTo(sx, sy);
-                    ctx.lineTo(sx * 1.35, sy * 1.35);
-                    ctx.stroke();
-                }
+                ctx.beginPath();
+                ctx.moveTo(-38, 91);
+                ctx.quadraticCurveTo(0, 55, 38, 91);
+                ctx.quadraticCurveTo(38, 125, 0, 126);
+                ctx.quadraticCurveTo(-38, 125, -38, 91);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
 
-                ctx.fillStyle = '#FFFFFF';
-                ctx.lineWidth = 8.5;
-                ctx.beginPath(); ctx.ellipse(35, 25, 52, 46, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, 66);
+                ctx.lineTo(0, 119);
+                ctx.moveTo(-18, 77);
+                ctx.lineTo(-23, 112);
+                ctx.moveTo(18, 77);
+                ctx.lineTo(23, 112);
+                ctx.stroke();
 
-                ctx.fillStyle = '#231F20';
-                ctx.beginPath(); ctx.arc(62, 18, 7.5, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(82, 32, 9, 0, Math.PI * 2); ctx.fill();
+
+            } else if (type === 'deer') {
+                // =================================
+                // 小鹿：小鹿角、斑点和奶油色脸颊
+                // =================================
+
+                // 鹿角
+                ctx.strokeStyle = '#986B48';
+                ctx.lineWidth = 11;
+                ctx.beginPath();
+                ctx.moveTo(-48, -77);
+                ctx.lineTo(-62, -112);
+                ctx.lineTo(-83, -126);
+                ctx.moveTo(-62, -112);
+                ctx.lineTo(-57, -139);
+
+                ctx.moveTo(48, -77);
+                ctx.lineTo(62, -112);
+                ctx.lineTo(83, -126);
+                ctx.moveTo(62, -112);
+                ctx.lineTo(57, -139);
+                ctx.stroke();
+
+                // 身体
+                ctx.fillStyle = '#D9A879';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.ellipse(0, 18, 105, 112, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 脸部
+                ctx.fillStyle = '#FFF0D9';
+                ctx.beginPath();
+                ctx.ellipse(0, 39, 76, 67, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 耳朵
+                ctx.fillStyle = '#D9A879';
+                ctx.beginPath();
+                ctx.ellipse(-100, -62, 24, 48, -0.65, 0, Math.PI * 2);
+                ctx.ellipse(100, -62, 24, 48, 0.65, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#F4B7B0';
+                ctx.beginPath();
+                ctx.ellipse(-100, -62, 12, 30, -0.65, 0, Math.PI * 2);
+                ctx.ellipse(100, -62, 12, 30, 0.65, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 鹿角下方的小斑点
+                ctx.fillStyle = '#FFF3DD';
+                ctx.beginPath();
+                ctx.arc(-43, -67, 8, 0, Math.PI * 2);
+                ctx.arc(-22, -78, 7, 0, Math.PI * 2);
+                ctx.arc(22, -78, 7, 0, Math.PI * 2);
+                ctx.arc(43, -67, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#382A23';
+                ctx.beginPath();
+                ctx.arc(-36, 15, 8, 0, Math.PI * 2);
+                ctx.arc(36, 15, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 鼻子
+                ctx.fillStyle = '#8C5B4A';
+                ctx.beginPath();
+                ctx.ellipse(0, 43, 10, 7, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 嘴巴
+                ctx.strokeStyle = '#8C5B4A';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(0, 50);
+                ctx.quadraticCurveTo(-10, 63, -19, 54);
+                ctx.moveTo(0, 50);
+                ctx.quadraticCurveTo(10, 63, 19, 54);
+                ctx.stroke();
+
+                // 腮红
+                ctx.fillStyle = '#F4A6A6';
+                ctx.beginPath();
+                ctx.ellipse(-65, 48, 15, 9, 0, 0, Math.PI * 2);
+                ctx.ellipse(65, 48, 15, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+
+            } else if (type === 'snowman') {
+                // =================================
+                // 小雪人：两团雪球和蓝色围巾
+                // =================================
+
+                // 身体下半部分
+                ctx.fillStyle = '#F8FCFF';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.arc(0, 51, 83, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 头部
+                ctx.beginPath();
+                ctx.arc(0, -48, 67, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 帽子
+                ctx.fillStyle = '#83B8D8';
+                ctx.beginPath();
+                ctx.roundRect(-53, -120, 106, 22, 8);
+                ctx.roundRect(-38, -166, 76, 50, 10);
+                ctx.fill();
+                ctx.stroke();
+
+                // 帽子绒球
+                ctx.fillStyle = '#F8FCFF';
+                ctx.beginPath();
+                ctx.arc(0, -171, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 眼睛
+                ctx.fillStyle = '#263746';
+                ctx.beginPath();
+                ctx.arc(-24, -56, 7, 0, Math.PI * 2);
+                ctx.arc(24, -56, 7, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 胡萝卜鼻子
+                ctx.fillStyle = '#F29B38';
+                ctx.beginPath();
+                ctx.moveTo(0, -43);
+                ctx.lineTo(39, -34);
+                ctx.lineTo(0, -24);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 微笑
+                ctx.strokeStyle = '#263746';
+                ctx.lineWidth = 4.5;
+                ctx.beginPath();
+                ctx.arc(0, -31, 17, 0.2, Math.PI - 0.2);
+                ctx.stroke();
+
+                // 围巾
+                ctx.fillStyle = '#8EC5E8';
+                ctx.beginPath();
+                ctx.roundRect(-65, 1, 130, 24, 9);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(35, 17);
+                ctx.lineTo(55, 77);
+                ctx.lineTo(27, 72);
+                ctx.lineTo(15, 17);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 身体纽扣
+                ctx.fillStyle = '#668DA8';
+                ctx.beginPath();
+                ctx.arc(0, 49, 6, 0, Math.PI * 2);
+                ctx.arc(0, 76, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 腮红
+                ctx.fillStyle = '#F6B6B9';
+                ctx.beginPath();
+                ctx.ellipse(-48, -35, 12, 8, 0, 0, Math.PI * 2);
+                ctx.ellipse(48, -35, 12, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
             }
-        }
 
         function drawUploadedPhotoIllustration(ctx, img, applySketch) {
             const maxDim = 170;
@@ -2884,10 +3156,43 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 case 'penguin':
                     return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M20 9 C28 9 31 20 29 29 Q20 32 11 29 C9 20 12 9 20 9 Z" ${common}/><circle cx="16" cy="18" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="18" r="1.2" fill="#f3f2f0"/><polygon points="18,21 22,21 20,24" fill="#fde047"/></svg>`;
                 case 'frog':
-                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="14" cy="13" r="4" ${common}/><circle cx="26" cy="13" r="4" ${common}/><ellipse cx="20" cy="23" rx="12" ry="8.5" ${common}/><path d="M15 24 Q20 28 25 24" ${common}/></svg>`;
-                case 'duck':
-                    return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M19 11 Q17 7 20 6 M21 11 Q23 8 22 9" ${common}/><ellipse cx="20" cy="21" rx="11" ry="9.5" ${common}/><ellipse cx="20" cy="24" rx="4.5" ry="2.2" stroke="#fde047" stroke-width="1.8" fill="none"/><circle cx="16" cy="19" r="1.2" fill="#f3f2f0"/><circle cx="24" cy="19" r="1.2" fill="#f3f2f0"/></svg>`;
-                case 'hedgehog':
+                                    case 'chick':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8">
+                        <ellipse cx="20" cy="23" rx="12" ry="13" fill="#FFE9A8" stroke="#f3f2f0" stroke-width="2"/>
+                        <circle cx="16" cy="21" r="1.3" fill="#231F20"/>
+                        <circle cx="24" cy="21" r="1.3" fill="#231F20"/>
+                        <path d="M17 25 L23 25 L20 29 Z" fill="#F5A623"/>
+                    </svg>`;
+
+                case 'otter':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8">
+                        <circle cx="11" cy="14" r="4" ${common}/>
+                        <circle cx="29" cy="14" r="4" ${common}/>
+                        <ellipse cx="20" cy="23" rx="12" ry="11" fill="#A97855" stroke="#f3f2f0" stroke-width="2"/>
+                        <ellipse cx="20" cy="25" rx="8" ry="6" fill="#F6E4C9"/>
+                        <circle cx="16" cy="21" r="1.2" fill="#231F20"/>
+                        <circle cx="24" cy="21" r="1.2" fill="#231F20"/>
+                    </svg>`;
+
+                case 'deer':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8">
+                        <path d="M14 15 L10 6 M10 6 L6 4 M10 6 L12 2 M26 15 L30 6 M30 6 L34 4 M30 6 L28 2" ${common}/>
+                        <circle cx="20" cy="23" r="12" fill="#D9A879" stroke="#f3f2f0" stroke-width="2"/>
+                        <circle cx="16" cy="22" r="1.2" fill="#231F20"/>
+                        <circle cx="24" cy="22" r="1.2" fill="#231F20"/>
+                        <circle cx="20" cy="28" r="2" fill="#8C5B4A"/>
+                    </svg>`;
+
+                case 'snowman':
+                    return `<svg viewBox="0 0 40 40" class="w-8 h-8">
+                        <circle cx="20" cy="26" r="10" fill="#F8FCFF" stroke="#f3f2f0" stroke-width="2"/>
+                        <circle cx="20" cy="13" r="7" fill="#F8FCFF" stroke="#f3f2f0" stroke-width="2"/>
+                        <rect x="14" y="4" width="12" height="4" rx="1" fill="#83B8D8"/>
+                        <circle cx="17" cy="13" r="1" fill="#231F20"/>
+                        <circle cx="23" cy="13" r="1" fill="#231F20"/>
+                        <path d="M20 15 L26 17 L20 18 Z" fill="#F29B38"/>
+                        <path d="M11 22 H29" stroke="#83B8D8" stroke-width="3"/>
+                    </svg>`;
                     return `<svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M9 24 L8 19 L11 17 L11 13 L15 13 L17 9 L20 11 L23 9 L25 13 L29 13 L29 17 L32 19 L31 24 Q29 30 20 30 Q11 30 9 24 Z" ${common}/><circle cx="16.5" cy="22" r="1.1" fill="#f3f2f0"/><circle cx="23.5" cy="22" r="1.1" fill="#f3f2f0"/><circle cx="20" cy="25" r="1.3" fill="#f3f2f0"/></svg>`;
                 default:
                     return `<div class="w-8 h-8 flex items-center justify-center text-xs font-gaegu font-bold text-stone-300 border border-dashed border-white/25 rounded-lg">Aa</div>`;
