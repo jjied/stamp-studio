@@ -641,7 +641,7 @@ THIS CUTENESS</textarea>
     });
   });
 
-  // 18款白团子手绘萌物
+  // Stamp Studio 原版角色列表
   const ANIMALS = [
             { id: 'cat', name: '猫咪' },
             { id: 'puppy', name: '小狗' },
@@ -733,6 +733,7 @@ THIS CUTENESS</textarea>
       rows: 24,
       grid: [],
       history: [],
+      gestureSaved: false,
       tool: 'brush',
       bead: ALL_BEADS.find(b => b.code === 'F4'),
       mirror: false,
@@ -843,7 +844,7 @@ THIS CUTENESS</textarea>
   function drawCharacterIllustration(ctx, type, outlineColor = '#231F20') {
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.strokeStyle = '#231F20';
+            ctx.strokeStyle = outlineColor || '#231F20';
             ctx.lineWidth = 8.5;
 
             if (type === 'cat') {
@@ -1400,7 +1401,7 @@ THIS CUTENESS</textarea>
                 // 小鹿：黑白线稿
 
                 // 鹿角
-                ctx.strokeStyle = '#231F20';
+                ctx.strokeStyle = outlineColor || '#231F20';
                 ctx.lineWidth = 11;
                 ctx.beginPath();
                 ctx.moveTo(-48, -77);
@@ -1508,7 +1509,7 @@ THIS CUTENESS</textarea>
 
                 // 胡萝卜鼻子：只保留轮廓
                 ctx.fillStyle = '#FFFFFF';
-                ctx.strokeStyle = '#231F20';
+                ctx.strokeStyle = outlineColor || '#231F20';
                 ctx.beginPath();
                 ctx.moveTo(0, -43);
                 ctx.lineTo(39, -34);
@@ -1524,7 +1525,7 @@ THIS CUTENESS</textarea>
 
                // 围巾：进一步上移，贴近下巴
 ctx.fillStyle = '#FFFFFF';
-ctx.strokeStyle = '#231F20';
+ctx.strokeStyle = outlineColor || '#231F20';
 ctx.lineWidth = 8;
 
 // 围巾主体
@@ -1583,7 +1584,7 @@ ctx.stroke();
             ctx.restore();
 
             ctx.save();
-            ctx.strokeStyle = '#231F20';
+            ctx.strokeStyle = outlineColor || '#231F20';
             ctx.lineWidth = 6;
             ctx.beginPath();
             ctx.roundRect(-maxDim/2 - 4, -maxDim/2 - 4, maxDim + 8, maxDim + 8, 26);
@@ -2095,9 +2096,24 @@ function renderHandStamp(ctx, W, H) {
   }
   window.resizePixelGrid = function(v) {
     const m = RATIOS[state.ratio];
-    const cols = v;
-    const rows = Math.max(8, Math.min(52, Math.round(v * (m.h / m.w))));
-    initPixelBoard(cols, rows);
+    const cols = Math.max(8, Math.min(52, Math.round(Number(v) || 24)));
+    const rows = Math.max(8, Math.min(52, Math.round(cols * (m.h / m.w))));
+    const oldGrid = state.pixel.grid;
+    const oldRows = state.pixel.rows;
+    const oldCols = state.pixel.cols;
+    if (cols !== oldCols || rows !== oldRows) {
+      // 调整网格时保留新旧网格重叠区域内的拼豆，避免缩放尺寸后整张画板被清空。
+      const nextGrid = Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => (oldGrid[r] && oldGrid[r][c]) ? oldGrid[r][c] : null)
+      );
+      state.pixel.cols = cols;
+      state.pixel.rows = rows;
+      state.pixel.grid = nextGrid;
+      // 不保留旧尺寸的撤销快照，避免撤销后恢复成与当前画布尺寸不匹配的网格。
+      state.pixel.history = [];
+      document.getElementById('lbl-grid-dim').textContent = `${cols} × ${rows} 格`;
+      updateBeadLegend();
+    }
     render();
   };
   window.togglePixelGrid = function() {
@@ -2152,7 +2168,10 @@ function renderHandStamp(ctx, W, H) {
     }
   };
   window.clearPixel = function() {
+    const hasPixels = state.pixel.grid.some(row => row.some(cell => cell));
+    if (!hasPixels) return;
     state.pixel.history.push(state.pixel.grid.map(r => r.slice()));
+    if (state.pixel.history.length > 50) state.pixel.history.shift();
     state.pixel.grid = Array.from({ length: state.pixel.rows }, () => Array(state.pixel.cols).fill(null));
     updateBeadLegend();
     render();
@@ -2161,7 +2180,6 @@ function renderHandStamp(ctx, W, H) {
   function paintCell(r, c, first) {
     const { rows, cols, grid, tool, bead, mirror } = state.pixel;
     if (r < 0 || r >= rows || c < 0 || c >= cols) return;
-    if (first) state.pixel.history.push(grid.map(row => row.slice()));
     if (tool === 'picker') {
       const t = grid[r][c];
       if (t) {
@@ -2175,6 +2193,11 @@ function renderHandStamp(ctx, W, H) {
     if (tool === 'bucket') {
       const target = grid[r][c] ? grid[r][c].code : null;
       if (target === bead.code) return;
+      if (!state.pixel.gestureSaved) {
+        state.pixel.history.push(grid.map(row => row.slice()));
+        if (state.pixel.history.length > 50) state.pixel.history.shift();
+        state.pixel.gestureSaved = true;
+      }
       const st = [[r, c]], vis = new Set();
       while (st.length) {
         const [cr, cc] = st.pop();
@@ -2190,8 +2213,17 @@ function renderHandStamp(ctx, W, H) {
       return;
     }
     const val = tool === 'eraser' ? null : bead;
+    const mirrorC = cols - 1 - c;
+    const changesMain = (grid[r][c] ? grid[r][c].code : null) !== (val ? val.code : null);
+    const changesMirror = mirror && mirrorC !== c && (grid[r][mirrorC] ? grid[r][mirrorC].code : null) !== (val ? val.code : null);
+    if (!changesMain && !changesMirror) return;
+    if (!state.pixel.gestureSaved) {
+      state.pixel.history.push(grid.map(row => row.slice()));
+      if (state.pixel.history.length > 50) state.pixel.history.shift();
+      state.pixel.gestureSaved = true;
+    }
     grid[r][c] = val;
-    if (mirror) grid[r][cols - 1 - c] = val;
+    if (mirror) grid[r][mirrorC] = val;
     updateBeadLegend();
     render();
   }
@@ -2208,6 +2240,7 @@ function renderHandStamp(ctx, W, H) {
       isDown = true;
       const p = ptOf(e);
       if (state.mode === 'pixel') {
+        state.pixel.gestureSaved = false;
         const g = state.pixel.geom;
         if (!g) return;
         const c = Math.floor((p.x - g.ox) / g.cell), r = Math.floor((p.y - g.oy) / g.cell);
