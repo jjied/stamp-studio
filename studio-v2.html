@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gaegu:wght@400;700&family=Indie+Flower&family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <title>MY STAMP GENERATOR - Stamp Studio × 拼豆邮票工坊</title>
 <style>
 :root {
@@ -394,6 +397,54 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
   #stampCanvas { display:block; width:100%; height:auto; max-height:58vh; object-fit:contain; }
 }
 
+
+@media (max-width: 600px) {
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  .app-shell, .workspace, .ctrl-col, #panel-pixel, #panel-hand, .card-box { min-width: 0; max-width: 100%; }
+  .workspace { display: flex; flex-direction: column; }
+  .stage-col { width: 100%; padding: 10px 8px; }
+  .ctrl-col { width: 100%; padding: 9px 7px; overflow: visible; }
+  .canvas-holder { width: 100%; padding: 2px 0; }
+  #aspect-box { width: min(88vw, 360px) !important; max-width: 100%; }
+  .bead-tabs { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .bead-grid { width: 100%; max-width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .bead-cell-btn { min-width: 0; padding: 4px 1px; font-size: 8px; }
+  .bead-circle { width: 15px; height: 15px; }
+  .pill-grid-4, .pill-grid-5, .pill-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-head > * { min-width: 0; }
+  .row-flex { min-width: 0; }
+  .color-pill { max-width: 100%; }
+  #pixel-legend-box { width: 100%; }
+  #rng-grid-size { min-width: 0; }
+}
+@media (max-width: 380px) {
+  .bead-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ratio-btn { padding: 4px 6px; font-size: 10px; }
+  .stage-top-bar { justify-content: center; }
+}
+
+
+@media (max-width: 600px) {
+  .workspace { grid-template-columns: minmax(0, 1fr) !important; }
+  .stage-col, .ctrl-col { min-width: 0; width: 100%; box-sizing: border-box; }
+  .ctrl-col { overflow-x: hidden; }
+  #panel-pixel, #panel-hand { width: 100%; min-width: 0; }
+  .card-box { width: 100%; min-width: 0; box-sizing: border-box; }
+  .bead-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+  .bead-cell-btn { overflow: hidden; }
+  .bead-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; }
+  .bead-tabs .bead-tab { flex: 0 0 auto; }
+  .pill-grid-4, .pill-grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-head { align-items: flex-start; }
+  .row-flex > * { max-width: 100%; }
+  #aspect-box { width: min(86vw, 350px) !important; height: auto; }
+}
+@media (max-width: 360px) {
+  .bead-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .card-title { font-size: 11px; }
+  .opt-btn { font-size: 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -457,10 +508,10 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
     <section class="ctrl-col">
       <!-- ==================== 模式 A：手绘治愈邮票 ==================== -->
       <div id="panel-hand" style="display:flex;flex-direction:column;gap:10px;">
-        <!-- 1. 14款原版手绘小动物 & 照片 -->
+        <!-- 1. 15款原版手绘小动物 & 照片 -->
         <div class="card-box">
           <div class="card-head">
-            <span class="card-title">1. 选择手绘小动物 (14款) 或上传照片</span>
+            <span class="card-title">1. 选择手绘小动物 (15款) 或上传照片</span>
             <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6E635C;">
               <span>大小</span><input type="range" id="rng-char-scale" min="50" max="150" value="100" oninput="setHand('charScale', +this.value)" style="width:56px;">
               <span>旋转</span><input type="range" id="rng-char-rot" min="-180" max="180" value="0" oninput="setHand('charRot', +this.value * Math.PI / 180)" style="width:52px;">
@@ -526,11 +577,9 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
           <div class="card-head">
             <span class="card-title">3. 治愈文字与手绘字体</span>
             <select class="sel-input" onchange="setHand('fontStyle', this.value)">
-              <option value="marker">可爱手写体（推荐）</option>
-              <option value="round">软萌圆润体</option>
-              <option value="kaiti">温暖楷体手写</option>
-              <option value="serif">复古文艺衬线</option>
-              <option value="pixel">复古像素等宽</option>
+              <option value="Gaegu">呆萌手写体（原版默认）</option>
+              <option value="Indie Flower">随笔涂鸦体</option>
+              <option value="Caveat">毛笔连笔体</option>
             </select>
           </div>
 
@@ -722,6 +771,7 @@ THIS CUTENESS</textarea>
             { id: 'bear', name: '小熊' },
             { id: 'fox', name: '小狐' },
             { id: 'hamster', name: '小仓鼠' },
+            { id: 'ferret', name: '雪貂' },
             { id: 'fish', name: '小鱼' },
             { id: 'tiger', name: '小老虎' },
             { id: 'pig', name: '小猪' },
@@ -731,23 +781,14 @@ THIS CUTENESS</textarea>
             { id: 'deer', name: '小鹿' },
             { id: 'snowman', name: '小雪人' },
             { id: 'none', name: '纯文字' },
-    { id: 'photo', name: '本地照片' }
   ];
 
   // 手绘涂鸦小贴纸（含参考图中的螺旋圈圈和四角星）
   const STICKERS = [
-    { id: 'swirl', name: '螺旋圈圈' },
-    { id: 'sparkle', name: '四角星' },
-    { id: 'heart', name: '手绘爱心' },
-    { id: 'daisy', name: '小雏菊' },
-    { id: 'clover', name: '四叶草' },
-    { id: 'cloud', name: '软云朵' },
-    { id: 'bow', name: '蝴蝶结' },
-    { id: 'berry', name: '小草莓' },
-    { id: 'moon', name: '弯月亮' },
-    { id: 'paw', name: '小猫爪' }
+    { id: 'sparkle', name: '小星星' },
+    { id: 'heart', name: '小爱心' },
+    { id: 'swirl', name: '小卷卷' }
   ];
-
   const PALETTES = {
     paper: ['#F8D8F0', '#FBE3F6', '#FDFBF7', '#FBEED7', '#E3F1FA', '#E3F2E6', '#EDE6FA'],
     border: ['#FFFFFF', '#FAF1C8', '#FAD8E2', '#DCEFF7', '#E8D5B9'],
@@ -782,7 +823,7 @@ THIS CUTENESS</textarea>
       sketchCanvas: null,
       sketchFilter: true,
       text: "I CAN'T TAKE\nTHIS CUTENESS",
-      fontStyle: 'marker',
+      fontStyle: 'Gaegu',
       textAlign: 'center',
       textColor: '#231F20',
       fontScale: 100,
@@ -853,7 +894,7 @@ THIS CUTENESS</textarea>
     mkSw('sw-bg', PALETTES.ink, h => setSubColor('badge', 'color', h, 'hx-bg', 'pk-bg'));
     mkSw('sw-brush', PALETTES.brush, h => setColor('brushColor', h, 'hx-brush', 'pk-brush'));
 
-    // 14款原版动物按钮
+    // 15款原版动物按钮
     const aGrid = document.getElementById('animal-grid');
     ANIMALS.forEach(a => {
       const b = document.createElement('button');
@@ -920,6 +961,8 @@ THIS CUTENESS</textarea>
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = outlineColor || '#231F20';
+            ctx.shadowColor = outlineColor || '#231F20';
+            ctx.shadowBlur = 1.15;
             ctx.lineWidth = 8.5;
 
             if (type === 'cat') {
@@ -1170,7 +1213,7 @@ THIS CUTENESS</textarea>
                 ctx.beginPath(); ctx.ellipse(-22, 58, 14, 11, -0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.ellipse(22, 58, 14, 11, 0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
-            } else if (type === 'deer') {
+            } else if (type === 'ferret') {
                 ctx.fillStyle = '#FFFFFF';
                 ctx.lineWidth = 8.5;
                 ctx.beginPath();
@@ -1734,8 +1777,7 @@ ctx.stroke();
       ctx.moveTo(10, -10); ctx.lineTo(-10, 10);
       ctx.stroke();
     } else if (t === 'heart') {
-      ctx.fillStyle = '#171313';
-      ctx.beginPath(); ctx.moveTo(0, 18); ctx.bezierCurveTo(-28, 0, -22, -24, 0, -8); ctx.bezierCurveTo(22, -24, 28, 0, 0, 18); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 18); ctx.bezierCurveTo(-28, 0, -22, -24, 0, -8); ctx.bezierCurveTo(22, -24, 28, 0, 0, 18); ctx.stroke();
     } else if (t === 'daisy') {
       ctx.fillStyle = '#171313';
       for (let i = 0; i < 5; i++) {
@@ -1775,52 +1817,20 @@ ctx.stroke();
     if (!h.text || !h.text.trim()) return;
     ctx.save();
     ctx.translate(h.textX, h.textY);
-    ctx.rotate(h.textRot);
-    const fs = Math.round(52 * (h.fontScale / 100));
+    ctx.rotate(h.textRot || 0);
+    const fs = Math.round(52 * ((h.fontScale || 100) / 100));
     const lines = h.text.split('\n');
-    const lh = fs * 1.24;
-    const sy = -((lines.length - 1) * lh) / 2;
-
-    const fontMap = {
-      marker: '"Comic Sans MS", "Chalkboard SE", "Marker Felt", "Comic Neue", "Kaiti SC", "PingFang SC", cursive, sans-serif',
-      round: '"Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "YouYuan", "PingFang SC", sans-serif',
-      kaiti: '"KaiTi", "STKaiti", "BiauKai", cursive, serif',
-      serif: '"Songti SC", "SimSun", Georgia, serif',
-      pixel: '"Courier New", Consolas, monospace'
-    };
-    ctx.font = `700 ${fs}px ${fontMap[h.fontStyle] || fontMap.marker}`;
-    ctx.fillStyle = h.textColor;
-    ctx.strokeStyle = h.textColor;
+    const lineHeight = fs * 1.18;
+    const startY = -((lines.length - 1) * lineHeight) / 2;
+    const fontName = ['Gaegu', 'Indie Flower', 'Caveat'].includes(h.fontStyle) ? h.fontStyle : 'Gaegu';
+    const fallback = fontName === 'Caveat' ? '"Ma Shan Zheng"' : '"ZCOOL KuaiLe"';
+    ctx.font = `700 ${fs}px "${fontName}", ${fallback}, "Comic Sans MS", cursive`;
+    ctx.fillStyle = h.textColor || '#231F20';
+    ctx.textAlign = h.textAlign || 'center';
     ctx.textBaseline = 'middle';
-
-    if (h.fontStyle === 'marker') {
-      // 逐字微幅旋转+高低错落，呈现真实手写马克笔感
-      lines.forEach((line, li) => {
-        const chars = Array.from(line);
-        const widths = chars.map(ch => ctx.measureText(ch).width * 1.03);
-        const totalW = widths.reduce((a, b) => a + b, 0);
-        let curX = h.textAlign === 'center' ? -totalW / 2 : (h.textAlign === 'right' ? -totalW : 0);
-        chars.forEach((ch, ci) => {
-          const seed = (li * 31 + ci * 17) % 11;
-          const dy = (seed - 5) * 0.9;
-          const ang = ((seed - 5) * 0.016);
-          ctx.save();
-          ctx.translate(curX + widths[ci] / 2, sy + li * lh + dy);
-          ctx.rotate(ang);
-          ctx.textAlign = 'center';
-          ctx.lineWidth = Math.max(1.2, fs * 0.025);
-          ctx.strokeText(ch, 0, 0);
-          ctx.fillText(ch, 0, 0);
-          ctx.restore();
-          curX += widths[ci];
-        });
-      });
-    } else {
-      ctx.textAlign = h.textAlign;
-      lines.forEach((line, li) => {
-        ctx.fillText(line, 0, sy + li * lh);
-      });
-    }
+    lines.forEach((line, i) => {
+      ctx.fillText(line, 0, startY + i * lineHeight);
+    });
     ctx.restore();
   }
 
@@ -1852,9 +1862,6 @@ ctx.stroke();
   function getMiniSVG(id) {
     if (id === 'none') {
       return '<span class="animal-none-icon">Aa</span>';
-    }
-    if (id === 'photo') {
-      return '<span class="animal-photo-icon">▧</span>';
     }
     return `<canvas class="animal-thumb" width="48" height="48" data-character-thumbnail="${id}" aria-hidden="true"></canvas>`;
   }
@@ -1985,7 +1992,7 @@ function renderHandStamp(ctx, W, H) {
       if (pm.type === 'star') {
         // 星形邮戳：独立五角星外框与放射短线，不复用双环圆戳
         ctx.beginPath();
-        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 108 : 88; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
+        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 112 : 48; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
         ctx.closePath(); ctx.stroke();
         ctx.beginPath(); ctx.arc(0,0,64,0,Math.PI*2); ctx.stroke();
       } else {
