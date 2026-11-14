@@ -2903,28 +2903,6 @@ function tracePerforatedStampPath(ctx, x, y, w, h) {
                 ctx.fill();
                 ctx.stroke();
 
-               // 圆角三角形冬帽：帽尖微微向右弯
-ctx.fillStyle = '#FFFFFF';
-ctx.strokeStyle = '#231F20';
-ctx.lineWidth = 8;
-
-// 帽子主体
-ctx.beginPath();
-ctx.moveTo(-62, -105);
-ctx.quadraticCurveTo(-49, -137, -12, -158);
-ctx.quadraticCurveTo(18, -180, 35, -188);
-ctx.quadraticCurveTo(31, -153, 59, -105);
-ctx.quadraticCurveTo(0, -91, -62, -105);
-ctx.closePath();
-ctx.fill();
-ctx.stroke();
-
-// 帽子底边
-ctx.beginPath();
-ctx.moveTo(-63, -106);
-ctx.quadraticCurveTo(0, -91, 63, -106);
-ctx.stroke();
-
                 // 眼睛
                 ctx.fillStyle = '#231F20';
                 ctx.beginPath();
