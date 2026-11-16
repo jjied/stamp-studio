@@ -46,17 +46,26 @@ body {
 .top-nav {
   padding: 10px 16px;
   border-bottom: 1px solid var(--line);
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   background: var(--bg-card);
   z-index: 2;
 }
-.brand { display: flex; align-items: center; gap: 8px; }
-.creator-credit { flex: 1 1 100%; order: 3; text-align: center; color: #8A6F68; font-size: 11px; font-weight: 800; letter-spacing: .2px; padding: 2px 0 0; }
-@media (min-width: 700px) { .creator-credit { order: 0; flex: 1 1 auto; text-align: center; padding: 0 8px; } }
+.creator-credit-top {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto 5px;
+  padding: 1px 8px 0;
+  text-align: center;
+  color: #9A8178;
+  font-size: 9px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: .15px;
+}
+.brand { display: flex; align-items: center; gap: 8px; justify-self: start; min-width: 0; }
 .brand-badge {
   width: 32px; height: 32px; border-radius: 10px;
   background: var(--ink); color: #FFF;
@@ -67,8 +76,10 @@ body {
 .nav-right {
   display: flex;
   align-items: center;
+  justify-self: end;
+  justify-content: flex-end;
   gap: 8px;
-  flex-wrap: wrap;
+  min-width: 0;
 }
 .lang-select {
   background: #F5EAE6;
@@ -80,8 +91,21 @@ body {
   font-weight: 800;
   cursor: pointer;
   font-family: inherit;
+  max-width: 100%;
 }
 .lang-select:focus { outline: none; border-color: #B98289; }
+.mode-tabs {
+  display: flex; justify-self: center;
+  background: #F1EBE0; padding: 3px;
+  border-radius: 14px; border: 1px solid #E1D6C5;
+  white-space: nowrap;
+}
+.mode-btn {
+  border: none; background: transparent; color: var(--ink-soft);
+  padding: 6px 13px; border-radius: 11px; font-size: 12px; font-weight: 800;
+  cursor: pointer; transition: 0.15s;
+}
+.mode-btn.active { background: var(--ink); color: #FFF; }
 #rng-grid-size:disabled { opacity:.35; cursor:not-allowed; }
 .mode-tabs {
   display: flex; background: #F1EBE0; padding: 3px;
@@ -152,10 +176,13 @@ body {
   padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; text-align: center;
 }
 .canvas-holder {
-  width: 100%; max-width: 100%; overflow: auto;
+  width: 100%; max-width: 100%; min-width: 0;
+  overflow: auto;
   display: flex; align-items: flex-start; justify-content: center;
   padding: 8px 2px; box-sizing: border-box;
   overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #D8B8AE #F8EEE8;
 }
 .aspect-1-1 { width: 100%; max-width: 375px; aspect-ratio: 1 / 1; }
 .aspect-3-4 { width: 80%; max-width: 300px; aspect-ratio: 3 / 4; }
@@ -403,10 +430,28 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
   .card-box { padding: 9px; }
   .animal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+@media (max-width: 600px) {
+  body { padding: 7px; }
+  .creator-credit-top { font-size: 8px; margin-bottom: 4px; }
+  .top-nav {
+    grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+    gap: 4px;
+    padding: 9px 7px;
+  }
+  .brand { gap: 5px; }
+  .brand-badge { width: 27px; height: 27px; border-radius: 8px; font-size: 13px; }
+  .brand-title { font-size: 10px; letter-spacing: .2px; }
+  .brand-sub { display: none; }
+  .mode-tabs { justify-self: center; padding: 2px; }
+  .mode-btn { padding: 7px 8px; font-size: 10px; }
+  .nav-right { justify-self: end; }
+  .lang-select { padding: 5px 6px; font-size: 9px; max-width: 88px; }
+}
 @media (max-width: 360px) {
-  .top-nav { justify-content: center; }
-  .mode-tabs { order: 3; width: 100%; justify-content: center; }
-  .btn-export { margin-left: auto; }
+  .top-nav { gap: 2px; padding-left: 5px; padding-right: 5px; }
+  .brand-title { font-size: 9px; }
+  .mode-btn { padding: 6px 6px; font-size: 9px; }
+  .lang-select { max-width: 76px; font-size: 8px; }
   .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
@@ -566,6 +611,7 @@ body {
 </head>
 <body>
 
+<div class="creator-credit-top">此网站由📕等一场雨季和G老师共同制作</div>
 <div class="app-shell">
   <!-- 顶部栏 -->
   <header class="top-nav">
@@ -576,8 +622,6 @@ body {
         <div class="brand-sub" data-i18n="brandSub">邮票工坊 </div>
       </div>
     </div>
-
-    <div class="creator-credit">此网站由📕等一场雨季和G老师共同制作</div>
 
     <div class="mode-tabs">
       <button class="mode-btn active" id="tab-hand" onclick="switchMode('hand')" data-i18n="tabHand">可爱邮票</button>
@@ -3041,6 +3085,7 @@ THIS CUTENESS</textarea>
     const m = RATIOS[r];
     document.querySelectorAll('.ratio-btn[data-r]').forEach(b => b.classList.toggle('active', b.dataset.r === r));
     document.getElementById('aspect-box').className = m.cls;
+    if (state.mode === 'pixel') setPixelZoom(state.pixel.zoom * 100);
     const cv = document.getElementById('stampCanvas');
     cv.width = m.w; cv.height = m.h;
     resetPositions(true);
@@ -3371,11 +3416,23 @@ THIS CUTENESS</textarea>
     document.getElementById('grid-lock-hint').textContent=state.pixel.gridLocked?'网格尺寸已锁定，绘制时不会误触改变':'调整格数后，缩小可能裁切内容，会先询问确认';
   };
   window.setPixelZoom=function(v){
-    const z=Math.max(1,Math.min(2.4,Number(v)/100||1)); state.pixel.zoom=z;
-    const box=document.getElementById('aspect-box'), holder=box.parentElement;
+    const z=Math.max(1,Math.min(2.4,Number(v)/100||1));
+    state.pixel.zoom=z;
+    const box=document.getElementById('aspect-box');
+    const holder=box.parentElement;
     const base=state.ratio==='3:4'?300:state.ratio==='4:3'?400:375;
-    box.style.width=`min(100%, ${Math.round(base*z)}px)`; box.style.maxWidth=`${Math.round(base*z)}px`;
-    box.style.flex='0 0 auto'; holder.style.justifyContent=z>1?'flex-start':'center';
+    const width=Math.round(base*z);
+    // Responsive CSS previously forced max-width:100% on mobile, so the
+    // canvas never grew. Explicit important dimensions make the zoom real.
+    box.style.setProperty('width', width+'px', 'important');
+    box.style.setProperty('max-width', 'none', 'important');
+    box.style.setProperty('min-width', width+'px', 'important');
+    box.style.flex='0 0 auto';
+    box.style.overflow='visible';
+    holder.style.justifyContent=z>1?'flex-start':'center';
+    holder.style.overflowX=z>1?'auto':'auto';
+    holder.style.overflowY=z>1?'auto':'visible';
+    holder.style.webkitOverflowScrolling='touch';
     document.getElementById('lbl-pixel-zoom').textContent=`${Math.round(z*100)}%`;
     document.getElementById('rng-pixel-zoom').value=Math.round(z*100);
   };
