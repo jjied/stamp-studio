@@ -683,8 +683,7 @@ body {
           <div class="pill-grid-5">
             <button class="opt-btn" data-pat="none" onclick="setPattern('none')" data-i18n="patNone">纯色无纹</button>
             <button class="opt-btn active" data-pat="dots" onclick="setPattern('dots')" data-i18n="patDots">波点</button>
-            <button class="opt-btn" data-pat="stripes" onclick="setPattern('stripes')" data-i18n="patStripes">斜条纹</button>
-            <button class="opt-btn" data-pat="vertical" onclick="setPattern('vertical')" data-i18n="patVertical">竖条纹</button>
+            <button class="opt-btn" data-pat="stripes" onclick="setPattern('stripes')" data-i18n="patStripes">条纹</button>
             <button class="opt-btn" data-pat="grid" onclick="setPattern('grid')" data-i18n="patGrid">方格本</button>
           </div>
           <div class="row-flex">
@@ -693,6 +692,16 @@ body {
             <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6E635C;">
               <span data-i18n="lblOpacity">浓度</span><input type="range" id="rng-pat-op" min="15" max="100" value="75" onchange="pushHandHistory()" oninput="setHand('patternOpacity', +this.value)" style="width:55px;">
             </div>
+          </div>
+          <div class="row-flex" style="gap:8px;">
+            <label style="font-size:11px;color:#6E635C;flex:1;">图案大小 / 间距 <input type="range" id="rng-pat-size" min="8" max="120" value="40" oninput="setHand('patternSize',+this.value)" style="width:100%;"></label>
+            <label style="font-size:11px;color:#6E635C;flex:1;">粗细 / 点大小 <input type="range" id="rng-pat-weight" min="1" max="30" value="5" oninput="setHand('patternWeight',+this.value)" style="width:100%;"></label>
+          </div>
+          <div class="row-flex" id="pattern-direction-row" style="gap:8px;">
+            <label style="font-size:11px;color:#6E635C;">条纹方向</label>
+            <select id="sel-pat-direction" class="sel-input" onchange="setHand('patternDirection',+this.value)">
+              <option value="0">横向</option><option value="45" selected>斜向 45°</option><option value="90">竖向</option><option value="135">斜向 135°</option>
+            </select>
           </div>
         </div>
 
@@ -856,6 +865,7 @@ THIS CUTENESS</textarea>
             <span data-i18n="btnChoosePixelImg">选择图片（PNG / JPG / WEBP）</span>
             <input id="pixel-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;" onchange="choosePixelImage(event)">
           </label>
+          <label style="font-size:11px;color:#6E635C;">图片大小 <input id="rng-image-scale" type="range" min="25" max="200" value="100" oninput="setPixelImageScale(+this.value)" style="width:100%;"></label>
           <div id="pixel-image-status" style="font-size:11px;color:#6E635C;line-height:1.45;" data-i18n="p2Hint">上传后先在右侧画布上拖动照片调整位置，再按当前格子数量和 221 色 MARD 色卡自动配色；透明区域会保留为空格。</div>
           <button class="opt-btn active" id="btn-convert-image" onclick="convertImageToBeads()" disabled style="padding:9px;font-size:12px;" data-i18n="btnConvertBeads">一键转换成拼豆图纸</button>
         </div>
@@ -1549,6 +1559,9 @@ THIS CUTENESS</textarea>
       pattern: 'dots',
       patternColor: '#FFFFFF',
       patternOpacity: 75,
+      patternSize: 40,
+      patternWeight: 5,
+      patternDirection: 45,
       inkColor: '#231F20',
       character: 'puppy',
       charScale: 100,
@@ -1592,6 +1605,7 @@ THIS CUTENESS</textarea>
       cols: 24,
       rows: 24,
       grid: [],
+      archive: {},
       history: [],
       gestureSaved: false,
       tool: 'brush',
@@ -1621,7 +1635,7 @@ THIS CUTENESS</textarea>
     const h = state.hand;
     return JSON.stringify({
       paperColor: h.paperColor, borderColor: h.borderColor, pattern: h.pattern,
-      patternColor: h.patternColor, patternOpacity: h.patternOpacity, inkColor: h.inkColor,
+      patternColor: h.patternColor, patternOpacity: h.patternOpacity, patternSize: h.patternSize, patternWeight: h.patternWeight, patternDirection: h.patternDirection, inkColor: h.inkColor,
       character: h.character === 'photo' ? 'puppy' : h.character,
       charScale: h.charScale, charX: h.charX, charY: h.charY, charRot: h.charRot,
       sketchFilter: h.sketchFilter, text: h.text, fontStyle: h.fontStyle,
@@ -1749,6 +1763,10 @@ THIS CUTENESS</textarea>
     document.getElementById('pk-border').value = h.borderColor; document.getElementById('hx-border').textContent = h.borderColor;
     document.getElementById('pk-pat').value = h.patternColor; document.getElementById('hx-pat').textContent = h.patternColor;
     document.getElementById('rng-pat-op').value = h.patternOpacity;
+    document.getElementById('rng-pat-size').value = h.patternSize || 40;
+    document.getElementById('rng-pat-weight').value = h.patternWeight || 5;
+    document.getElementById('sel-pat-direction').value = String(h.patternDirection ?? 45);
+    document.getElementById('pattern-direction-row').style.display = h.pattern === 'stripes' ? 'flex' : 'none';
     document.querySelectorAll('.opt-btn[data-pat]').forEach(b => b.classList.toggle('active', b.dataset.pat === h.pattern));
     document.getElementById('sel-font').value = h.fontStyle;
     document.querySelectorAll('.ratio-btn[data-al]').forEach(b => b.classList.toggle('active', b.dataset.al === h.textAlign));
@@ -2678,25 +2696,27 @@ THIS CUTENESS</textarea>
       ctx.globalAlpha = h.patternOpacity / 100;
       ctx.fillStyle = h.patternColor;
       ctx.strokeStyle = h.patternColor;
+      const spacing = Math.max(8, h.patternSize || 40);
+      const weight = Math.max(1, h.patternWeight || 5);
       if (h.pattern === 'dots') {
-        for (let r = 0, y = inPad + 18; y < inPad + iH; r++, y += 34) {
-          const offsetX = (r % 2) * 17;
-          for (let x = inPad + 18 + offsetX; x < inPad + iW; x += 34) {
-            ctx.beginPath(); ctx.arc(x, y, 4.2, 0, Math.PI * 2); ctx.fill();
+        for (let y = inPad + spacing / 2; y < inPad + iH; y += spacing) {
+          const row = Math.round((y - inPad) / spacing);
+          for (let x = inPad + spacing / 2 + (row % 2) * spacing / 2; x < inPad + iW; x += spacing) {
+            ctx.beginPath(); ctx.arc(x, y, weight, 0, Math.PI * 2); ctx.fill();
           }
         }
       } else if (h.pattern === 'stripes') {
-        ctx.lineWidth = 18;
-        for (let d = -iH; d < iW + iH; d += 54) {
-          ctx.beginPath(); ctx.moveTo(inPad + d, inPad); ctx.lineTo(inPad + d - iH, inPad + iH); ctx.stroke();
+        ctx.translate(inPad + iW / 2, inPad + iH / 2);
+        ctx.rotate((h.patternDirection || 0) * Math.PI / 180);
+        ctx.lineWidth = weight;
+        const extent = Math.hypot(iW, iH);
+        for (let d = -extent; d <= extent; d += spacing) {
+          ctx.beginPath(); ctx.moveTo(d, -extent); ctx.lineTo(d, extent); ctx.stroke();
         }
-      } else if (h.pattern === 'vertical') {
-        ctx.lineWidth = 18;
-        for (let x = inPad + 22; x < inPad + iW; x += 54) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
       } else if (h.pattern === 'grid') {
-        ctx.lineWidth = 2.5;
-        for (let x = inPad + 38; x < inPad + iW; x += 40) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
-        for (let y = inPad + 38; y < inPad + iH; y += 40) { ctx.beginPath(); ctx.moveTo(inPad, y); ctx.lineTo(inPad + iW, y); ctx.stroke(); }
+        ctx.lineWidth = weight;
+        for (let x = inPad + spacing / 2; x < inPad + iW; x += spacing) { ctx.beginPath(); ctx.moveTo(x, inPad); ctx.lineTo(x, inPad + iH); ctx.stroke(); }
+        for (let y = inPad + spacing / 2; y < inPad + iH; y += spacing) { ctx.beginPath(); ctx.moveTo(inPad, y); ctx.lineTo(inPad + iW, y); ctx.stroke(); }
       }
       ctx.restore();
     }
@@ -2840,11 +2860,11 @@ THIS CUTENESS</textarea>
           ctx.fillStyle = b.hex;
           ctx.fillRect(cx, cy, cell, cell);
           ctx.fillStyle = b.darkText ? '#231F20' : '#FFFFFF';
-          const fs = Math.max(7, Math.floor(cell * (b.code.length >= 3 ? 0.31 : 0.36)));
+          const fs = Math.floor(cell * (b.code.length >= 3 ? 0.31 : 0.36));
           ctx.font = `800 ${fs}px monospace`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(b.code, cx + cell / 2, cy + cell / 2 + 0.5);
+          if (cell >= 17) ctx.fillText(b.code, cx + cell / 2, cy + cell / 2 + 0.5);
         } else {
           ctx.fillStyle = (r + c) % 2 === 0 ? '#FAF7F2' : '#F3EFE8';
           ctx.fillRect(cx, cy, cell, cell);
@@ -2854,12 +2874,12 @@ THIS CUTENESS</textarea>
 
     for (let r = 0; r <= rows; r++) {
       ctx.strokeStyle = r % 5 === 0 ? '#9E9488' : '#DCD3C4';
-      ctx.lineWidth = r % 5 === 0 ? 1.6 : 0.8;
+      ctx.lineWidth = r % 5 === 0 ? 2.2 : 1.15;
       ctx.beginPath(); ctx.moveTo(ox, oy + r * cell); ctx.lineTo(ox + gW, oy + r * cell); ctx.stroke();
     }
     for (let c = 0; c <= cols; c++) {
       ctx.strokeStyle = c % 5 === 0 ? '#9E9488' : '#DCD3C4';
-      ctx.lineWidth = c % 5 === 0 ? 1.6 : 0.8;
+      ctx.lineWidth = c % 5 === 0 ? 2.2 : 1.15;
       ctx.beginPath(); ctx.moveTo(ox + c * cell, oy); ctx.lineTo(ox + c * cell, oy + gH); ctx.stroke();
     }
 
@@ -3061,6 +3081,7 @@ THIS CUTENESS</textarea>
   window.setPattern = function(p) {
     pushHandHistory();
     state.hand.pattern = p;
+    const dirRow=document.getElementById('pattern-direction-row'); if(dirRow) dirRow.style.display=p==='stripes'?'flex':'none';
     document.querySelectorAll('.opt-btn[data-pat]').forEach(b => b.classList.toggle('active', b.dataset.pat === p));
     render();
     scheduleAutoSave();
@@ -3208,12 +3229,14 @@ THIS CUTENESS</textarea>
 
   let pendingPixelImage = null;
   let pixelImageOffset = { x: 0, y: 0 };
+  let pixelImageScale = 1;
+  window.setPixelImageScale = function(v) { pixelImageScale=Math.max(.25,Math.min(2,Number(v)/100)); render(); };
   let pixelImagePreviewRect = null;
 
   function drawPixelImagePreview(ctx) {
     if(!pendingPixelImage) { pixelImagePreviewRect=null; return; }
     const g=state.pixel.geom; if(!g) return;
-    const scale=Math.min(g.cols/pendingPixelImage.naturalWidth,g.rows/pendingPixelImage.naturalHeight);
+    const scale=Math.min(g.cols/pendingPixelImage.naturalWidth,g.rows/pendingPixelImage.naturalHeight)*pixelImageScale;
     const w=pendingPixelImage.naturalWidth*scale*g.cell, h=pendingPixelImage.naturalHeight*scale*g.cell;
     const x=g.ox+(g.cols* g.cell-w)/2+pixelImageOffset.x*g.cell;
     const y=g.oy+(g.rows* g.cell-h)/2+pixelImageOffset.y*g.cell;
@@ -3239,6 +3262,7 @@ THIS CUTENESS</textarea>
       if (img.naturalWidth > 8000 || img.naturalHeight > 8000) return;
       pendingPixelImage = img;
       pixelImageOffset = { x: 0, y: 0 };
+      pixelImageScale = 1; document.getElementById('rng-image-scale').value=100;
       button.disabled = false;
       render();
       status.textContent = `${file.name} (${img.naturalWidth} × ${img.naturalHeight})`;
@@ -3257,7 +3281,7 @@ THIS CUTENESS</textarea>
     cx.clearRect(0,0,cols,rows);
     cx.imageSmoothingEnabled = true;
     cx.imageSmoothingQuality = 'high';
-    const scale = Math.min(cols / img.naturalWidth, rows / img.naturalHeight);
+    const scale = Math.min(cols / img.naturalWidth, rows / img.naturalHeight) * pixelImageScale;
     const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
     cx.drawImage(img,(cols-dw)/2+pixelImageOffset.x,(rows-dh)/2+pixelImageOffset.y,dw,dh);
     let pixels;
@@ -3318,8 +3342,17 @@ THIS CUTENESS</textarea>
     const oldRows = state.pixel.rows;
     const oldCols = state.pixel.cols;
     if (cols !== oldCols || rows !== oldRows) {
+      const archive = state.pixel.archive || (state.pixel.archive = {});
+      // Shrinking the board moves out-of-range beads into a temporary archive instead of deleting them.
+      for (let r=0; r<oldRows; r++) for (let c=0; c<oldCols; c++) {
+        if ((r>=rows || c>=cols) && oldGrid[r] && oldGrid[r][c]) archive[`${r},${c}`]=oldGrid[r][c];
+      }
       const nextGrid = Array.from({ length: rows }, (_, r) =>
-        Array.from({ length: cols }, (_, c) => (oldGrid[r] && oldGrid[r][c]) ? oldGrid[r][c] : null)
+        Array.from({ length: cols }, (_, c) => {
+          if (oldGrid[r] && oldGrid[r][c]) return oldGrid[r][c];
+          const key=`${r},${c}`; if (archive[key]) { const bead=archive[key]; delete archive[key]; return bead; }
+          return null;
+        })
       );
       state.pixel.cols = cols;
       state.pixel.rows = rows;
