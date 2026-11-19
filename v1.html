@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -623,9 +630,77 @@ body {
 }
 
 #stampCanvas.pixel-render-mode { filter:none !important; image-rendering:pixelated; }
+
+/* ===== Creative House landing page ===== */
+.welcome-screen{position:fixed;inset:0;z-index:1000;overflow:auto;padding:24px 20px 34px;background:#f3eee5;background-image:radial-gradient(#dfd5c5 1px,transparent 1px),radial-gradient(#e8dfd2 1px,#f3eee5 1px);background-size:24px 24px;background-position:0 0,12px 12px;color:#51453f;display:flex;align-items:center;justify-content:center}
+.welcome-inner{width:min(1080px,100%);margin:auto}
+.welcome-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:34px}
+.welcome-brand{display:flex;align-items:center;gap:11px;font-family:'Caveat','Comic Sans MS',cursive;font-size:25px;font-weight:700;letter-spacing:.4px}
+.welcome-brand-mark{width:42px;height:42px;border-radius:50% 50% 45% 45%;display:grid;place-items:center;background:#e8c5c4;color:#fff;font-family:serif;font-size:23px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.55);transform:rotate(-7deg)}
+.welcome-language{border:1px solid #d9cdbd;border-radius:99px;padding:8px 12px;background:rgba(255,253,249,.8);color:#78695f;font-size:12px;outline:none}
+.welcome-hero{text-align:center;margin:0 auto 34px;max-width:690px}
+.welcome-kicker{display:inline-block;padding:6px 13px;border:1px dashed #cbb7a7;border-radius:99px;color:#9c7778;background:#fffaf4;font-size:11px;letter-spacing:1.5px;margin-bottom:13px}
+.welcome-title{font-family:'Caveat','Ma Shan Zheng',cursive;font-size:clamp(43px,7vw,70px);line-height:1.02;color:#66534d;font-weight:700;letter-spacing:.5px}
+.welcome-title span{color:#c7838b}
+.welcome-desc{font-size:14px;line-height:1.9;color:#8b7c71;margin:13px auto 0;max-width:520px}
+.welcome-rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:820px;margin:0 auto}
+.welcome-room{position:relative;min-height:290px;padding:18px 20px 20px;border:1px solid #e4d8c9;border-radius:22px;background:rgba(255,253,249,.92);box-shadow:0 9px 24px rgba(91,72,59,.08);text-align:center;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease}
+.welcome-room:hover{transform:translateY(-5px) rotate(-.3deg);box-shadow:0 15px 30px rgba(91,72,59,.13)}
+.welcome-room:before{content:'';position:absolute;inset:9px;border:1px dashed #e5d8ca;border-radius:16px;pointer-events:none}
+.room-art{height:148px;position:relative;display:flex;align-items:center;justify-content:center;margin:0 auto 7px}
+.room-paper{width:116px;height:132px;background:#fffaf3;border:1px solid #e8d9c8;border-radius:5px;box-shadow:5px 7px 0 #eadfd1;transform:rotate(-5deg);position:relative;display:grid;place-items:center}
+.room-paper:before{content:'✿';position:absolute;top:10px;left:12px;color:#d99ba2;font-size:17px}
+.room-paper:after{content:'♡';position:absolute;right:12px;bottom:9px;color:#d99ba2;font-size:20px}
+.room-stamp{width:78px;height:78px;border:5px dotted #d99ba2;background:#f7e7e4;display:grid;place-items:center;color:#b87881;font-size:37px;transform:rotate(4deg)}
+.room-stamp.pixel{border:0;background:repeating-linear-gradient(90deg,#d9e3d5 0 10px,transparent 10px 14px),repeating-linear-gradient(0deg,#d9e3d5 0 10px,transparent 10px 14px);outline:5px solid #fffaf3;outline-offset:-5px;color:#7d927d;font-size:31px;image-rendering:pixelated}
+.room-spark{position:absolute;font-size:23px;color:#d4a7a0}.room-spark.one{left:calc(50% - 91px);top:25px;transform:rotate(-12deg)}.room-spark.two{right:calc(50% - 93px);bottom:16px;transform:rotate(12deg)}
+.room-label{font-family:'Caveat','Ma Shan Zheng',cursive;font-size:28px;color:#66534d;font-weight:700;line-height:1.1}
+.room-note{font-size:11px;color:#9b8b7e;margin:7px 0 14px;letter-spacing:.5px}
+.room-enter{position:relative;z-index:1;border:0;border-radius:99px;padding:10px 23px;background:#d9959e;color:#fffaf8;font-size:12px;font-weight:800;letter-spacing:.5px;cursor:pointer;box-shadow:0 3px 0 #c77f89;transition:transform .15s,box-shadow .15s}
+.room-enter:hover{transform:translateY(-2px);box-shadow:0 5px 0 #c77f89}
+.welcome-room.pixel-room .room-enter{background:#91a58f;box-shadow:0 3px 0 #758d75}
+.welcome-room.pixel-room .room-enter:hover{box-shadow:0 5px 0 #758d75}
+.welcome-foot{text-align:center;color:#a99a8d;font-size:10px;letter-spacing:1px;margin-top:27px}
+.home-return{border:1px solid #e4d8c9;background:#fffaf5;color:#8a7770;border-radius:99px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.home-return:hover{background:#f7ece8}
+body.studio-entered .welcome-screen{display:none}
+.app-shell{display:none}
+body.studio-entered .app-shell{display:flex}
+@media(max-width:620px){.welcome-screen{padding:17px 13px 25px;align-items:flex-start}.welcome-top{margin-bottom:27px}.welcome-brand{font-size:22px}.welcome-brand-mark{width:36px;height:36px}.welcome-hero{margin-bottom:23px}.welcome-desc{font-size:12px;padding:0 8px}.welcome-rooms{gap:12px}.welcome-room{min-height:250px;padding:13px 10px 16px;border-radius:17px}.room-art{height:122px}.room-paper{width:94px;height:108px}.room-stamp{width:64px;height:64px;font-size:30px}.room-label{font-size:23px}.room-note{font-size:10px;min-height:28px}.room-enter{padding:9px 17px;font-size:11px}.room-spark.one{left:calc(50% - 75px)}.room-spark.two{right:calc(50% - 76px)}}
+@media(max-width:360px){.welcome-rooms{grid-template-columns:1fr;max-width:300px}.welcome-room{min-height:235px}.room-art{height:112px}}
+
 </style>
 </head>
 <body>
+
+<div class="welcome-screen" id="welcome-screen">
+  <div class="welcome-inner">
+    <div class="welcome-top">
+      <div class="welcome-brand"><span class="welcome-brand-mark">♡</span><span>my little craft house</span></div>
+      <select class="welcome-language" id="home-lang-select" aria-label="Language" onchange="setLanguage(this.value)">
+        <option value="zh-CN">简体中文</option><option value="zh-TW">繁體中文</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option>
+      </select>
+    </div>
+    <section class="welcome-hero">
+      <div class="welcome-kicker" id="welcome-kicker">A LITTLE PLACE TO MAKE THINGS</div>
+      <h1 class="welcome-title" id="welcome-title">把喜欢的东西，<span>做成小小纪念。</span></h1>
+      <p class="welcome-desc" id="welcome-desc">欢迎来到我的手作小屋。挑选一间工作室，慢慢制作一枚属于自己的邮票，或把喜欢的图案变成一颗颗拼豆。</p>
+    </section>
+    <section class="welcome-rooms" aria-label="选择创作工作间">
+      <article class="welcome-room">
+        <div class="room-art"><span class="room-spark one">✧</span><div class="room-paper"><div class="room-stamp">✿</div></div><span class="room-spark two">♡</span></div>
+        <h2 class="room-label" id="room-hand-title">可爱邮票工作间</h2><p class="room-note" id="room-hand-note">贴纸、邮戳、手绘与一点点浪漫</p>
+        <button class="room-enter" type="button" onclick="enterStudio('hand')" id="room-hand-button">进去做邮票　↗</button>
+      </article>
+      <article class="welcome-room pixel-room">
+        <div class="room-art"><span class="room-spark one">✧</span><div class="room-paper"><div class="room-stamp pixel">▦</div></div><span class="room-spark two">✿</span></div>
+        <h2 class="room-label" id="room-pixel-title">像素拼豆工作间</h2><p class="room-note" id="room-pixel-note">挑选颜色，把图案一格一格拼出来</p>
+        <button class="room-enter" type="button" onclick="enterStudio('pixel')" id="room-pixel-button">进去拼拼豆　↗</button>
+      </article>
+    </section>
+    <footer class="welcome-foot" id="welcome-foot">MADE WITH ♡ · STAMP STUDIO</footer>
+  </div>
+</div>
 
 <div class="app-shell">
   <!-- 顶部栏 -->
@@ -637,6 +712,7 @@ body {
         <div class="brand-sub" data-i18n="brandSub">邮票工坊 </div>
       </div>
     </div>
+    <button class="home-return" type="button" onclick="returnHome()" aria-label="返回工作室首页">⌂ 工作室</button>
 
     <div class="mode-tabs">
       <button class="mode-btn active" id="tab-hand" onclick="switchMode('hand')" data-i18n="tabHand">可爱邮票</button>
@@ -931,15 +1007,10 @@ THIS CUTENESS</textarea>
             <span class="card-title">1. 像素邮票画布规格</span>
             <span id="lbl-grid-dim" style="font-size:12px;font-family:monospace;font-weight:900;color:#B84A58;">24 × 24 格</span>
           </div>
-          <div class="ratio-group" style="margin:8px 0;">
-            <button class="ratio-btn active" type="button" data-pixel-r="1:1" onclick="setRatio('1:1')">1:1</button>
-            <button class="ratio-btn" type="button" data-pixel-r="4:3" onclick="setRatio('4:3')">4:3</button>
-            <button class="ratio-btn" type="button" data-pixel-r="3:4" onclick="setRatio('3:4')">3:4</button>
-          </div>
           <div class="row-flex" style="justify-content:space-between;align-items:center;">
-            <span class="sub-lbl">网格长边数量（最少 15 格，最多 52 格）</span>
+            <span class="sub-lbl">网格长边数量（8–52 格；横竖版会按比例调整）</span>
           </div>
-          <input type="range" id="rng-grid-size" min="15" max="52" step="1" value="24" oninput="resizePixelGrid(+this.value)" style="width:100%;">
+          <input type="range" id="rng-grid-size" min="8" max="52" step="1" value="24" oninput="resizePixelGrid(+this.value)" style="width:100%;">
           <div class="row-flex" style="justify-content:space-between;gap:8px;flex-wrap:wrap;margin:8px 0;">
             <span class="sub-lbl">邮票外框颜色</span>
             <label class="color-pill"><input type="color" id="pk-pixel-border" value="#FFFFFF" oninput="setPixelBorder(this.value)"><span id="hx-pixel-border">#FFFFFF</span></label>
@@ -950,6 +1021,7 @@ THIS CUTENESS</textarea>
           <button class="opt-btn active" id="btn-tog-grid" onclick="togglePixelGrid()" style="padding:8px;font-size:12px;">
             显示拼豆网格、色号与底部统计: ON (关闭即变像素邮票)
           </button>
+          <button class="opt-btn" type="button" onclick="exportBeadGuidePNG()" data-i18n="btnExportGuide" style="padding:8px;font-size:12px;">导出拼豆制作图</button>
         </div>
 
         <!-- 2. 上传图片，一键转换为拼豆图纸 -->
@@ -977,9 +1049,10 @@ THIS CUTENESS</textarea>
             <button class="opt-btn" id="btn-mirror" onclick="toggleMirror()">左右对称画笔: OFF</button>
           </div>
           <div class="pill-grid-4">
-            <button class="opt-btn active" data-tl="brush" onclick="setPixelTool('brush')">逐格画笔</button>
-            <button class="opt-btn" data-tl="eraser" onclick="setPixelTool('eraser')">像素橡皮</button>
-            <button class="opt-btn" data-tl="picker" onclick="setPixelTool('picker')">吸管取色</button>
+            <button class="opt-btn active" data-tl="brush" onclick="setPixelTool('brush')" data-i18n="tlBrush">逐格画笔</button>
+            <button class="opt-btn" data-tl="bucket" onclick="setPixelTool('bucket')" data-i18n="tlBucket">油漆桶</button>
+            <button class="opt-btn" data-tl="eraser" onclick="setPixelTool('eraser')" data-i18n="tlEraser">像素橡皮</button>
+            <button class="opt-btn" data-tl="picker" onclick="setPixelTool('picker')" data-i18n="tlPicker">吸管取色</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
             <button class="opt-btn" onclick="undoPixel()" data-i18n="btnUndoPixel">撤销上一步</button>
@@ -1001,8 +1074,6 @@ THIS CUTENESS</textarea>
           <div class="bead-grid no-scroll" id="bead-grid"></div>
         </div>
 
-        <!-- MARD 色号统计：原有 updateBeadLegend / togglePixelGrid 逻辑依赖此容器 -->
-        <div id="pixel-legend-box" class="legend-preview" aria-live="polite"></div>
       </div>
     </section>
   </div>
@@ -1098,6 +1169,7 @@ THIS CUTENESS</textarea>
       gridUnit: '格',
       totalBeads: '总计 {n} 颗:',
       exportBeadTitle: 'MARD 拼豆色号统计 (共 {n} 颗)',
+      btnExportGuide: '导出拼豆制作图',
       dragImgHint: '拖动照片调整位置',
       toastExported: '高清无水印 PNG 已保存！',
       toastDeleted: '已删除选中元素',
@@ -1214,6 +1286,7 @@ THIS CUTENESS</textarea>
       gridUnit: '格',
       totalBeads: '總計 {n} 顆:',
       exportBeadTitle: 'MARD 拼豆色號統計 (共 {n} 顆)',
+      btnExportGuide: '匯出拼豆製作圖',
       dragImgHint: '拖曳照片調整位置',
       toastExported: '高畫質無浮水印 PNG 已儲存！',
       toastDeleted: '已刪除選取元素',
@@ -1330,6 +1403,7 @@ THIS CUTENESS</textarea>
       gridUnit: 'cells',
       totalBeads: 'Total {n} beads:',
       exportBeadTitle: 'MARD Bead Color Summary ({n} beads)',
+      btnExportGuide: 'Export Bead Guide',
       dragImgHint: 'Drag photo to position',
       toastExported: 'HD Watermark-Free PNG Saved!',
       toastDeleted: 'Element deleted',
@@ -1446,6 +1520,7 @@ THIS CUTENESS</textarea>
       gridUnit: 'マス',
       totalBeads: '合計 {n} 粒:',
       exportBeadTitle: 'MARD ビーズ色番号集計 (計 {n} 粒)',
+      btnExportGuide: 'ビーズ図案を出力',
       dragImgHint: 'ドラッグして位置を調整',
       toastExported: '高画質 PNG を保存しました！',
       toastDeleted: '選択した要素を削除しました',
@@ -1562,6 +1637,7 @@ THIS CUTENESS</textarea>
       gridUnit: '칸',
       totalBeads: '총 {n}개:',
       exportBeadTitle: 'MARD 비즈 색상 통계 (총 {n}개)',
+      btnExportGuide: '비즈 도안 내보내기',
       dragImgHint: '사진을 드래그해 위치 조정',
       toastExported: '고화질 무워터마크 PNG가 저장되었습니다!',
       toastDeleted: '선택한 요소를 삭제했습니다',
@@ -1840,7 +1916,7 @@ THIS CUTENESS</textarea>
       }
       if (saved.pixel && Array.isArray(saved.pixel.gridCodes)) {
         state.pixel.borderColor = saved.pixel.borderColor || '#FFFFFF';
-        state.pixel.innerColor = saved.pixel.innerColor || '#F8D8F0';
+        state.pixel.innerColor = saved.pixel.innerColor || '#FFFFFF';
         state.pixel.cols = saved.pixel.cols || 24;
         state.pixel.rows = saved.pixel.rows || 24;
         state.pixel.showGrid = saved.pixel.showGrid !== false;
@@ -1912,6 +1988,9 @@ THIS CUTENESS</textarea>
     localStorage.setItem('stamp_studio_lang', lang);
     document.documentElement.lang = lang;
     document.getElementById('lang-select').value = lang;
+    const homeLangSelect = document.getElementById('home-lang-select');
+    if (homeLangSelect) homeLangSelect.value = lang;
+    if (window.syncWelcomeLanguage) window.syncWelcomeLanguage(lang);
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const k = el.getAttribute('data-i18n');
@@ -3234,11 +3313,10 @@ THIS CUTENESS</textarea>
     cv.width = m.w; cv.height = m.h;
     resetPositions(true);
     if (state.mode === 'pixel') {
-      const currentLongSide = r === '3:4' ? state.pixel.rows : (r === '4:3' ? state.pixel.cols : Math.max(state.pixel.cols, state.pixel.rows));
+      const currentLongSide = Math.max(state.pixel.cols, state.pixel.rows);
       syncPixelGridSlider(currentLongSide);
       resizePixelGrid(currentLongSide);
     }
-    document.querySelectorAll('[data-pixel-r]').forEach(b => b.classList.toggle('active', b.dataset.pixelR === r));
     render();
     scheduleAutoSave();
   };
@@ -3578,49 +3656,52 @@ THIS CUTENESS</textarea>
   function syncPixelGridSlider(value) {
     const slider = document.getElementById('rng-grid-size');
     if (!slider) return;
-    if (state.ratio === '1:1') {
-      slider.min = '15'; slider.max = '52'; slider.step = '1';
-      slider.value = String(Math.max(15, Math.min(52, Number(value) || state.pixel.cols)));
-    } else {
-      // 4:3 使用 4k×3k；3:4 使用 3k×4k。k=5..13，保证两边均不少于15且不超过52。
-      slider.min = '20'; slider.max = '52'; slider.step = '4';
-      const longSide = Math.max(20, Math.min(52, Math.round((Number(value) || 24) / 4) * 4));
-      slider.value = String(longSide);
-    }
+    const square = state.ratio === '1:1';
+    const min = square ? 8 : 12;
+    slider.min = String(min);
+    slider.max = '52';
+    slider.step = square ? '1' : '4';
+    let n = Number(value) || 24;
+    if (!square) n = Math.round(n / 4) * 4;
+    n = Math.max(min, Math.min(52, n));
+    slider.value = String(n);
   }
 
   window.resizePixelGrid = function(v) {
-    const ratio = state.ratio;
+    const square = state.ratio === '1:1';
+    const min = square ? 8 : 12;
+    let longSide = Math.max(min, Math.min(52, Math.round(Number(v) || 24)));
+    if (!square) longSide = Math.max(12, Math.min(52, Math.round(longSide / 4) * 4));
     let cols, rows;
-    if (ratio === '1:1') {
-      const n = Math.max(15, Math.min(52, Math.round(Number(v) || 24)));
-      cols = n; rows = n;
-    } else if (ratio === '4:3') {
-      const longSide = Math.max(20, Math.min(52, Math.round((Number(v) || 24) / 4) * 4));
-      cols = longSide; rows = longSide * 3 / 4;
-    } else {
-      const longSide = Math.max(20, Math.min(52, Math.round((Number(v) || 24) / 4) * 4));
-      rows = longSide; cols = longSide * 3 / 4;
-    }
-    if (cols < 15 || rows < 15 || cols > 52 || rows > 52 || !Number.isInteger(cols) || !Number.isInteger(rows)) return;
-    const oldGrid = state.pixel.grid, oldRows = state.pixel.rows, oldCols = state.pixel.cols;
+    if (state.ratio === '1:1') { cols = longSide; rows = longSide; }
+    else if (state.ratio === '4:3') { cols = longSide; rows = longSide * 3 / 4; }
+    else { rows = longSide; cols = longSide * 3 / 4; }
+
+    const oldGrid = state.pixel.grid;
+    const oldRows = state.pixel.rows;
+    const oldCols = state.pixel.cols;
     if (cols !== oldCols || rows !== oldRows) {
       const archive = state.pixel.archive || (state.pixel.archive = {});
+      // 缩小画布时先暂存被裁出范围的豆子；调回尺寸时会恢复，不直接丢弃作品。
       for (let r = 0; r < oldRows; r++) for (let c = 0; c < oldCols; c++) {
-        if ((r >= rows || c >= cols) && oldGrid[r]?.[c]) archive[`${r},${c}`] = oldGrid[r][c];
+        if ((r >= rows || c >= cols) && oldGrid[r] && oldGrid[r][c]) archive[`${r},${c}`] = oldGrid[r][c];
       }
       const next = Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, (_, c) => {
-        if (oldGrid[r]?.[c]) return oldGrid[r][c];
+        if (oldGrid[r] && oldGrid[r][c]) return oldGrid[r][c];
         const key = `${r},${c}`;
         if (archive[key]) { const bead = archive[key]; delete archive[key]; return bead; }
         return null;
       }));
-      state.pixel.cols = cols; state.pixel.rows = rows; state.pixel.grid = next; state.pixel.history = [];
-      updateBeadLegend(); scheduleAutoSave();
+      state.pixel.cols = cols;
+      state.pixel.rows = rows;
+      state.pixel.grid = next;
+      state.pixel.history = [];
+      updateBeadLegend();
+      scheduleAutoSave();
     }
     const label = document.getElementById('lbl-grid-dim');
-    if (label) label.textContent = `${cols} × ${rows} 格`;
-    syncPixelGridSlider(ratio === '3:4' ? rows : cols);
+    if (label) label.textContent = `${cols} × ${rows} ${t('gridUnit')}`;
+    syncPixelGridSlider(longSide);
     render();
   };
   window.setPixelBorder = function(v) { state.pixel.borderColor = v; const el=document.getElementById('hx-pixel-border'); if(el) el.textContent=v.toUpperCase(); render(); scheduleAutoSave(); };
@@ -3701,6 +3782,30 @@ THIS CUTENESS</textarea>
         setPixelTool('brush');
         toast(t('toastPickedColor', { code: tgt.code }));
       }
+      return;
+    }
+    if (tool === 'bucket') {
+      const target = grid[r][c] ? grid[r][c].code : null;
+      if (target === bead.code) return;
+      if (!state.pixel.gestureSaved) {
+        state.pixel.history.push(grid.map(row => row.slice()));
+        if (state.pixel.history.length > 50) state.pixel.history.shift();
+        state.pixel.gestureSaved = true;
+      }
+      const stack = [[r, c]];
+      const visited = new Set();
+      while (stack.length) {
+        const [cr, cc] = stack.pop();
+        const key = `${cr},${cc}`;
+        if (visited.has(key) || cr < 0 || cr >= rows || cc < 0 || cc >= cols) continue;
+        if ((grid[cr][cc] ? grid[cr][cc].code : null) !== target) continue;
+        visited.add(key);
+        grid[cr][cc] = bead;
+        stack.push([cr + 1, cc], [cr - 1, cc], [cr, cc + 1], [cr, cc - 1]);
+      }
+      updateBeadLegend();
+      render();
+      scheduleAutoSave();
       return;
     }
     const val = tool === 'eraser' ? null : bead;
@@ -3844,7 +3949,7 @@ THIS CUTENESS</textarea>
           pixelImageRotation=startRotation+angle-startAngle;
           render(); return;
         }
-        if(state.pixel.tool==='picker') return;
+        if(state.pixel.tool==='bucket' || state.pixel.tool==='picker') return;
         const c=Math.floor((p.x-g.ox)/g.cell), r=Math.floor((p.y-g.oy)/g.cell);
         const k=`${r},${c}`;
         if(k!==lastKey){lastKey=k;paintCell(r,c,false);}
@@ -3902,7 +4007,7 @@ THIS CUTENESS</textarea>
       full.width = m.w; full.height = m.h;
       const fctx = full.getContext('2d');
       fctx.imageSmoothingEnabled = false;
-      renderPixelStamp(fctx, m.w, m.h, state.pixel.showGrid);
+      renderPixelStamp(fctx, m.w, m.h, false);
       const g = state.pixel.geom;
       const sx = Math.max(0, Math.floor(g.outerX));
       const sy = Math.max(0, Math.floor(g.outerY));
@@ -3915,6 +4020,52 @@ THIS CUTENESS</textarea>
     }
     const a = document.createElement('a');
     a.download = `stamp-studio-${Date.now()}.png`;
+    a.href = out.toDataURL('image/png');
+    a.click();
+    toast(t('toastExported'));
+  };
+
+  window.exportBeadGuidePNG = function() {
+    const m = RATIOS[state.ratio];
+    const uhd = document.getElementById('chk-uhd')?.checked ? 2 : 1;
+    const { map, total } = collectBeadStats();
+    const perRow = 6;
+    const items = Array.from(map.values());
+    const rows = Math.max(1, Math.ceil(items.length / perRow));
+    const headerH = 62;
+    const rowH = 48;
+    const extraH = headerH + rows * rowH + 24;
+    const out = document.createElement('canvas');
+    out.width = m.w * uhd;
+    out.height = (m.h + extraH) * uhd;
+    const ctx = out.getContext('2d');
+    ctx.scale(uhd, uhd);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, m.w, m.h + extraH);
+    ctx.imageSmoothingEnabled = false;
+    renderPixelStamp(ctx, m.w, m.h, true);
+    ctx.fillStyle = '#231F20';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = '800 22px sans-serif';
+    ctx.fillText(t('exportBeadTitle', { n: total }), 42, m.h + 34);
+    const cellW = (m.w - 84) / perRow;
+    items.forEach((it, index) => {
+      const row = Math.floor(index / perRow);
+      const col = index % perRow;
+      const x = 42 + col * cellW;
+      const y = m.h + headerH + row * rowH;
+      ctx.fillStyle = it.bead.hex;
+      ctx.fillRect(x, y, 28, 28);
+      ctx.strokeStyle = '#CFC5B6';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, 28, 28);
+      ctx.fillStyle = '#231F20';
+      ctx.font = '700 15px monospace';
+      ctx.fillText(`${it.bead.code} × ${it.count}`, x + 36, y + 19);
+    });
+    const a = document.createElement('a');
+    a.download = `stamp-studio-bead-guide-${Date.now()}.png`;
     a.href = out.toDataURL('image/png');
     a.click();
     toast(t('toastExported'));
@@ -3950,5 +4101,33 @@ THIS CUTENESS</textarea>
   syncToolDock(state.mode);
 })();
 </script>
+<script>
+window.syncWelcomeLanguage = function(lang) {
+  const copy = {
+    'zh-CN': ['A LITTLE PLACE TO MAKE THINGS','把喜欢的东西，<span>做成小小纪念。</span>','欢迎来到我的手作小屋。挑选一间工作室，慢慢制作一枚属于自己的邮票，或把喜欢的图案变成一颗颗拼豆。','可爱邮票工作间','贴纸、邮戳、手绘与一点点浪漫','进去做邮票　↗','像素拼豆工作间','挑选颜色，把图案一格一格拼出来','进去拼拼豆　↗'],
+    'zh-TW': ['A LITTLE PLACE TO MAKE THINGS','把喜歡的東西，<span>做成小小紀念。</span>','歡迎來到我的手作小屋。挑選一間工作室，慢慢製作一枚屬於自己的郵票，或把喜歡的圖案變成一顆顆拼豆。','可愛郵票工作間','貼紙、郵戳、手繪與一點點浪漫','進去做郵票　↗','像素拼豆工作間','挑選顏色，把圖案一格一格拼出來','進去拼拼豆　↗'],
+    'en': ['A LITTLE PLACE TO MAKE THINGS','Make something <span>worth keeping.</span>','Welcome to my little craft house. Choose a studio and make a tiny stamp or turn a favorite picture into pixel beads.','Little Stamp Studio','Stickers, postmarks, doodles & a little romance','Make a stamp　↗','Pixel Bead Studio','Pick your colors and build a picture bead by bead','Make pixel art　↗'],
+    'ja': ['A LITTLE PLACE TO MAKE THINGS','好きなものを、<span>小さな思い出に。</span>','小さな手作りのお部屋へようこそ。スタジオを選んで、自分だけの切手やビーズアートを作ってみてください。','かわいい切手工房','シール、消印、お絵かきと小さなときめき','切手を作る　↗','ピクセルビーズ工房','色を選んで、一粒ずつ絵を作ろう','ビーズを作る　↗'],
+    'ko': ['A LITTLE PLACE TO MAKE THINGS','좋아하는 것을 <span>작은 추억으로.</span>','작은 공방에 오신 것을 환영해요. 작업실을 골라 나만의 우표나 픽셀 비즈 작품을 만들어 보세요.','귀여운 우표 공방','스티커, 소인, 그림과 작은 설렘','우표 만들기　↗','픽셀 비즈 공방','색을 골라 한 칸씩 작품을 완성해요','비즈 만들기　↗']
+  };
+  const c = copy[lang] || copy['zh-CN'];
+  const ids = ['welcome-kicker','welcome-title','welcome-desc','room-hand-title','room-hand-note','room-hand-button','room-pixel-title','room-pixel-note','room-pixel-button'];
+  ids.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.innerHTML=c[i];});
+};
+function enterStudio(mode) {
+  document.body.classList.add('studio-entered');
+  if (typeof window.switchMode === 'function') window.switchMode(mode === 'pixel' ? 'pixel' : 'hand');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+function returnHome() {
+  document.body.classList.remove('studio-entered');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+window.syncWelcomeLanguage(document.documentElement.lang || 'zh-CN');
+</script>
 </body>
 </html>
+
+
+
+
