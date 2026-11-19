@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -752,12 +749,35 @@ body {
   .stage-hint { border-radius:10px; }
 }
 
+
+/* 制作者署名：放在整个工作室页面最上方，低调但清晰 */
+.creator-credit {
+  width:100%;
+  padding:8px 14px 7px;
+  text-align:center;
+  color:#a58a80;
+  background:#fffaf5;
+  border-bottom:1px solid #f0e4dc;
+  font-family:'Caveat','Ma Shan Zheng',cursive;
+  font-size:13px;
+  letter-spacing:.65px;
+  line-height:1.35;
+}
+.creator-credit .credit-names { color:#8f6e6d; font-weight:700; }
+.creator-credit .credit-heart { color:#c58e96; padding:0 4px; }
+@media (max-width:600px) {
+  .creator-credit { padding:6px 8px 5px; font-size:12px; letter-spacing:.35px; }
+}
 </style>
 </head>
 <body>
 
 
 <div class="app-shell">
+  <div class="creator-credit" aria-label="网站由 Ziyuan 和 ChatGPT 一起制作">
+    <span>made with love by</span> <span class="credit-names">Ziyuan</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
+    <span> · 我们一起制作</span>
+  </div>
   <!-- 顶部栏 -->
   <header class="top-nav">
     <div class="brand">
@@ -873,6 +893,9 @@ body {
               <input type="checkbox" id="chk-sketch" checked onchange="pushHandHistory(); setHand('sketchFilter', this.checked)" style="width:15px;height:15px;accent-color:#231F20;">
               <span data-i18n="lblSketchFilter">黑白手绘线稿滤镜</span>
             </label>
+          </div>
+          <div class="row-flex" style="margin-top:8px;">
+            <button type="button" id="btn-add-photo-sticker" class="mini-act-btn" onclick="addUploadedPhotoSticker()" disabled style="width:100%;justify-content:center;opacity:.5;cursor:not-allowed;" data-i18n="btnAddPhotoSticker">将已上传照片添加为贴纸（可重复添加）</button>
           </div>
           <div id="hand-photo-scale-row" class="row-flex" style="display:none;align-items:center;gap:10px;margin-top:8px;">
             <span data-i18n="photoScale" style="font-size:11px;font-weight:800;color:#80665B;white-space:nowrap;">照片大小</span>
@@ -1240,6 +1263,7 @@ THIS CUTENESS</textarea>
       toastRedo: '已重做上一步',
       toastClearDoodle: '已清空涂鸦',
       toastPhotoLoaded: '照片已放入邮票！',
+      btnAddPhotoSticker: '将已上传照片添加为贴纸（可重复添加）',
       toastClearBoard: '已清空画板',
       toastAddedSticker: '已添加「{name}」',
       toastPickedColor: '已吸取色号 {code}',
@@ -1253,7 +1277,7 @@ THIS CUTENESS</textarea>
       },
       stickers: {
         sparkle:'星星', heart:'爱心', swirl:'卷卷', sun:'太阳线稿', music:'音符',
-        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑脸', lightning:'闪电', catdoodle:'奶糖猫', bunnydoodle:'歪耳兔', beardoodle:'小熊脸', duckdoodle:'摇摇鸭', froggydoodle:'青蛙仔'
+        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑脸', lightning:'闪电', catdoodle:'奶糖猫', bunnydoodle:'歪耳兔', beardoodle:'小熊脸', duckdoodle:'咕噜鸡', froggydoodle:'青蛙仔'
       },
       beadGroups: { A:'A黄橙', B:'B绿色', C:'C蓝色', D:'D紫玫', E:'E红色', F:'F粉色', G:'G肤棕', H:'H黑白灰', M:'M莫兰迪' },
       fonts: {
@@ -1358,6 +1382,7 @@ THIS CUTENESS</textarea>
       toastRedo: '已重做上一步',
       toastClearDoodle: '已清空塗鴉',
       toastPhotoLoaded: '照片已放入郵票！',
+      btnAddPhotoSticker: '將已上傳照片新增為貼紙（可重複新增）',
       toastClearBoard: '已清空畫板',
       toastAddedSticker: '已新增「{name}」',
       toastPickedColor: '已吸取色號 {code}',
@@ -1371,7 +1396,7 @@ THIS CUTENESS</textarea>
       },
       stickers: {
         sparkle:'星星', heart:'愛心', swirl:'捲捲', sun:'太陽線稿', music:'音符',
-        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑臉', lightning:'閃電', catdoodle:'奶糖貓', bunnydoodle:'歪耳兔', beardoodle:'小熊臉', duckdoodle:'搖搖鴨', froggydoodle:'青蛙仔'
+        star5:'五角星', envelope:'信封', coffee:'咖啡杯', smile:'笑臉', lightning:'閃電', catdoodle:'奶糖貓', bunnydoodle:'歪耳兔', beardoodle:'小熊臉', duckdoodle:'咕嚕雞', froggydoodle:'青蛙仔'
       },
       beadGroups: { A:'A黃橙', B:'B綠色', C:'C藍色', D:'D紫玫', E:'E紅色', F:'F粉色', G:'G膚棕', H:'H黑白灰', M:'M莫蘭迪' },
       fonts: {
@@ -1476,6 +1501,7 @@ THIS CUTENESS</textarea>
       toastRedo: 'Redone',
       toastClearDoodle: 'Doodles cleared',
       toastPhotoLoaded: 'Photo added to stamp!',
+      btnAddPhotoSticker: 'Add uploaded photo as sticker (add multiple copies)',
       toastClearBoard: 'Grid cleared',
       toastAddedSticker: 'Added "{name}"',
       toastPickedColor: 'Picked color {code}',
@@ -1489,7 +1515,7 @@ THIS CUTENESS</textarea>
       },
       stickers: {
         sparkle:'Sparkle', heart:'Heart', swirl:'Swirl', sun:'Sun', music:'Music',
-        star5:'Star', envelope:'Envelope', coffee:'Coffee', smile:'Smile', lightning:'Lightning', catdoodle:'Toffee Cat', bunnydoodle:'Wonky Bunny', beardoodle:'Little Bear', duckdoodle:'Wobbly Duck', froggydoodle:'Doodle Frog'
+        star5:'Star', envelope:'Envelope', coffee:'Coffee', smile:'Smile', lightning:'Lightning', catdoodle:'Toffee Cat', bunnydoodle:'Wonky Bunny', beardoodle:'Little Bear', duckdoodle:'Gulu Chick', froggydoodle:'Doodle Frog'
       },
       beadGroups: { A:'A Yellow', B:'B Green', C:'C Blue', D:'D Purple', E:'E Red', F:'F Pink', G:'G Brown', H:'H B&W', M:'M Morandi' },
       fonts: {
@@ -1594,6 +1620,7 @@ THIS CUTENESS</textarea>
       toastRedo: 'やり直しました',
       toastClearDoodle: '落書きを消去しました',
       toastPhotoLoaded: '写真を切手に配置しました！',
+      btnAddPhotoSticker: 'アップロードした写真をステッカーとして追加（複数追加可）',
       toastClearBoard: 'ボードをクリアしました',
       toastAddedSticker: '「{name}」を追加しました',
       toastPickedColor: '色番号 {code} を取得しました',
@@ -1607,7 +1634,7 @@ THIS CUTENESS</textarea>
       },
       stickers: {
         sparkle:'キラキラ', heart:'ハート', swirl:'ぐるぐる', sun:'おひさま', music:'音符',
-        star5:'星', envelope:'封筒', coffee:'コーヒー', smile:'スマイル', lightning:'いなずま', catdoodle:'キャンディねこ', bunnydoodle:'たれ耳うさぎ', beardoodle:'くまさん', duckdoodle:'よちよちアヒル', froggydoodle:'かえるさん'
+        star5:'星', envelope:'封筒', coffee:'コーヒー', smile:'スマイル', lightning:'いなずま', catdoodle:'キャンディねこ', bunnydoodle:'たれ耳うさぎ', beardoodle:'くまさん', duckdoodle:'ぐるぐるひよこ', froggydoodle:'かえるさん'
       },
       beadGroups: { A:'A黄・橙', B:'B緑', C:'C青', D:'D紫', E:'E赤', F:'Fピンク', G:'G茶・肌', H:'H白黒灰', M:'Mくすみ' },
       fonts: {
@@ -1712,6 +1739,7 @@ THIS CUTENESS</textarea>
       toastRedo: '다시 실행했습니다',
       toastClearDoodle: '낙서를 지웠습니다',
       toastPhotoLoaded: '사진이 우표에 추가되었습니다!',
+      btnAddPhotoSticker: '업로드한 사진을 스티커로 추가 (여러 개 추가 가능)',
       toastClearBoard: '캔버스를 비웠습니다',
       toastAddedSticker: '「{name}」 추가됨',
       toastPickedColor: '색상 코드 {code} 선택됨',
@@ -1725,7 +1753,7 @@ THIS CUTENESS</textarea>
       },
       stickers: {
         sparkle:'반짝이', heart:'하트', swirl:'소용돌이', sun:'햇님', music:'음표',
-        star5:'별', envelope:'편지봉투', coffee:'커피잔', smile:'스마일', lightning:'번개', catdoodle:'캔디 고양이', bunnydoodle:'삐뚤토끼', beardoodle:'작은 곰', duckdoodle:'뒤뚱 오리', froggydoodle:'개구리'
+        star5:'별', envelope:'편지봉투', coffee:'커피잔', smile:'스마일', lightning:'번개', catdoodle:'캔디 고양이', bunnydoodle:'삐뚤토끼', beardoodle:'작은 곰', duckdoodle:'구르르 병아리', froggydoodle:'개구리'
       },
       beadGroups: { A:'A노랑/주황', B:'B초록', C:'C파랑', D:'D보라', E:'E빨강', F:'F분홍', G:'G갈색/살구', H:'H흑백회색', M:'M모란디' },
       fonts: {
@@ -1812,6 +1840,8 @@ THIS CUTENESS</textarea>
       charY: 365,
       charRot: 0,
       photoImg: null,
+      uploadedAssets: {},
+      currentPhotoAssetKey: '',
       sketchCanvas: null,
       sketchFilter: true,
       text: "I CAN'T TAKE\nTHIS CUTENESS",
@@ -1880,6 +1910,7 @@ THIS CUTENESS</textarea>
       paperColor: h.paperColor, borderColor: h.borderColor, pattern: h.pattern,
       patternColor: h.patternColor, patternOpacity: h.patternOpacity, patternSize: h.patternSize, patternWeight: h.patternWeight, patternDirection: h.patternDirection, inkColor: h.inkColor,
       character: h.character,
+      currentPhotoAssetKey: h.currentPhotoAssetKey || '',
       charScale: h.charScale, charX: h.charX, charY: h.charY, charRot: h.charRot,
       sketchFilter: h.sketchFilter, text: h.text, fontStyle: h.fontStyle,
       textAlign: h.textAlign, textColor: h.textColor, fontScale: h.fontScale,
@@ -1949,6 +1980,7 @@ THIS CUTENESS</textarea>
           mode: state.mode,
           ratio: state.ratio,
           hand: JSON.parse(cloneHandSnapshot()),
+          uploadedAssets: state.hand.uploadedAssets || {},
           pixel: {
             borderColor: state.pixel.borderColor,
             innerColor: state.pixel.innerColor,
@@ -1978,6 +2010,7 @@ THIS CUTENESS</textarea>
       }
       if (saved.hand) {
         Object.assign(state.hand, saved.hand);
+        state.hand.uploadedAssets = saved.uploadedAssets || saved.hand.uploadedAssets || {};
       }
       if (saved.pixel && Array.isArray(saved.pixel.gridCodes)) {
         state.pixel.borderColor = saved.pixel.borderColor || '#FFFFFF';
@@ -2033,6 +2066,13 @@ THIS CUTENESS</textarea>
     if (photoScaleRow) photoScaleRow.style.display = h.character === 'photo' && h.photoImg ? 'flex' : 'none';
     if (photoScale) photoScale.value = Math.round(h.charScale || 100);
     if (photoScaleValue) photoScaleValue.textContent = `${Math.round(h.charScale || 100)}%`;
+    const addPhotoStickerBtn = document.getElementById('btn-add-photo-sticker');
+    if (addPhotoStickerBtn) {
+      const ready = !!(h.currentPhotoAssetKey && h.uploadedAssets && h.uploadedAssets[h.currentPhotoAssetKey]);
+      addPhotoStickerBtn.disabled = !ready;
+      addPhotoStickerBtn.style.opacity = ready ? '1' : '.5';
+      addPhotoStickerBtn.style.cursor = ready ? 'pointer' : 'not-allowed';
+    }
   }
 
   window.resetAllStudio = function() {
@@ -2989,6 +3029,20 @@ THIS CUTENESS</textarea>
       dot(-8, 23, 1.1, '#A6BE91'); dot(8, 23, 1.1, '#A6BE91');
     }
   }
+  const customStickerImageCache = new Map();
+  let uploadedAssetSeq = 0;
+  function getCustomStickerImage(src) {
+    if (!src) return null;
+    const cached = customStickerImageCache.get(src);
+    if (cached) return cached.complete && cached.naturalWidth ? cached : null;
+    const img = new Image();
+    customStickerImageCache.set(src, img);
+    img.onload = () => { if (state.mode === 'hand') render(); };
+    img.onerror = () => customStickerImageCache.delete(src);
+    img.src = src;
+    return null;
+  }
+
   function drawSticker(ctx, st, ink) {
     ctx.save();
     ctx.translate(st.x, st.y);
@@ -3000,7 +3054,14 @@ THIS CUTENESS</textarea>
     ctx.lineJoin = 'round';
 
     const tType = st.type;
-    if (['catdoodle','bunnydoodle','beardoodle','duckdoodle','froggydoodle'].includes(tType)) {
+    if (tType === 'custom-image' && st.imageKey) {
+      const imageData = state.hand.uploadedAssets && state.hand.uploadedAssets[st.imageKey];
+      const img = getCustomStickerImage(imageData);
+      if (img) {
+        const w = st.baseW || 220, h = st.baseH || 220;
+        ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      }
+    } else if (['catdoodle','bunnydoodle','beardoodle','duckdoodle','froggydoodle'].includes(tType)) {
       drawDoodleAnimalSticker(ctx, tType, ink);
     } else if (tType === 'swirl') {
       ctx.beginPath();
@@ -3388,8 +3449,10 @@ THIS CUTENESS</textarea>
     }
     if (target.type === 'sticker') {
       const st = h.stickers[target.index]; if (!st) return null;
-      const size = 70 * st.scale;
-      return { x:st.x, y:st.y, w:size, h:size };
+      const size = st.type === 'custom-image'
+        ? { w:(st.baseW || 220) * st.scale, h:(st.baseH || 220) * st.scale }
+        : { w:70 * st.scale, h:70 * st.scale };
+      return { x:st.x, y:st.y, w:size.w, h:size.h };
     }
     if (target.type === 'postmark') {
       const p=h.postmark, size=230*p.scale; return {x:p.x,y:p.y,w:size,h:size};
@@ -3645,6 +3708,11 @@ THIS CUTENESS</textarea>
       img.onload = () => {
         pushHandHistory();
         state.hand.photoImg = img;
+        state.hand.uploadedAssets = state.hand.uploadedAssets || {};
+        state.hand.currentPhotoAssetKey = 'photo_' + Date.now() + '_' + (++uploadedAssetSeq);
+        state.hand.uploadedAssets[state.hand.currentPhotoAssetKey] = String(ev.target.result || '');
+        const addPhotoStickerBtn = document.getElementById('btn-add-photo-sticker');
+        if (addPhotoStickerBtn) { addPhotoStickerBtn.disabled = false; addPhotoStickerBtn.style.opacity = '1'; addPhotoStickerBtn.style.cursor = 'pointer'; }
         // 线稿缓存与原图使用相同长宽比，避免关闭滤镜/切换滤镜时照片比例跳变。
         const maxSide = 900;
         const fit = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
@@ -3686,6 +3754,40 @@ THIS CUTENESS</textarea>
       img.src = ev.target.result;
     };
     rd.readAsDataURL(f);
+    // 清空 input 值，允许用户再次选择同一张图片。
+    e.target.value = '';
+  };
+
+  window.addUploadedPhotoSticker = function() {
+    const h = state.hand;
+    const assetKey = h.currentPhotoAssetKey;
+    const src = assetKey && h.uploadedAssets ? h.uploadedAssets[assetKey] : '';
+    if (!src) { toast(t('toastSelectImgFirst')); return; }
+    const img = getCustomStickerImage(src);
+    // 图片尚未进入缓存时，根据 data URL 的 Image 尺寸创建一个保比例贴纸。
+    const createSticker = (image) => {
+      const iw = image.naturalWidth || image.width || 1;
+      const ih = image.naturalHeight || image.height || 1;
+      const fit = 220 / Math.max(iw, ih);
+      pushHandHistory();
+      h.stickers.push({
+        type: 'custom-image', imageKey: assetKey,
+        baseW: Math.max(1, iw * fit), baseH: Math.max(1, ih * fit),
+        x: Math.round(RATIOS[state.ratio].w * (0.28 + Math.random() * 0.44)),
+        y: Math.round(RATIOS[state.ratio].h * (0.24 + Math.random() * 0.52)),
+        scale: 1, rot: 0
+      });
+      const index = h.stickers.length - 1;
+      h.selSticker = index;
+      selectedObject = { type: 'sticker', index };
+      render(); scheduleAutoSave();
+      toast(t('toastAddedSticker', { name: curLang === 'en' ? 'your photo' : '自定义照片' }));
+    };
+    if (img) { createSticker(img); return; }
+    const loader = new Image();
+    loader.onload = () => createSticker(loader);
+    loader.onerror = () => toast(t('toastSelectImgFirst'));
+    loader.src = src;
   };
 
   // 拼豆色卡 & 棋盘函数
