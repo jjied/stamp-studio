@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2751,61 +2744,83 @@ THIS CUTENESS</textarea>
     }
   }
 
-  // Loose hand-drawn animal stickers: deliberately organic curves, tiny asymmetries and soft pastel fills.
+  // Soft vintage picture-book animal stickers: clearer silhouettes, gentler expressions and a consistent fine outline.
   function drawDoodleAnimalSticker(ctx, type, ink) {
-    const stroke = ink || '#6F514B';
-    const fill = (hex) => { ctx.fillStyle = hex; ctx.fill(); };
-    ctx.lineWidth = 4.2;
-    ctx.strokeStyle = stroke;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(120,82,72,.08)';
-    ctx.shadowBlur = 1.5;
-    if (type === 'catdoodle') {
-      ctx.beginPath(); ctx.moveTo(-27,-10);
-      ctx.quadraticCurveTo(-34,-30,-25,-39); ctx.quadraticCurveTo(-16,-42,-8,-25);
-      ctx.quadraticCurveTo(7,-30,19,-24); ctx.quadraticCurveTo(25,-42,32,-35);
-      ctx.quadraticCurveTo(37,-22,29,-7); ctx.quadraticCurveTo(38,15,19,28);
-      ctx.quadraticCurveTo(-4,39,-23,23); ctx.quadraticCurveTo(-38,9,-27,-10);
-      fill('#FFF4E8'); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-19,-25); ctx.quadraticCurveTo(-17,-31,-12,-24); ctx.moveTo(20,-24); ctx.quadraticCurveTo(25,-31,27,-22); ctx.stroke();
-      ctx.fillStyle=stroke; ctx.beginPath(); ctx.ellipse(-11,2,2.6,3.5,-.1,0,Math.PI*2); ctx.ellipse(12,1,2.5,3.4,.1,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-3,9); ctx.quadraticCurveTo(0,12,3,9); ctx.moveTo(0,11); ctx.quadraticCurveTo(-4,18,-9,14); ctx.moveTo(1,11); ctx.quadraticCurveTo(7,18,11,13); ctx.stroke();
-      ctx.strokeStyle='#D9959C'; ctx.lineWidth=2.4; ctx.beginPath(); ctx.moveTo(-18,10); ctx.lineTo(-30,8); ctx.moveTo(18,10); ctx.lineTo(30,7); ctx.stroke();
-    } else if (type === 'bunnydoodle') {
-      ctx.beginPath(); ctx.moveTo(-17,-17); ctx.quadraticCurveTo(-34,-51,-24,-58); ctx.quadraticCurveTo(-8,-57,-7,-20);
-      ctx.quadraticCurveTo(7,-25,18,-18); ctx.quadraticCurveTo(27,-57,39,-49); ctx.quadraticCurveTo(45,-35,25,-11);
-      ctx.quadraticCurveTo(38,15,17,29); ctx.quadraticCurveTo(-8,39,-25,17); ctx.quadraticCurveTo(-34,-1,-17,-17);
-      fill('#FFF8F0'); ctx.stroke();
-      ctx.fillStyle='#EFB4BC'; ctx.beginPath(); ctx.ellipse(-19,-39,4,13,-.2,0,Math.PI*2); ctx.ellipse(31,-34,4,12,.35,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle=stroke; ctx.beginPath(); ctx.arc(-10,1,2.5,0,Math.PI*2); ctx.arc(12,0,2.5,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-2,9); ctx.quadraticCurveTo(1,12,4,9); ctx.stroke();
-      ctx.fillStyle='#F1B5B9'; ctx.beginPath(); ctx.arc(-20,11,5,0,Math.PI*2); ctx.arc(21,10,5,0,Math.PI*2); ctx.fill();
-    } else if (type === 'beardoodle') {
-      ctx.beginPath(); ctx.moveTo(-29,-8); ctx.quadraticCurveTo(-37,-29,-20,-35); ctx.quadraticCurveTo(-7,-45,3,-34); ctx.quadraticCurveTo(25,-39,31,-20); ctx.quadraticCurveTo(39,5,24,24); ctx.quadraticCurveTo(7,39,-15,29); ctx.quadraticCurveTo(-38,20,-29,-8);
-      fill('#D9A77F'); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-24,-22); ctx.quadraticCurveTo(-38,-27,-36,-12); ctx.quadraticCurveTo(-33,1,-23,0); ctx.moveTo(25,-21); ctx.quadraticCurveTo(39,-25,36,-9); ctx.quadraticCurveTo(34,2,24,1); ctx.stroke();
-      ctx.fillStyle=stroke; ctx.beginPath(); ctx.arc(-11,-3,2.6,0,Math.PI*2); ctx.arc(11,-3,2.6,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#59413C'; ctx.beginPath(); ctx.ellipse(0,8,5,3.5,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(0,11); ctx.quadraticCurveTo(-5,19,-11,15); ctx.moveTo(0,11); ctx.quadraticCurveTo(6,19,11,14); ctx.stroke();
-      ctx.fillStyle='#F3B4B6'; ctx.beginPath(); ctx.arc(-20,10,5,0,Math.PI*2); ctx.arc(20,10,5,0,Math.PI*2); ctx.fill();
+    const line = ink || '#80665B';
+    const outline = (path, color, width = 2.7) => {
+      ctx.beginPath(); path();
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = width; ctx.strokeStyle = line; ctx.stroke();
+    };
+    const detail = (path, color = line, width = 2.1) => {
+      ctx.beginPath(); path(); ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+    };
+    const dot = (x, y, r, color = line) => {
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+    };
+    const blush = (x, y, rx = 5, ry = 3.2) => {
+      ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#E9B5AD'; ctx.fill();
+    };
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(111,82,69,.10)'; ctx.shadowBlur = 1.2;
+
+    if (type === 'beardoodle') {
+      // A small seated teddy bear with rounded ears, a muzzle and a visible little body.
+      outline(() => { ctx.ellipse(-19, -31, 10, 11, -.18, 0, Math.PI * 2); }, '#C99670');
+      outline(() => { ctx.ellipse(19, -31, 10, 11, .18, 0, Math.PI * 2); }, '#C99670');
+      ctx.beginPath(); ctx.ellipse(0, 16, 23, 25, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#C99670'; ctx.fill(); ctx.strokeStyle = line; ctx.lineWidth = 2.8; ctx.stroke();
+      outline(() => { ctx.ellipse(-22, 13, 8, 13, -.35, 0, Math.PI * 2); }, '#C99670', 2.5);
+      outline(() => { ctx.ellipse(22, 13, 8, 13, .35, 0, Math.PI * 2); }, '#C99670', 2.5);
+      outline(() => { ctx.ellipse(0, -9, 29, 27, 0, 0, Math.PI * 2); }, '#D9AE89', 2.8);
+      ctx.beginPath(); ctx.ellipse(0, 1, 13, 10, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#F5E2CF'; ctx.fill();
+      dot(-10, -11, 2.1); dot(10, -11, 2.1);
+      ctx.beginPath(); ctx.moveTo(-2.8, -1); ctx.quadraticCurveTo(0, -4, 2.8, -1);
+      ctx.quadraticCurveTo(2, 3, 0, 3); ctx.quadraticCurveTo(-2, 3, -2.8, -1);
+      ctx.fillStyle = '#77564C'; ctx.fill();
+      detail(() => { ctx.moveTo(0, 3); ctx.lineTo(0, 6); ctx.moveTo(0, 6); ctx.quadraticCurveTo(-4, 10, -7, 7); ctx.moveTo(0, 6); ctx.quadraticCurveTo(4, 10, 7, 7); });
+      blush(-17, 0, 4.5, 3); blush(17, 0, 4.5, 3);
+      ctx.beginPath(); ctx.ellipse(0, 20, 11, 13, 0, 0, Math.PI * 2); ctx.fillStyle = '#EAD0B8'; ctx.fill();
+      detail(() => { ctx.moveTo(-5, 20); ctx.quadraticCurveTo(0, 24, 5, 20); }, '#B88969', 1.5);
+      // tiny stitched heart on the tummy
+      ctx.beginPath(); ctx.moveTo(0, 15); ctx.bezierCurveTo(-8, 9, -9, 19, 0, 24); ctx.bezierCurveTo(9, 19, 8, 9, 0, 15);
+      ctx.fillStyle = '#D99A9A'; ctx.fill();
     } else if (type === 'duckdoodle') {
-      ctx.beginPath(); ctx.moveTo(-26,19); ctx.quadraticCurveTo(-35,-2,-23,-22); ctx.quadraticCurveTo(-8,-43,13,-30); ctx.quadraticCurveTo(31,-19,25,5); ctx.quadraticCurveTo(22,30,-2,31); ctx.quadraticCurveTo(-21,31,-26,19);
-      fill('#F9D978'); ctx.stroke();
-      ctx.fillStyle=stroke; ctx.beginPath(); ctx.arc(-8,-5,2.5,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#E99A72'; ctx.beginPath(); ctx.moveTo(4,2); ctx.quadraticCurveTo(19,-2,24,5); ctx.quadraticCurveTo(14,14,4,9); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.strokeStyle=stroke; ctx.beginPath(); ctx.moveTo(-15,29); ctx.quadraticCurveTo(-19,37,-25,35); ctx.moveTo(-1,30); ctx.quadraticCurveTo(-2,38,-8,38); ctx.stroke();
-      ctx.strokeStyle='#FFF0B5'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-19,-18); ctx.quadraticCurveTo(-7,-31,8,-24); ctx.stroke();
+      // A side-facing waddling duckling; the beak, wing and feet make the pose readable at small size.
+      outline(() => { ctx.moveTo(-29, 20); ctx.quadraticCurveTo(-36, 3, -22, -12); ctx.quadraticCurveTo(-15, -31, 3, -31); ctx.quadraticCurveTo(22, -31, 27, -13); ctx.quadraticCurveTo(34, 5, 20, 23); ctx.quadraticCurveTo(4, 37, -17, 29); ctx.quadraticCurveTo(-25, 27, -29, 20); ctx.closePath(); }, '#F6D77D', 2.8);
+      // small crest
+      detail(() => { ctx.moveTo(-8, -29); ctx.quadraticCurveTo(-15, -42, -5, -39); ctx.quadraticCurveTo(1, -37, 1, -30); }, '#D9B65F', 2.2);
+      // wing
+      outline(() => { ctx.moveTo(-16, 1); ctx.quadraticCurveTo(-7, -12, 8, -7); ctx.quadraticCurveTo(20, 0, 12, 13); ctx.quadraticCurveTo(0, 23, -13, 13); ctx.quadraticCurveTo(-20, 8, -16, 1); }, '#EFC45F', 2.1);
+      detail(() => { ctx.moveTo(-10, 4); ctx.quadraticCurveTo(-1, 0, 8, 7); }, '#D8AE56', 1.6);
+      // beak
+      outline(() => { ctx.moveTo(20, -12); ctx.quadraticCurveTo(34, -17, 38, -8); ctx.quadraticCurveTo(31, 0, 20, -3); ctx.closePath(); }, '#E99A70', 2.2);
+      dot(12, -15, 2.2);
+      detail(() => { ctx.moveTo(8, -20); ctx.quadraticCurveTo(12, -22, 15, -20); }, '#FFF0C4', 1.5);
+      // feet
+      detail(() => { ctx.moveTo(-10, 28); ctx.lineTo(-12, 35); ctx.quadraticCurveTo(-18, 37, -21, 34); ctx.moveTo(8, 29); ctx.lineTo(9, 35); ctx.quadraticCurveTo(15, 38, 19, 34); }, '#D98F68', 2.4);
+      blush(4, -5, 3.8, 2.5);
     } else if (type === 'froggydoodle') {
-      ctx.beginPath(); ctx.moveTo(-29,2); ctx.quadraticCurveTo(-35,-19,-17,-27); ctx.quadraticCurveTo(-8,-39,0,-27); ctx.quadraticCurveTo(10,-39,20,-25); ctx.quadraticCurveTo(37,-17,29,4); ctx.quadraticCurveTo(25,29,1,30); ctx.quadraticCurveTo(-26,31,-29,2);
-      fill('#B9D8A4'); ctx.stroke();
-      ctx.fillStyle='#D5E8C6'; ctx.beginPath(); ctx.arc(-16,-24,8,0,Math.PI*2); ctx.arc(17,-23,8,0,Math.PI*2); ctx.fill(); ctx.stroke();
-      ctx.fillStyle=stroke; ctx.beginPath(); ctx.arc(-15,-23,2.7,0,Math.PI*2); ctx.arc(17,-22,2.7,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-12,8); ctx.quadraticCurveTo(0,18,13,7); ctx.stroke();
-      ctx.fillStyle='#EAA6A7'; ctx.beginPath(); ctx.arc(-22,7,4,0,Math.PI*2); ctx.arc(23,7,4,0,Math.PI*2); ctx.fill();
+      // A squat little pond frog with distinct eye bumps, a round belly and tiny toes.
+      outline(() => { ctx.ellipse(0, 13, 29, 22, 0, 0, Math.PI * 2); }, '#A9C995', 2.8);
+      outline(() => { ctx.ellipse(-17, -15, 10, 12, -.15, 0, Math.PI * 2); }, '#B8D6A5', 2.5);
+      outline(() => { ctx.ellipse(17, -15, 10, 12, .15, 0, Math.PI * 2); }, '#B8D6A5', 2.5);
+      // soft belly patch
+      ctx.beginPath(); ctx.ellipse(0, 19, 17, 12, 0, 0, Math.PI * 2); ctx.fillStyle = '#DCE8C8'; ctx.fill();
+      dot(-17, -16, 2.5); dot(17, -16, 2.5);
+      // tiny eyelid highlights
+      detail(() => { ctx.moveTo(-22, -22); ctx.quadraticCurveTo(-17, -27, -12, -22); ctx.moveTo(12, -22); ctx.quadraticCurveTo(17, -27, 22, -22); }, '#E8F0D9', 1.8);
+      detail(() => { ctx.moveTo(-10, 7); ctx.quadraticCurveTo(0, 16, 10, 7); }, '#66815D', 2.2);
+      blush(-22, 5, 4.2, 3); blush(22, 5, 4.2, 3);
+      // front feet and small toes
+      detail(() => { ctx.moveTo(-19, 26); ctx.quadraticCurveTo(-24, 32, -29, 29); ctx.moveTo(-25, 29); ctx.lineTo(-28, 33); ctx.moveTo(19, 26); ctx.quadraticCurveTo(24, 32, 29, 29); ctx.moveTo(25, 29); ctx.lineTo(28, 33); }, '#78966B', 2.2);
+      // two little pond freckles
+      dot(-8, 23, 1.1, '#A6BE91'); dot(8, 23, 1.1, '#A6BE91');
     }
   }
-
   function drawSticker(ctx, st, ink) {
     ctx.save();
     ctx.translate(st.x, st.y);
