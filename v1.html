@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -871,6 +874,12 @@ body {
               <span data-i18n="lblSketchFilter">黑白手绘线稿滤镜</span>
             </label>
           </div>
+          <div id="hand-photo-scale-row" class="row-flex" style="display:none;align-items:center;gap:10px;margin-top:8px;">
+            <span data-i18n="photoScale" style="font-size:11px;font-weight:800;color:#80665B;white-space:nowrap;">照片大小</span>
+            <input type="range" id="rng-hand-photo-scale" min="20" max="800" step="1" value="100"
+              onpointerdown="pushHandHistory()" onkeydown="pushHandHistory()" oninput="setHandPhotoScale(this.value)" style="flex:1;min-width:80px;accent-color:#B98289;">
+            <span id="hand-photo-scale-value" style="font-size:11px;color:#80665B;min-width:38px;text-align:right;">100%</span>
+          </div>
         </div>
 
         <!-- 2. 纸张底色、外齿框色与底纹 -->
@@ -1156,6 +1165,7 @@ THIS CUTENESS</textarea>
       c1Sub: '在画布控制框上调整大小与角度',
       lblInkColor: '描边线条色:',
       btnUploadPhoto: '上传相册照片',
+      photoScale: '照片大小',
       lblSketchFilter: '黑白手绘线稿滤镜',
       c2Title: '2. 邮票纸张色与底纹',
       lblBorderColor: '外齿白边色:',
@@ -1273,6 +1283,7 @@ THIS CUTENESS</textarea>
       c1Sub: '在畫布控制框上調整大小與角度',
       lblInkColor: '描邊線條色:',
       btnUploadPhoto: '上傳相簿照片',
+      photoScale: '照片大小',
       lblSketchFilter: '黑白手繪線稿濾鏡',
       c2Title: '2. 郵票紙張色與底紋',
       lblBorderColor: '外齒白邊色:',
@@ -1390,6 +1401,7 @@ THIS CUTENESS</textarea>
       c1Sub: 'Resize & rotate via canvas box',
       lblInkColor: 'Line Ink:',
       btnUploadPhoto: 'Upload Photo',
+      photoScale: 'Photo size',
       lblSketchFilter: 'B&W Sketch Filter',
       c2Title: '2. Paper Color & Texture Pattern',
       lblBorderColor: 'Perforation Edge:',
@@ -1507,6 +1519,7 @@ THIS CUTENESS</textarea>
       c1Sub: 'キャンバスの枠でサイズと角度を調整',
       lblInkColor: '主線の色:',
       btnUploadPhoto: '写真をアップロード',
+      photoScale: '写真サイズ',
       lblSketchFilter: 'モノクロ線画フィルター',
       c2Title: '2. 切手の紙色と背景パターン',
       lblBorderColor: '目打ち枠の色:',
@@ -1624,6 +1637,7 @@ THIS CUTENESS</textarea>
       c1Sub: '캔버스 조절 박스에서 크기와 각도 조절',
       lblInkColor: '외곽선 색상:',
       btnUploadPhoto: '앨범 사진 업로드',
+      photoScale: '사진 크기',
       lblSketchFilter: '흑백 손그림 스케치 필터',
       c2Title: '2. 우표 종이 색상 및 배경 패턴',
       lblBorderColor: '우표 톱니 테두리색:',
@@ -1865,7 +1879,7 @@ THIS CUTENESS</textarea>
     return JSON.stringify({
       paperColor: h.paperColor, borderColor: h.borderColor, pattern: h.pattern,
       patternColor: h.patternColor, patternOpacity: h.patternOpacity, patternSize: h.patternSize, patternWeight: h.patternWeight, patternDirection: h.patternDirection, inkColor: h.inkColor,
-      character: h.character === 'photo' ? 'puppy' : h.character,
+      character: h.character,
       charScale: h.charScale, charX: h.charX, charY: h.charY, charRot: h.charRot,
       sketchFilter: h.sketchFilter, text: h.text, fontStyle: h.fontStyle,
       textAlign: h.textAlign, textColor: h.textColor, fontScale: h.fontScale,
@@ -2013,6 +2027,12 @@ THIS CUTENESS</textarea>
     document.querySelectorAll('.opt-btn[data-bs]').forEach(b => b.classList.toggle('active', b.dataset.bs === h.badge.shape));
     document.getElementById('pk-bg').value = h.badge.color; document.getElementById('hx-bg').textContent = h.badge.color;
     document.getElementById('chk-sketch').checked = !!h.sketchFilter;
+    const photoScaleRow = document.getElementById('hand-photo-scale-row');
+    const photoScale = document.getElementById('rng-hand-photo-scale');
+    const photoScaleValue = document.getElementById('hand-photo-scale-value');
+    if (photoScaleRow) photoScaleRow.style.display = h.character === 'photo' && h.photoImg ? 'flex' : 'none';
+    if (photoScale) photoScale.value = Math.round(h.charScale || 100);
+    if (photoScaleValue) photoScaleValue.textContent = `${Math.round(h.charScale || 100)}%`;
   }
 
   window.resetAllStudio = function() {
@@ -2090,7 +2110,11 @@ THIS CUTENESS</textarea>
       b.innerHTML = `${getMiniSVG(id)}<span>${dictAnimals[id] || id}</span>`;
       b.onclick = () => {
         pushHandHistory();
+        if (state.hand.character === 'photo') state.hand.charScale = 100;
         state.hand.character = id;
+        selectedObject = null;
+        const photoScaleRow = document.getElementById('hand-photo-scale-row');
+        if (photoScaleRow) photoScaleRow.style.display = 'none';
         document.querySelectorAll('.animal-btn').forEach(el => el.classList.toggle('active', el.dataset.id === id));
         render();
         scheduleAutoSave();
@@ -2859,10 +2883,8 @@ THIS CUTENESS</textarea>
         ctx.moveTo(19, 13); ctx.lineTo(30, 15);
       }, '#80665B', 1.7);
       blush(-18, 7, 4.5, 3.1); blush(19, 7, 4.5, 3.1);
-      // tiny chest bib, like a little fabric patch
-      ctx.beginPath(); ctx.ellipse(1, 25, 10, 5.5, -.08, 0, Math.PI * 2);
-      ctx.fillStyle = '#E8C5B8'; ctx.fill();
-      detail(() => { ctx.moveTo(-5, 24); ctx.quadraticCurveTo(1, 28, 7, 24); }, '#C28F83', 1.4);
+      // a short, soft chin curve keeps the lower face clean and connected
+      detail(() => { ctx.moveTo(-9, 23); ctx.quadraticCurveTo(1, 28, 10, 23); }, '#C99C91', 1.35);
     } else if (type === 'bunnydoodle') {
       // Wonky-ear bunny: one upright ear and one gently folded ear make the name readable.
       outline(() => {
@@ -2891,9 +2913,6 @@ THIS CUTENESS</textarea>
       ctx.fillStyle = '#D98F98'; ctx.fill();
       detail(() => { ctx.moveTo(1, 11); ctx.quadraticCurveTo(-2, 15, -6, 13); ctx.moveTo(1, 11); ctx.quadraticCurveTo(5, 15, 8, 12); }, '#80665B', 1.7);
       blush(-19, 10, 4.5, 3.2); blush(20, 10, 4.5, 3.2);
-      // little cotton tail peeking out
-      ctx.beginPath(); ctx.arc(25, 24, 5.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFFDF8'; ctx.fill(); ctx.strokeStyle = line; ctx.lineWidth = 1.8; ctx.stroke();
     } else if (type === 'beardoodle') {
       // A small seated teddy bear with rounded ears, a muzzle and a visible little body.
       outline(() => { ctx.ellipse(-19, -31, 10, 11, -.18, 0, Math.PI * 2); }, '#C99670');
@@ -2917,20 +2936,41 @@ THIS CUTENESS</textarea>
       ctx.beginPath(); ctx.moveTo(0, 15); ctx.bezierCurveTo(-8, 9, -9, 19, 0, 24); ctx.bezierCurveTo(9, 19, 8, 9, 0, 15);
       ctx.fillStyle = '#D99A9A'; ctx.fill();
     } else if (type === 'duckdoodle') {
-      // A side-facing waddling duckling; the beak, wing and feet make the pose readable at small size.
-      outline(() => { ctx.moveTo(-29, 20); ctx.quadraticCurveTo(-36, 3, -22, -12); ctx.quadraticCurveTo(-15, -31, 3, -31); ctx.quadraticCurveTo(22, -31, 27, -13); ctx.quadraticCurveTo(34, 5, 20, 23); ctx.quadraticCurveTo(4, 37, -17, 29); ctx.quadraticCurveTo(-25, 27, -29, 20); ctx.closePath(); }, '#F6D77D', 2.8);
-      // small crest
-      detail(() => { ctx.moveTo(-8, -29); ctx.quadraticCurveTo(-15, -42, -5, -39); ctx.quadraticCurveTo(1, -37, 1, -30); }, '#D9B65F', 2.2);
-      // wing
-      outline(() => { ctx.moveTo(-16, 1); ctx.quadraticCurveTo(-7, -12, 8, -7); ctx.quadraticCurveTo(20, 0, 12, 13); ctx.quadraticCurveTo(0, 23, -13, 13); ctx.quadraticCurveTo(-20, 8, -16, 1); }, '#EFC45F', 2.1);
-      detail(() => { ctx.moveTo(-10, 4); ctx.quadraticCurveTo(-1, 0, 8, 7); }, '#D8AE56', 1.6);
-      // beak
-      outline(() => { ctx.moveTo(20, -12); ctx.quadraticCurveTo(34, -17, 38, -8); ctx.quadraticCurveTo(31, 0, 20, -3); ctx.closePath(); }, '#E99A70', 2.2);
-      dot(12, -15, 2.2);
-      detail(() => { ctx.moveTo(8, -20); ctx.quadraticCurveTo(12, -22, 15, -20); }, '#FFF0C4', 1.5);
-      // feet
-      detail(() => { ctx.moveTo(-10, 28); ctx.lineTo(-12, 35); ctx.quadraticCurveTo(-18, 37, -21, 34); ctx.moveTo(8, 29); ctx.lineTo(9, 35); ctx.quadraticCurveTo(15, 38, 19, 34); }, '#D98F68', 2.4);
-      blush(4, -5, 3.8, 2.5);
+      // Side-profile duck with a raised head, a visible neck and a long flat bill.
+      outline(() => {
+        ctx.moveTo(-33, 15);
+        ctx.quadraticCurveTo(-40, 2, -27, -8);
+        ctx.quadraticCurveTo(-17, -17, -4, -10);
+        ctx.quadraticCurveTo(-2, -35, 15, -39);
+        ctx.quadraticCurveTo(34, -42, 39, -25);
+        ctx.quadraticCurveTo(42, -14, 33, -7);
+        ctx.quadraticCurveTo(42, 7, 28, 22);
+        ctx.quadraticCurveTo(8, 37, -17, 29);
+        ctx.quadraticCurveTo(-29, 25, -33, 15);
+        ctx.closePath();
+      }, '#F6D77D', 2.8);
+      // raised head feather
+      detail(() => { ctx.moveTo(2, -38); ctx.quadraticCurveTo(-2, -48, 8, -43); ctx.quadraticCurveTo(13, -40, 12, -37); }, '#D9B65F', 2.1);
+      // broad, low wing gives the body a duck-like horizontal shape
+      outline(() => {
+        ctx.moveTo(-21, 5); ctx.quadraticCurveTo(-10, -8, 7, -4);
+        ctx.quadraticCurveTo(22, 1, 17, 14); ctx.quadraticCurveTo(4, 25, -13, 17);
+        ctx.quadraticCurveTo(-22, 13, -21, 5); ctx.closePath();
+      }, '#EFC45F', 2.1);
+      detail(() => { ctx.moveTo(-14, 7); ctx.quadraticCurveTo(-2, 2, 11, 10); }, '#D8AE56', 1.6);
+      // unmistakable flat duck bill pointing forward
+      outline(() => {
+        ctx.moveTo(32, -23); ctx.quadraticCurveTo(48, -27, 49, -18);
+        ctx.quadraticCurveTo(43, -10, 32, -13); ctx.closePath();
+      }, '#E99A70', 2.2);
+      dot(25, -27, 2.35);
+      detail(() => { ctx.moveTo(19, -33); ctx.quadraticCurveTo(24, -36, 28, -32); }, '#FFF0C4', 1.5);
+      // two small webbed feet
+      detail(() => {
+        ctx.moveTo(-10, 28); ctx.lineTo(-11, 35); ctx.quadraticCurveTo(-18, 39, -23, 35);
+        ctx.moveTo(12, 27); ctx.lineTo(14, 34); ctx.quadraticCurveTo(21, 38, 25, 33);
+      }, '#D98F68', 2.4);
+      blush(18, -12, 3.4, 2.3);
     } else if (type === 'froggydoodle') {
       // A squat little pond frog with distinct eye bumps, a round belly and tiny toes.
       outline(() => { ctx.ellipse(0, 13, 29, 22, 0, 0, Math.PI * 2); }, '#A9C995', 2.8);
@@ -3110,7 +3150,8 @@ THIS CUTENESS</textarea>
       ctx.scale(sc, sc);
       if (h.character === 'photo' && h.photoImg) {
         const src = h.sketchFilter && h.sketchCanvas ? h.sketchCanvas : h.photoImg;
-        ctx.drawImage(src, -145, -145, 290, 290);
+        const photoSize = getPhotoBaseSize(src);
+        ctx.drawImage(src, -photoSize.w / 2, -photoSize.h / 2, photoSize.w, photoSize.h);
       } else {
         drawChibiWhiteAnimal(ctx, h.character, h.inkColor);
       }
@@ -3247,7 +3288,8 @@ THIS CUTENESS</textarea>
     const { cols, rows, grid } = state.pixel;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
-    // Keep every cell square. The canvas ratio and grid ratio are always identical.
+
+    // 保留 v1 的齿孔邮票几何：每格为正方形，四周留两格作为齿孔边框。
     const cell = Math.floor(Math.min(W / (cols + 4), H / (rows + 4)));
     const gW = cell * cols, gH = cell * rows;
     const ox = Math.floor((W - gW) / 2), oy = Math.floor((H - gH) / 2);
@@ -3255,68 +3297,85 @@ THIS CUTENESS</textarea>
     const outerW = gW + 4 * cell, outerH = gH + 4 * cell;
     state.pixel.geom = { ox, oy, cell, cols, rows, outerX, outerY, outerW, outerH };
 
-    // Actual stamp silhouette: no rectangular backing; square perforation notches are part of the clip path.
     tracePixelStampPath(ctx, outerX, outerY, outerW, outerH, cell);
     ctx.fillStyle = state.pixel.borderColor || '#FFFFFF';
     ctx.fill();
     ctx.clip();
 
-    // 干净白底；所有网格单元均为完全相同的正方形。
     ctx.fillStyle = state.pixel.innerColor || '#FFFFFF';
-    ctx.fillRect(ox, oy, gW, gH);
-    for (let r=0;r<rows;r++) {
-      for (let c=0;c<cols;c++) {
-        const x=ox+c*cell, y=oy+r*cell, bead=grid[r]?.[c];
-        if (!bead) continue;
-        ctx.fillStyle=bead.hex;
-        ctx.fillRect(x, y, cell, cell);
-      }
-    }
-    if (showGrid) {
-      // 网格线改为按画布像素绘制的实色矩形，不再使用 1.15/2.2px 的居中描边。
-      // 非整数描边在 CSS 缩放、不同显示比例下会产生抗锯齿，视觉上像是线条错位。
-      // 所有线的位置都由同一组 ox/oy/cell 计算；普通线 1px，5 格分组线 2px。
-      ctx.save();
-      ctx.imageSmoothingEnabled = false;
-      for (let r = 0; r <= rows; r++) {
-        const y = oy + r * cell;
-        const major = r % 5 === 0;
-        ctx.fillStyle = major ? '#9E9488' : '#DCD3C4';
-        ctx.fillRect(ox, major ? y - 1 : y, gW, major ? 2 : 1);
-      }
-      for (let c = 0; c <= cols; c++) {
-        const x = ox + c * cell;
-        const major = c % 5 === 0;
-        ctx.fillStyle = major ? '#9E9488' : '#DCD3C4';
-        ctx.fillRect(major ? x - 1 : x, oy, major ? 2 : 1, gH);
-      }
+    ctx.fillRect(outerX, outerY, outerW, outerH);
 
-      // 色号文字与网格共用 ox/oy/cell 坐标；浅色底黑字，深色底白字。
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const bead = grid[r]?.[c];
-          if (!bead) continue;
-          ctx.fillStyle = bead.darkText ? '#231F20' : '#FFFFFF';
-          const fs = Math.floor(cell * (String(bead.code || '').length >= 3 ? 0.31 : 0.36));
-          ctx.font = `800 ${fs}px monospace`;
-          if (cell >= 17) ctx.fillText(String(bead.code || ''), ox + (c + 0.5) * cell, oy + (r + 0.5) * cell + 0.5);
+    // 采用 index 的网格单元显示方式：空格棋盘底、已填色块、格内色号。
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = ox + c * cell, y = oy + r * cell;
+        const bead = grid[r]?.[c];
+        if (bead) {
+          ctx.fillStyle = bead.hex;
+          ctx.fillRect(x, y, cell, cell);
+          if (showGrid) {
+            ctx.fillStyle = bead.darkText ? '#231F20' : '#FFFFFF';
+            const fs = Math.max(7, Math.floor(cell * (String(bead.code || '').length >= 3 ? 0.31 : 0.36)));
+            ctx.font = `800 ${fs}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            if (cell >= 17) ctx.fillText(String(bead.code || ''), x + cell / 2, y + cell / 2 + 0.5);
+          }
+        } else if (showGrid) {
+          ctx.fillStyle = (r + c) % 2 === 0 ? '#FAF7F2' : '#F3EFE8';
+          ctx.fillRect(x, y, cell, cell);
         }
       }
-      ctx.restore();
+    }
+
+    if (showGrid) {
+      // index 的网格线粗细、每五格强调线及外围行列编号。
+      for (let r = 0; r <= rows; r++) {
+        ctx.strokeStyle = r % 5 === 0 ? '#9E9488' : '#DCD3C4';
+        ctx.lineWidth = r % 5 === 0 ? 2.2 : 1.15;
+        ctx.beginPath(); ctx.moveTo(ox, oy + r * cell); ctx.lineTo(ox + gW, oy + r * cell); ctx.stroke();
+      }
+      for (let c = 0; c <= cols; c++) {
+        ctx.strokeStyle = c % 5 === 0 ? '#9E9488' : '#DCD3C4';
+        ctx.lineWidth = c % 5 === 0 ? 2.2 : 1.15;
+        ctx.beginPath(); ctx.moveTo(ox + c * cell, oy); ctx.lineTo(ox + c * cell, oy + gH); ctx.stroke();
+      }
+      ctx.fillStyle = '#3B322C';
+      const numFs = Math.max(8, Math.min(16, Math.floor(cell * 0.42)));
+      ctx.font = `800 ${numFs}px monospace`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const step = cols > 36 ? 2 : 1;
+      for (let c = 0; c < cols; c += step) {
+        ctx.fillText(String(c + 1), ox + (c + 0.5) * cell, oy - Math.max(13, cell * 0.55));
+        ctx.fillText(String(c + 1), ox + (c + 0.5) * cell, oy + gH + Math.max(13, cell * 0.55));
+      }
+      for (let r = 0; r < rows; r += step) {
+        ctx.fillText(String(r + 1), ox - Math.max(13, cell * 0.58), oy + (r + 0.5) * cell);
+        ctx.fillText(String(r + 1), ox + gW + Math.max(13, cell * 0.58), oy + (r + 0.5) * cell);
+      }
     }
     ctx.restore();
   }
 
   let selectedObject = null;
 
+  function getPhotoBaseSize(img) {
+    if (!img) return { w: 290, h: 290 };
+    const iw = img.naturalWidth || img.width || 1;
+    const ih = img.naturalHeight || img.height || 1;
+    const fit = 290 / Math.max(iw, ih);
+    return { w: iw * fit, h: ih * fit };
+  }
+
   function getObjectBox(target) {
     const h = state.hand, cv = document.getElementById('stampCanvas');
     if (!target) return null;
     if (target.type === 'character') {
-      const size = 250 * h.charScale / 100;
-      return { x:h.charX, y:h.charY, w:size, h:size };
+      const size = h.character === 'photo'
+        ? getPhotoBaseSize(h.sketchFilter && h.sketchCanvas ? h.sketchCanvas : h.photoImg)
+        : { w: 250, h: 250 };
+      const scale = h.charScale / 100;
+      return { x:h.charX, y:h.charY, w:size.w * scale, h:size.h * scale };
     }
     if (target.type === 'text') {
       const ctx = cv.getContext('2d');
@@ -3567,6 +3626,16 @@ THIS CUTENESS</textarea>
     toast(t('toastClearDoodle'));
   };
 
+  window.setHandPhotoScale = function(value) {
+    if (state.hand.character !== 'photo') return;
+    const scale = Math.max(20, Math.min(800, Number(value) || 100));
+    state.hand.charScale = scale;
+    const valueEl = document.getElementById('hand-photo-scale-value');
+    if (valueEl) valueEl.textContent = `${Math.round(scale)}%`;
+    render();
+    scheduleAutoSave();
+  };
+
   window.onUploadPhoto = function(e) {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
@@ -3576,13 +3645,17 @@ THIS CUTENESS</textarea>
       img.onload = () => {
         pushHandHistory();
         state.hand.photoImg = img;
-        const sz = 320, c = document.createElement('canvas');
-        c.width = sz; c.height = sz;
-        const cx = c.getContext('2d');
-        const sc = Math.min(sz / img.width, sz / img.height);
-        cx.fillStyle = '#FFF'; cx.fillRect(0, 0, sz, sz);
-        cx.drawImage(img, (sz - img.width*sc)/2, (sz - img.height*sc)/2, img.width*sc, img.height*sc);
-        const id = cx.getImageData(0, 0, sz, sz), d = id.data;
+        // 线稿缓存与原图使用相同长宽比，避免关闭滤镜/切换滤镜时照片比例跳变。
+        const maxSide = 900;
+        const fit = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+        const pw = Math.max(1, Math.round((img.naturalWidth || img.width) * fit));
+        const ph = Math.max(1, Math.round((img.naturalHeight || img.height) * fit));
+        const c = document.createElement('canvas');
+        c.width = pw; c.height = ph;
+        const cx = c.getContext('2d', { willReadFrequently: true });
+        cx.fillStyle = '#FFF'; cx.fillRect(0, 0, pw, ph);
+        cx.drawImage(img, 0, 0, pw, ph);
+        const id = cx.getImageData(0, 0, pw, ph), d = id.data;
         for (let i = 0; i < d.length; i += 4) {
           const g = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
           if (g > 185) d[i+3] = 0;
@@ -3595,6 +3668,17 @@ THIS CUTENESS</textarea>
         cx.putImageData(id, 0, 0);
         state.hand.sketchCanvas = c;
         state.hand.character = 'photo';
+        state.hand.charScale = 100;
+        const dims = RATIOS[state.ratio];
+        state.hand.charX = dims.w * 0.5;
+        state.hand.charY = dims.h * 0.34;
+        selectedObject = { type: 'character' };
+        const photoScale = document.getElementById('rng-hand-photo-scale');
+        if (photoScale) photoScale.value = 100;
+        const photoScaleValue = document.getElementById('hand-photo-scale-value');
+        if (photoScaleValue) photoScaleValue.textContent = '100%';
+        const photoScaleRow = document.getElementById('hand-photo-scale-row');
+        if (photoScaleRow) photoScaleRow.style.display = 'flex';
         document.querySelectorAll('.animal-btn').forEach(el => el.classList.remove('active'));
         render();
         toast(t('toastPhotoLoaded'));
@@ -4116,7 +4200,15 @@ THIS CUTENESS</textarea>
         const startDist=Math.max(18,Math.hypot(dragStart.x-dragCenter.x,dragStart.y-dragCenter.y));
         const factor=Math.max(0.35,Math.min(2.8,Math.hypot(p.x-dragCenter.x,p.y-dragCenter.y)/startDist));
         const next=startScale*factor;
-        if(selectedObject.type==='character') h.charScale=Math.max(40,Math.min(180,next*100));
+        if(selectedObject.type==='character') {
+          h.charScale=Math.max(20,Math.min(800,next*100));
+          if (h.character === 'photo') {
+            const slider=document.getElementById('rng-hand-photo-scale');
+            const valueEl=document.getElementById('hand-photo-scale-value');
+            if(slider) slider.value=Math.round(h.charScale);
+            if(valueEl) valueEl.textContent=`${Math.round(h.charScale)}%`;
+          }
+        }
         else if(selectedObject.type==='text') h.fontScale=Math.max(50,Math.min(180,next*100));
         else if(selectedObject.type==='sticker') h.stickers[selectedObject.index].scale=Math.max(0.4,Math.min(2.5,next));
         else if(selectedObject.type==='postmark') h.postmark.scale=Math.max(0.45,Math.min(1.8,next));
@@ -4246,7 +4338,3 @@ THIS CUTENESS</textarea>
 </script>
 </body>
 </html>
-
-
-
-
