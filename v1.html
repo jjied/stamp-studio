@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Stamp Studio 邮票工坊：制作复古手绘邮票与像素拼豆作品，支持本地编辑、贴纸素材和高清导出。">
+<meta name="description" content="Stamp Studio 邮票工坊：制作手绘邮票与像素拼豆作品，支持本地编辑、贴纸素材和高清导出。">
 <meta name="theme-color" content="#F5EEE9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -818,6 +818,7 @@ body {
 
 /* V8 · Layer navigator and mobile touch-friendly controls */
 .layer-panel{width:min(100%,620px);margin:8px auto 4px;padding:10px 12px;background:#FFFCF8;border:1px solid #E6D2CC;border-radius:13px;box-shadow:0 3px 12px rgba(112,82,76,.05)}
+.layer-panel>summary{list-style:none;cursor:pointer}.layer-panel>summary::-webkit-details-marker{display:none}.layer-panel>summary:after{content:"＋";font-size:15px;color:#A77E82;margin-left:8px}.layer-panel[open]>summary:after{content:"－"}.layer-panel:not([open]) .layer-panel-head{margin-bottom:0}
 .layer-panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:#51413F;font-size:12px}
 .layer-panel-head span{font-size:10px;color:#9A8580;font-weight:400}
 .layer-list{display:flex;flex-direction:column;gap:5px;max-height:190px;overflow:auto}
@@ -836,15 +837,16 @@ body {
 .export-modal-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(220px,.9fr);gap:18px}.export-preview-wrap{min-height:260px;border:1px dashed #d9c5bb;border-radius:16px;background-color:#fff;background-image:linear-gradient(45deg,#f4eee9 25%,transparent 25%),linear-gradient(-45deg,#f4eee9 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f4eee9 75%),linear-gradient(-45deg,transparent 75%,#f4eee9 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}.export-preview-wrap canvas{max-width:100%;max-height:340px;width:auto;height:auto;object-fit:contain;box-shadow:0 5px 20px rgba(50,35,30,.12)}.export-settings{display:flex;flex-direction:column;gap:12px}.export-field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#77665f}.export-field input,.export-field select{width:100%;border:1px solid #e2d1c7;border-radius:10px;background:white;padding:10px;color:#51413b;font:inherit;box-sizing:border-box}.export-dimensions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.export-check{display:flex;align-items:center;gap:8px;font-size:13px;color:#66534d}.export-check input{accent-color:#b98289}.export-note{font-size:11px;line-height:1.55;color:#9a8981;background:#f7eee9;padding:10px;border-radius:10px}.export-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;flex-wrap:wrap}.export-actions button{border:1px solid #dfcbc1;border-radius:12px;padding:10px 16px;background:#fff;color:#74585a;font-weight:700;cursor:pointer}.export-actions .primary{background:#b98289;color:white;border-color:#b98289}.export-size-line{font-size:12px;color:#8a7770;text-align:center;margin-top:8px}
 @media(max-width:620px){.export-modal{padding:15px;border-radius:17px}.export-modal-grid{grid-template-columns:1fr}.export-preview-wrap{min-height:190px}.export-preview-wrap canvas{max-height:230px}.export-modal-head h2{font-size:20px}}
 
+.stage-footer{display:none!important}
 </style>
 </head>
 <body>
 
 
 <div class="app-shell">
-  <div class="creator-credit" aria-label="网站由 Ziyuan 和 ChatGPT 一起制作">
-    <span>made with love by</span> <span class="credit-names">Ziyuan</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
-    <span> · 我们一起制作</span>
+  <div class="creator-credit" aria-label="网站由📕等一场雨季和ChatGPT一起制作">
+    <span>made with love by</span> <span class="credit-names">📕等一场雨季</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
+    <span>
   </div>
   <div class="first-use-guide" id="first-use-guide" role="note">
     <div><strong>第一次使用？</strong> ① 选择「可爱邮票」或「像素拼豆」→ ② 上传图片 / 选择素材 → ③ 在画布调整 → ④ 导出作品。两种模式分别保存，切换不会清空另一边的作品。</div>
@@ -890,6 +892,7 @@ body {
       <button class="tool-tab" type="button" data-category="postmark" onclick="setToolCategory('hand','postmark')"><span>📮</span><b>邮戳</b></button>
       <button class="tool-tab" type="button" data-category="badge" onclick="setToolCategory('hand','badge')"><span>🏷</span><b>角标</b></button>
       <button class="tool-tab" type="button" data-category="brush" onclick="setToolCategory('hand','brush')"><span>🖍</span><b>画笔</b></button>
+      <button class="tool-tab" type="button" data-category="layers" onclick="setToolCategory('hand','layers')"><span>▤</span><b>图层</b></button>
     </div>
     <div class="tool-dock-inner hidden" id="pixel-tool-nav" role="tablist" aria-label="像素邮票工具">
       <button class="tool-tab active" type="button" data-category="grid" onclick="setToolCategory('pixel','grid')"><span>▦</span><b>画布</b></button>
@@ -933,21 +936,10 @@ body {
         </div>
       </div>
 
-      <section class="layer-panel" id="layer-panel" aria-label="图层管理">
-        <div class="layer-panel-head"><strong>图层管理</strong><span>选择对象 · 显示 / 锁定</span></div>
-        <div id="layer-list" class="layer-list"></div>
-      </section>
 
       <!-- 拼豆色号统计条 -->
       <div id="pixel-legend-box" class="legend-preview hidden"></div>
 
-      <div class="stage-footer">
-        <label class="hd-toggle-lbl" title="2x Ultra HD Export">
-          <input type="checkbox" id="chk-uhd" checked style="accent-color:#B98289;">
-          <span data-i18n="chkUhd">2× 超清导出</span>
-        </label>
-        <button class="btn-export-big" onclick="exportPNG()" data-i18n="btnExportBig">保存无水印高清 PNG 图片</button>
-      </div>
     </section>
 
     <!-- 右侧控制面板 -->
@@ -957,11 +949,12 @@ body {
         <!-- 1. 15款原版手绘小动物 & 照片 -->
         <div class="card-box">
           <div class="card-head">
-            <span class="card-title" data-i18n="c1Title">1. 选择手绘小动物 (15款) 或上传照片</span>
+            <span class="card-title" data-i18n="c1Title">1. 点击小动物即可添加，可重复添加不同款式</span>
             <span style="font-size:11px;color:#8A7B70;" data-i18n="c1Sub">在画布控制框上调整大小与角度</span>
           </div>
 
           <div class="animal-grid" id="animal-grid"></div>
+          <div class="row-flex" style="justify-content:flex-end;margin-top:7px"><button type="button" class="opt-btn" onclick="addAnimalFromCurrent()">＋ 添加一个小动物（可重复添加）</button></div>
 
           <div class="divider"></div>
           <div class="row-flex">
@@ -1072,8 +1065,9 @@ body {
             <span style="font-size:11px;color:#8A7B70;" data-i18n="c3Sub">在画布控制框上拖动圆点即可缩放、旋转</span>
           </div>
 
-          <textarea class="txt-input" id="txt-stamp-text" rows="2" maxlength="60" onfocus="pushHandHistory()" oninput="setHand('text', this.value)">I CAN'T TAKE
+          <textarea class="txt-input" id="txt-stamp-text" rows="2" maxlength="120" onfocus="pushHandHistory()" oninput="setHand('text', this.value)">I CAN'T TAKE
 THIS CUTENESS</textarea>
+          <div class="row-flex" style="justify-content:flex-end;margin-top:7px"><button type="button" class="opt-btn" onclick="addTextLayerFromEditor()">＋ 将这段文字添加为独立图层</button></div>
 
           <div class="row-flex">
             <span class="sub-lbl" data-i18n="lblTextColor">文字颜色:</span>
@@ -1167,6 +1161,10 @@ THIS CUTENESS</textarea>
             <button class="opt-btn" style="background:#FDE8EC;color:#B84A58;border-color:#F3B8C5;" onclick="clearDoodle()" data-i18n="btnClearDoodle">清空涂鸦</button>
           </div>
         </div>
+        <details class="layer-panel card-box" id="layer-panel" aria-label="图层管理">
+          <summary class="layer-panel-head"><strong>图层管理</strong><span>点击展开 · 排列 / 显示 / 锁定</span></summary>
+          <div id="layer-list" class="layer-list"></div>
+        </details>
       </div>
 
       <!-- ==================== 模式 B：像素邮票（第四版：拼豆式细网格 + 五格主线） ==================== -->
@@ -1272,7 +1270,7 @@ THIS CUTENESS</textarea>
       hintPixel: '上传照片后可直接在画布上拖动调整位置，再转换为拼豆图纸',
       chkUhd: '2× 超清导出',
       btnExportBig: '保存无水印高清 PNG 图片',
-      c1Title: '1. 选择手绘小动物 (15款) 或上传照片',
+      c1Title: '1. 点击小动物即可添加，可重复添加不同款式',
       c1Sub: '在画布控制框上调整大小与角度',
       lblInkColor: '描边线条色:',
       btnUploadPhoto: '上传相册照片',
@@ -2387,6 +2385,31 @@ THIS CUTENESS</textarea>
     render();
   };
 
+  function addAnimalLayer(animalId) {
+    if (!animalId || animalId==='none') return;
+    pushHandHistory();
+    const n=state.hand.stickers.filter(x=>x.type==='animal-object').length;
+    const st={type:'animal-object',animalId,x:Math.max(150,Math.min(930,540+(n%4-1.5)*48)),y:Math.max(150,Math.min(930,540+(n%3-1)*52)),scale:1,rot:0,hidden:false,locked:false,_layerId:'st_'+Math.random().toString(36).slice(2,10),name:''};
+    state.hand.stickers.push(st); ensureLayerOrder();
+    selectedObject={type:'sticker',index:state.hand.stickers.length-1}; state.hand.selSticker=selectedObject.index;
+    render();scheduleAutoSave();toast('已添加小动物，可以继续添加不同的小动物');
+  }
+  window.addAnimalFromCurrent=function(){
+    const chosen=document.querySelector('.animal-btn.active')?.dataset.id;
+    const fallback=state.hand.character!=='none'&&state.hand.character!=='photo'?state.hand.character:ANIMAL_IDS.find(x=>x!=='none');
+    addAnimalLayer(chosen&&chosen!=='none'?chosen:fallback);
+  };
+  window.addTextLayerFromEditor=function(){
+    const el=document.getElementById('txt-stamp-text'), text=String(el?.value||'').trim();
+    if(!text){toast('先输入想添加的文字');return;}
+    pushHandHistory();
+    const n=state.hand.stickers.filter(x=>x.type==='text-object').length;
+    const st={type:'text-object',text,fontStyle:state.hand.fontStyle||'Gaegu',fontSize:64,color:state.hand.textColor||'#231F20',align:state.hand.textAlign||'center',x:540+(n%4-1.5)*35,y:540+(n%3-1)*48,scale:1,rot:0,hidden:false,locked:false,_layerId:'st_'+Math.random().toString(36).slice(2,10),name:''};
+    state.hand.stickers.push(st);ensureLayerOrder();
+    selectedObject={type:'sticker',index:state.hand.stickers.length-1};state.hand.selSticker=selectedObject.index;
+    render();scheduleAutoSave();toast('已添加独立文字图层');
+  };
+
   function buildAnimalButtons() {
     const aGrid = document.getElementById('animal-grid');
     aGrid.innerHTML = '';
@@ -2396,17 +2419,7 @@ THIS CUTENESS</textarea>
       b.className = 'animal-btn' + (id === state.hand.character ? ' active' : '');
       b.dataset.id = id;
       b.innerHTML = `${getMiniSVG(id)}<span>${dictAnimals[id] || id}</span>`;
-      b.onclick = () => {
-        pushHandHistory();
-        if (state.hand.character === 'photo') state.hand.charScale = 100;
-        state.hand.character = id;
-        selectedObject = null;
-        const photoScaleRow = document.getElementById('hand-photo-scale-row');
-        if (photoScaleRow) photoScaleRow.style.display = 'none';
-        document.querySelectorAll('.animal-btn').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-        render();
-        scheduleAutoSave();
-      };
+      b.onclick = () => { if (id !== 'none') addAnimalLayer(id); };
       aGrid.appendChild(b);
     });
     aGrid.querySelectorAll('canvas[data-character-thumbnail]').forEach(canvas => {
@@ -3303,7 +3316,18 @@ THIS CUTENESS</textarea>
     ctx.lineJoin = 'round';
 
     const tType = st.type;
-    if (tType === 'custom-image' && st.imageKey) {
+    if (tType === 'animal-object') {
+      drawChibiWhiteAnimal(ctx, st.animalId, st.inkColor || ink);
+    } else if (tType === 'text-object') {
+      const fs = Math.round(st.fontSize || 58);
+      const lines = String(st.text || '').split('\n');
+      const lh = fs * 1.18, sy = -((lines.length - 1) * lh) / 2;
+      const allowed = ['Gaegu','Indie Flower','Caveat','Architects Daughter','Comic Neue','Kalam','Patrick Hand','Ma Shan Zheng','ZCOOL KuaiLe','Short Stack','Handlee','Itim','Cherry Bomb One'];
+      const font = allowed.includes(st.fontStyle) ? st.fontStyle : 'Gaegu';
+      ctx.font = `700 ${fs}px "${font}", cursive`; ctx.fillStyle = st.color || '#231F20';
+      ctx.textAlign = st.align || 'center'; ctx.textBaseline = 'middle';
+      lines.forEach((line,i)=>ctx.fillText(line,0,sy+i*lh));
+    } else if (tType === 'custom-image' && st.imageKey) {
       const imageData = state.hand.uploadedAssets && state.hand.uploadedAssets[st.imageKey];
       const img = getCustomStickerImage(imageData);
       if (img) {
@@ -3748,9 +3772,11 @@ THIS CUTENESS</textarea>
     }
     if (target.type === 'sticker') {
       const st = h.stickers[target.index]; if (!st) return null;
-      const size = st.type === 'custom-image'
-        ? { w:(st.baseW || 220) * st.scale, h:(st.baseH || 220) * st.scale }
-        : { w:70 * st.scale, h:70 * st.scale };
+      let size;
+      if (st.type === 'custom-image') size={w:(st.baseW||220)*st.scale,h:(st.baseH||220)*st.scale};
+      else if (st.type === 'animal-object') size={w:250*st.scale,h:250*st.scale};
+      else if (st.type === 'text-object') { const fs=(st.fontSize||58)*st.scale, lines=String(st.text||'').split('\n'); const c=cv.getContext('2d'); c.save(); c.font=`700 ${fs}px "${st.fontStyle||'Gaegu'}", cursive`; const w=Math.max(50,...lines.map(x=>c.measureText(x||' ').width))+24; c.restore(); size={w,h:Math.max(fs*1.35,lines.length*fs*1.18)+18}; }
+      else size={w:70*st.scale,h:70*st.scale};
       return { x:st.x, y:st.y, w:size.w, h:size.h };
     }
     if (target.type === 'postmark') {
@@ -3850,7 +3876,7 @@ THIS CUTENESS</textarea>
     if(target.type==='text') return h.layerNames?.text || '文字内容';
     if(target.type==='postmark') return h.layerNames?.postmark || '邮戳';
     if(target.type==='badge') return h.layerNames?.badge || '角标';
-    if(target.type==='sticker') { const st=h.stickers[target.index]; return st?.name || (st?.type==='custom-image'?'自定义图片贴纸':`贴纸 ${target.index+1}`); }
+    if(target.type==='sticker') { const st=h.stickers[target.index]; return st?.name || (st?.type==='animal-object'?`小动物：${(I18N[curLang]?.animals||I18N['zh-CN'].animals)[st.animalId]||st.animalId}`:st?.type==='text-object'?'文字：'+String(st.text||'').slice(0,12):(st?.type==='custom-image'?'自定义图片贴纸':`贴纸 ${target.index+1}`)); }
     return '图层';
   }
   function renderLayerPanel() {
@@ -4766,7 +4792,7 @@ THIS CUTENESS</textarea>
           }
         }
         else if(selectedObject.type==='text') h.fontScale=Math.max(50,Math.min(180,next*100));
-        else if(selectedObject.type==='sticker') h.stickers[selectedObject.index].scale=Math.max(0.4,Math.min(2.5,next));
+        else if(selectedObject.type==='sticker') h.stickers[selectedObject.index].scale=Math.max(0.35,Math.min(5,next));
         else if(selectedObject.type==='postmark') h.postmark.scale=Math.max(0.45,Math.min(1.8,next));
         else if(selectedObject.type==='badge') h.badge.scale=Math.max(0.45,Math.min(1.8,next));
       }
@@ -4849,7 +4875,7 @@ THIS CUTENESS</textarea>
       scale.addEventListener('change',()=>{const base=getExportBaseSize();const factor=scale.value==='custom'?1:Number(scale.value);w.value=Math.min(8192,base.width*factor);h.value=Math.min(8192,base.height*factor);refreshExportPreview();});
       modal.querySelector('#export-transparent').addEventListener('change',refreshExportPreview);
     }
-    const defaultScale=document.getElementById('chk-uhd')?.checked?2:1;
+    const defaultScale=document.getElementById('chk-uhd')?.checked !== false ? 2 : 1;
     modal.querySelector('#export-width').value=base.width*defaultScale; modal.querySelector('#export-height').value=base.height*defaultScale; modal.querySelector('#export-scale').value=String(defaultScale);
     modal.querySelector('#export-transparent').checked=false;
     modal.querySelector('#export-mode-note').textContent=state.mode==='hand'?'手绘邮票：保留邮票纸张、齿孔和全部装饰。透明背景会移除邮票内侧纸色，保留边框与绘制内容。':'像素拼豆：导出会自动裁切到邮票齿孔外边界，并保持每个像素的硬边缘。透明背景会移除空白底色。';
@@ -4884,7 +4910,7 @@ THIS CUTENESS</textarea>
 
   window.exportBeadGuidePNG = function() {
     const m = RATIOS[state.ratio];
-    const uhd = document.getElementById('chk-uhd')?.checked ? 2 : 1;
+    const uhd = document.getElementById('chk-uhd')?.checked !== false ? 2 : 1;
     const { map, total } = collectBeadStats();
     const perRow = 6;
     const items = Array.from(map.values());
@@ -4930,7 +4956,7 @@ THIS CUTENESS</textarea>
 
   // 工具分类映射：仅切换面板显示，不卸载控件或重置创作状态
   const TOOL_CATEGORY_MAP = {
-    hand: { materials:[0], paper:[1], text:[2], stickers:[3], postmark:[4], badge:[5], brush:[6] },
+    hand: { materials:[0], paper:[1], text:[2], stickers:[3], postmark:[4], badge:[5], brush:[6], layers:[7] },
     pixel: { grid:[0], import:[1], paint:[2], palette:[3] }
   };
   const activeToolCategory = { hand:'materials', pixel:'grid' };
