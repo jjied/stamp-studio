@@ -2,11 +2,13 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="description" content="Stamp Studio 邮票工坊：制作复古手绘邮票与像素拼豆作品，支持本地编辑、贴纸素材和高清导出。">
+<meta name="theme-color" content="#F5EEE9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Architects+Daughter&family=Caveat:wght@400;500;600;700&family=Comic+Neue:wght@400;700&family=Gaegu:wght@400;700&family=Gloria+Hallelujah&family=Gochi+Hand&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Ma+Shan+Zheng&family=Nanum+Pen+Script&family=Patrick+Hand&family=Permanent+Marker&family=Reenie+Beanie&family=Shadows+Into+Light&family=ZCOOL+KuaiLe&family=Coming+Soon&family=Handlee&family=Itim&family=Schoolbell&family=Short+Stack&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
-<title>Stamp Studio · 邮票工坊 </title>
+<title>Stamp Studio · 邮票工坊 | 手绘邮票与像素拼豆</title>
 <style>
 :root {
   --bg-desk: #F4EFE6;
@@ -768,15 +770,56 @@ body {
 @media (max-width:600px) {
   .creator-credit { padding:6px 8px 5px; font-size:12px; letter-spacing:.35px; }
 }
+
+
+/* V7 · First-use guidance, clearer mode identity and mobile touch targets */
+.first-use-guide {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin:10px 14px 0; padding:10px 14px; border:1px solid #E8D5CB;
+  border-radius:14px; background:linear-gradient(110deg,#FFF9F3,#F8EEE9);
+  color:#725D58; font-size:12px; line-height:1.6;
+}
+.first-use-guide strong { color:#8F6E6D; }
+.first-use-guide .guide-dismiss {
+  flex:0 0 auto; border:1px solid #E4CEC4; border-radius:999px;
+  background:#FFFCF8; color:#8A7470; padding:5px 10px; font-size:11px; cursor:pointer;
+}
+.mode-btn { position:relative; min-height:38px; }
+.mode-btn::before { display:inline-block; margin-right:6px; font-size:14px; vertical-align:-1px; }
+#tab-hand::before { content:'✿'; }
+#tab-pixel::before { content:'▦'; }
+.mode-btn::after {
+  content:attr(data-mode-hint); display:block; font-size:9px; font-weight:500;
+  line-height:1.2; opacity:.78; margin-top:2px; letter-spacing:.1px;
+}
+.mode-tabs { align-items:stretch; }
+.mode-btn { line-height:1.15; }
+@media (max-width:600px) {
+  .first-use-guide { margin:8px 8px 0; align-items:flex-start; font-size:11px; }
+  .first-use-guide .guide-dismiss { padding:6px 9px; min-height:34px; }
+  .mode-tabs { width:100%; display:flex; gap:6px; }
+  .mode-btn { flex:1 1 0; min-width:0; padding:7px 5px; min-height:48px; }
+  .tool-dock { max-width:100%; overflow:hidden; }
+  .tool-dock-inner { max-width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+  .tool-tab { flex:0 0 auto; min-width:58px; min-height:42px; }
+  .mini-act-btn, .opt-btn, .ratio-btn, .btn-export, .btn-export-big { min-height:36px; }
+  input[type="range"] { min-height:30px; touch-action:pan-y; }
+  input[type="color"] { min-width:42px; min-height:38px; }
+}
+
 </style>
 </head>
 <body>
 
 
 <div class="app-shell">
-  <div class="creator-credit" aria-label="网站由 📕等一场雨季 和 ChatGPT 一起制作">
-    <span>made with love by</span> <span class="credit-names">📕等一场雨季</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
-    <span>
+  <div class="creator-credit" aria-label="网站由 Ziyuan 和 ChatGPT 一起制作">
+    <span>made with love by</span> <span class="credit-names">Ziyuan</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
+    <span> · 我们一起制作</span>
+  </div>
+  <div class="first-use-guide" id="first-use-guide" role="note">
+    <div><strong>第一次使用？</strong> ① 选择「可爱邮票」或「像素拼豆」→ ② 上传图片 / 选择素材 → ③ 在画布调整 → ④ 导出作品。两种模式分别保存，切换不会清空另一边的作品。</div>
+    <button class="guide-dismiss" type="button" onclick="dismissFirstUseGuide()">知道啦 ×</button>
   </div>
   <!-- 顶部栏 -->
   <header class="top-nav">
@@ -789,8 +832,8 @@ body {
     </div>
 
     <div class="mode-tabs">
-      <button class="mode-btn active" id="tab-hand" onclick="switchMode('hand')" data-i18n="tabHand">可爱邮票</button>
-      <button class="mode-btn" id="tab-pixel" onclick="switchMode('pixel')" data-i18n="tabPixel">像素邮票</button>
+      <button class="mode-btn active" id="tab-hand" onclick="switchMode('hand')" data-mode-hint="贴纸 · 文字 · 手绘" data-i18n="tabHand">可爱邮票</button>
+      <button class="mode-btn" id="tab-pixel" onclick="switchMode('pixel')" data-mode-hint="221 色 · 网格 · 拼豆" data-i18n="tabPixel">像素邮票</button>
     </div>
 
     <div class="nav-right">
@@ -1138,8 +1181,9 @@ THIS CUTENESS</textarea>
             <button class="opt-btn" data-tl="picker" onclick="setPixelTool('picker')" data-i18n="tlPicker">吸管取色</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <button class="opt-btn" onclick="undoPixel()" data-i18n="btnUndoPixel">撤销上一步</button>
-            <button class="opt-btn" style="background:#FDE8EC;color:#B84A58;border-color:#F3B8C5;" onclick="clearPixel()" data-i18n="btnClearPixel">清空所有格子</button>
+            <button class="opt-btn" onclick="undoPixel()" data-i18n="btnUndoPixel">↶ 撤销上一步</button>
+            <button class="opt-btn" onclick="redoPixel()">↷ 重做上一步</button>
+            <button class="opt-btn" style="background:#FDE8EC;color:#B84A58;border-color:#F3B8C5;grid-column:1/-1;" onclick="clearPixel()" data-i18n="btnClearPixel">清空所有格子</button>
           </div>
         </div>
 
@@ -1880,6 +1924,7 @@ THIS CUTENESS</textarea>
       grid: [],
       archive: {},
       history: [],
+      redoStack: [],
       gestureSaved: false,
       tool: 'brush',
       bead: ALL_BEADS.find(b => b.code === 'H2'),
@@ -1894,6 +1939,21 @@ THIS CUTENESS</textarea>
   let isDown = false, curStroke = null, lastKey = '';
   const STORAGE_KEY = 'stamp_studio_v3_autosave';
   let saveTimer = null;
+
+  window.dismissFirstUseGuide = function() {
+    const guide = document.getElementById('first-use-guide');
+    if (guide) guide.remove();
+    try { localStorage.setItem('stamp_studio_guide_dismissed', '1'); } catch (e) {}
+  };
+
+  function restoreFirstUseGuidePreference() {
+    try {
+      if (localStorage.getItem('stamp_studio_guide_dismissed') === '1') {
+        const guide = document.getElementById('first-use-guide');
+        if (guide) guide.remove();
+      }
+    } catch (e) {}
+  }
 
   function toast(msg) {
     const tEl = document.getElementById('toast');
@@ -2022,6 +2082,8 @@ THIS CUTENESS</textarea>
           row.map(code => (code && BEAD_BY_CODE[code]) ? BEAD_BY_CODE[code] : null)
         );
       }
+      state.pixel.history = [];
+      state.pixel.redoStack = [];
       if (saved.mode === 'pixel' || saved.mode === 'hand') {
         state.mode = saved.mode;
       }
@@ -2076,6 +2138,8 @@ THIS CUTENESS</textarea>
   }
 
   window.resetAllStudio = function() {
+    const confirmed = window.confirm('确定恢复默认状态吗？这会清空可爱邮票和像素拼豆的当前作品，且无法撤销。建议先导出作品或保存项目。');
+    if (!confirmed) return;
     pushHandHistory();
     localStorage.removeItem(STORAGE_KEY);
     state.ratio = '1:1';
@@ -2084,11 +2148,17 @@ THIS CUTENESS</textarea>
     const cv = document.getElementById('stampCanvas');
     cv.width = 1080; cv.height = 1080;
     state.hand = getDefaultHandState();
+    state.handHistory = [];
+    state.handRedoStack = [];
+    state.pixel.history = [];
+    state.pixel.redoStack = [];
     selectedObject = null;
     syncAllHandControls();
     initPixelBoard(24, 24);
     document.getElementById('rng-grid-size').value = 24;
     render();
+    scheduleAutoSave();
+    updateUndoRedoButtons();
     toast(t('toastResetAll'));
   };
 
@@ -2203,6 +2273,7 @@ THIS CUTENESS</textarea>
   }
 
   function initUI() {
+    restoreFirstUseGuidePreference();
     const mkSw = (id, arr, cb) => {
       const box = document.getElementById(id);
       arr.forEach((hex, idx) => {
@@ -2256,7 +2327,7 @@ THIS CUTENESS</textarea>
       } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
         if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
         e.preventDefault();
-        if (state.mode === 'hand') redoHand();
+        if (state.mode === 'hand') redoHand(); else redoPixel();
       }
     });
   }
@@ -3549,6 +3620,8 @@ THIS CUTENESS</textarea>
   }
 
   window.switchMode = function(m) {
+    const previousMode = state.mode;
+    if (m !== 'hand' && m !== 'pixel') return;
     state.mode = m;
     document.getElementById('tab-hand').classList.toggle('active', m === 'hand');
     document.getElementById('tab-pixel').classList.toggle('active', m === 'pixel');
@@ -3566,6 +3639,7 @@ THIS CUTENESS</textarea>
     }
     render();
     scheduleAutoSave();
+    if (previousMode !== m) toast(m === 'hand' ? '已切换到可爱邮票；像素拼豆作品已保留' : '已切换到像素拼豆；可爱邮票作品已保留');
   };
 
   window.setRatio = function(r) {
@@ -3959,8 +4033,7 @@ THIS CUTENESS</textarea>
         nextGrid[r][c]=best;
       }
     }
-    state.pixel.history.push(state.pixel.grid.map(row=>row.slice()));
-    if(state.pixel.history.length>50) state.pixel.history.shift();
+    pushPixelHistory();
     state.pixel.grid=nextGrid;
     state.pixel.showGrid=true;
     const toggle=document.getElementById('btn-tog-grid');
@@ -3979,6 +4052,7 @@ THIS CUTENESS</textarea>
     state.pixel.rows = rows;
     state.pixel.grid = Array.from({ length: rows }, () => Array(cols).fill(null));
     state.pixel.history = [];
+    state.pixel.redoStack = [];
     document.getElementById('lbl-grid-dim').textContent = `${cols} × ${rows} ${t('gridUnit')}`;
     updateBeadLegend();
   }
@@ -4025,6 +4099,7 @@ THIS CUTENESS</textarea>
       state.pixel.rows = rows;
       state.pixel.grid = next;
       state.pixel.history = [];
+      state.pixel.redoStack = [];
       updateBeadLegend();
       scheduleAutoSave();
     }
@@ -4080,20 +4155,38 @@ THIS CUTENESS</textarea>
       box.appendChild(chip);
     });
   }
+  function pushPixelHistory(snapshot) {
+    const source = snapshot || state.pixel.grid;
+    state.pixel.history.push(source.map(row => row.slice()));
+    if (state.pixel.history.length > 50) state.pixel.history.shift();
+    state.pixel.redoStack = [];
+  }
+
   window.undoPixel = function() {
-    if (state.pixel.history.length) {
-      state.pixel.grid = state.pixel.history.pop();
-      updateBeadLegend();
-      render();
-      scheduleAutoSave();
-      toast(t('toastUndo'));
-    }
+    if (!state.pixel.history.length) return;
+    state.pixel.redoStack.push(state.pixel.grid.map(row => row.slice()));
+    state.pixel.grid = state.pixel.history.pop();
+    updateBeadLegend();
+    render();
+    scheduleAutoSave();
+    toast(t('toastUndo'));
+  };
+
+  window.redoPixel = function() {
+    if (!state.pixel.redoStack.length) return;
+    const nextGrid = state.pixel.redoStack.pop();
+    state.pixel.history.push(state.pixel.grid.map(row => row.slice()));
+    if (state.pixel.history.length > 50) state.pixel.history.shift();
+    state.pixel.grid = nextGrid;
+    updateBeadLegend();
+    render();
+    scheduleAutoSave();
+    toast(t('toastRedo'));
   };
   window.clearPixel = function() {
     const hasPixels = state.pixel.grid.some(row => row.some(cell => cell));
     if (!hasPixels) return;
-    state.pixel.history.push(state.pixel.grid.map(r => r.slice()));
-    if (state.pixel.history.length > 50) state.pixel.history.shift();
+    pushPixelHistory();
     state.pixel.grid = Array.from({ length: state.pixel.rows }, () => Array(state.pixel.cols).fill(null));
     updateBeadLegend();
     render();
@@ -4117,8 +4210,7 @@ THIS CUTENESS</textarea>
       const target = grid[r][c] ? grid[r][c].code : null;
       if (target === bead.code) return;
       if (!state.pixel.gestureSaved) {
-        state.pixel.history.push(grid.map(row => row.slice()));
-        if (state.pixel.history.length > 50) state.pixel.history.shift();
+        pushPixelHistory();
         state.pixel.gestureSaved = true;
       }
       const stack = [[r, c]];
@@ -4143,8 +4235,7 @@ THIS CUTENESS</textarea>
     const changesMirror = mirror && mirrorC !== c && (grid[r][mirrorC] ? grid[r][mirrorC].code : null) !== (val ? val.code : null);
     if (!changesMain && !changesMirror) return;
     if (!state.pixel.gestureSaved) {
-      state.pixel.history.push(grid.map(row => row.slice()));
-      if (state.pixel.history.length > 50) state.pixel.history.shift();
+      pushPixelHistory();
       state.pixel.gestureSaved = true;
     }
     grid[r][c] = val;
