@@ -807,6 +807,19 @@ body {
   input[type="color"] { min-width:42px; min-height:38px; }
 }
 
+
+/* V8 · Layer navigator and mobile touch-friendly controls */
+.layer-panel{width:min(100%,620px);margin:8px auto 4px;padding:10px 12px;background:#FFFCF8;border:1px solid #E6D2CC;border-radius:13px;box-shadow:0 3px 12px rgba(112,82,76,.05)}
+.layer-panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:#51413F;font-size:12px}
+.layer-panel-head span{font-size:10px;color:#9A8580;font-weight:400}
+.layer-list{display:flex;flex-direction:column;gap:5px;max-height:190px;overflow:auto}
+.layer-row{display:flex;align-items:center;gap:6px;min-height:34px;padding:4px 6px;border:1px solid #F0E4DF;border-radius:9px;background:#FFFEFC}
+.layer-row.active{border-color:#C98F98;background:#FFF5F4;box-shadow:inset 0 0 0 1px rgba(201,143,152,.15)}
+.layer-select{flex:1;min-width:0;border:0;background:transparent;text-align:left;color:#66514E;font-size:11px;padding:5px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer-action{flex:0 0 29px;width:29px;height:28px;border:1px solid #EADAD4;border-radius:7px;background:#FFF9F6;color:#8A7470;font-size:12px;display:grid;place-items:center}
+.layer-action:disabled{opacity:.3}
+.layer-empty{padding:10px;text-align:center;color:#A18E88;font-size:11px}
+@media(max-width:600px){.layer-panel{width:100%;margin:7px 0 2px;padding:9px}.layer-list{max-height:160px}.layer-row{min-height:38px}.layer-action{width:34px;height:34px;flex-basis:34px}.layer-select{font-size:12px}}
 </style>
 </head>
 <body>
@@ -893,6 +906,11 @@ body {
           <canvas id="stampCanvas" width="1080" height="1080"></canvas>
         </div>
       </div>
+
+      <section class="layer-panel" id="layer-panel" aria-label="图层管理">
+        <div class="layer-panel-head"><strong>图层管理</strong><span>选择对象 · 显示 / 锁定</span></div>
+        <div id="layer-list" class="layer-list"></div>
+      </section>
 
       <!-- 拼豆色号统计条 -->
       <div id="pixel-legend-box" class="legend-preview hidden"></div>
@@ -1901,6 +1919,9 @@ THIS CUTENESS</textarea>
         { type: 'sparkle', x: 255, y: 525, scale: 1, rot: 0 }
       ],
       selSticker: -1,
+      layerHidden: { character:false, text:false, postmark:false, badge:false },
+      layerNames: {},
+      layerLocked: { character:false, text:false, postmark:false, badge:false },
       postmark: { enabled: false, type: 'wave', top: 'CUTE MAIL', date: '2026.11.14', bot: 'LOVE POST', color: '#B84A58', x: 250, y: 240, scale: 0.88, rot: -0.14 },
       badge: { enabled: false, text: '100% CUTE', shape: 'box', color: '#231F20', x: 825, y: 875, scale: 0.92, rot: 0 },
       doodleOn: false,
@@ -1976,6 +1997,7 @@ THIS CUTENESS</textarea>
       textAlign: h.textAlign, textColor: h.textColor, fontScale: h.fontScale,
       textX: h.textX, textY: h.textY, textRot: h.textRot,
       stickers: h.stickers, postmark: h.postmark, badge: h.badge,
+      layerHidden: h.layerHidden || {}, layerNames: h.layerNames || {}, layerLocked: h.layerLocked || {},
       brushColor: h.brushColor, brushSize: h.brushSize, strokes: h.strokes
     });
   }
@@ -2070,6 +2092,9 @@ THIS CUTENESS</textarea>
       }
       if (saved.hand) {
         Object.assign(state.hand, saved.hand);
+        state.hand.layerHidden = state.hand.layerHidden || {character:false,text:false,postmark:false,badge:false};
+        state.hand.layerNames = state.hand.layerNames || {};
+        state.hand.layerLocked = state.hand.layerLocked || {character:false,text:false,postmark:false,badge:false};
         state.hand.uploadedAssets = saved.uploadedAssets || saved.hand.uploadedAssets || {};
       }
       if (saved.pixel && Array.isArray(saved.pixel.gridCodes)) {
@@ -3274,7 +3299,7 @@ THIS CUTENESS</textarea>
       ctx.restore();
     }
 
-    if (h.character !== 'none') {
+    if (h.character !== 'none' && !(h.layerHidden && h.layerHidden.character)) {
       ctx.save();
       ctx.translate(h.charX, h.charY);
       ctx.rotate(h.charRot);
@@ -3290,8 +3315,8 @@ THIS CUTENESS</textarea>
       ctx.restore();
     }
 
-    h.stickers.forEach(st => drawSticker(ctx, st, h.inkColor));
-    drawHandLetteredText(ctx, h);
+    h.stickers.forEach(st => { if (!st.hidden) drawSticker(ctx, st, h.inkColor); });
+    if (!(h.layerHidden && h.layerHidden.text)) drawHandLetteredText(ctx, h);
 
     h.strokes.forEach(s => {
       if (s.pts.length < 2) return;
@@ -3307,7 +3332,7 @@ THIS CUTENESS</textarea>
       ctx.restore();
     });
 
-    if (h.badge.enabled) {
+    if (h.badge.enabled && !(h.layerHidden && h.layerHidden.badge)) {
       const bg = h.badge;
       ctx.save();
       ctx.translate(bg.x, bg.y);
@@ -3328,7 +3353,7 @@ THIS CUTENESS</textarea>
 
     ctx.restore();
 
-    if (h.postmark.enabled) {
+    if (h.postmark.enabled && !(h.layerHidden && h.layerHidden.postmark)) {
       const pm = h.postmark;
       ctx.save();
       traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
@@ -3554,7 +3579,7 @@ THIS CUTENESS</textarea>
     else if(target.type==='badge') h.badge.rot=value;
   }
   function drawSelectionControls(ctx) {
-    if (state.mode !== 'hand' || !selectedObject) return;
+    if (state.mode !== 'hand' || !selectedObject || isLayerHidden(selectedObject) || isLayerLocked(selectedObject)) return;
     const b = getObjectBox(selectedObject); if (!b) return;
     const x=b.x-b.w/2, y=b.y-b.h/2, right=x+b.w, bottom=y+b.h;
     ctx.save();
@@ -3603,6 +3628,92 @@ THIS CUTENESS</textarea>
     toast(t('toastDeleted'));
   }
 
+  let layerPanelSignature = '';
+  function layerTargetKey(type, index) { return type === 'sticker' ? `sticker:${index}` : type; }
+  function isLayerHidden(target) {
+    if (!target) return false;
+    const h=state.hand;
+    return target.type==='sticker' ? !!h.stickers[target.index]?.hidden : !!h.layerHidden?.[target.type];
+  }
+  function isLayerLocked(target) {
+    if (!target) return false;
+    const h=state.hand;
+    return target.type==='sticker' ? !!h.stickers[target.index]?.locked : !!h.layerLocked?.[target.type];
+  }
+  function layerLabel(target) {
+    const h=state.hand;
+    if(target.type==='character') return h.layerNames?.character || (h.character==='photo'?'上传照片':(h.character==='none'?'小动物（未启用）':'小动物素材'));
+    if(target.type==='text') return h.layerNames?.text || '文字内容';
+    if(target.type==='postmark') return h.layerNames?.postmark || '邮戳';
+    if(target.type==='badge') return h.layerNames?.badge || '角标';
+    if(target.type==='sticker') { const st=h.stickers[target.index]; return st?.name || (st?.type==='custom-image'?'自定义图片贴纸':`贴纸 ${target.index+1}`); }
+    return '图层';
+  }
+  function renderLayerPanel() {
+    const panel=document.getElementById('layer-panel'), list=document.getElementById('layer-list');
+    if(!panel||!list) return;
+    panel.classList.toggle('hidden',state.mode!=='hand');
+    if(state.mode!=='hand') return;
+    const h=state.hand, targets=[];
+    if(h.badge.enabled) targets.push({type:'badge'});
+    if(h.postmark.enabled) targets.push({type:'postmark'});
+    if(h.character!=='none') targets.push({type:'character'});
+    if(String(h.text||'').trim()) targets.push({type:'text'});
+    for(let i=h.stickers.length-1;i>=0;i--) targets.push({type:'sticker',index:i});
+    if(!targets.length){const sig='empty';if(layerPanelSignature!==sig){list.innerHTML='<div class="layer-empty">画布上还没有可管理的对象</div>';layerPanelSignature=sig;}return;}
+    const signature=targets.map(tg=>`${tg.type}:${tg.index??''}:${isLayerHidden(tg)?1:0}:${isLayerLocked(tg)?1:0}:${layerLabel(tg)}`).join('|')+'|sel:'+ (selectedObject?`${selectedObject.type}:${selectedObject.index??''}`:'none');
+    if(signature===layerPanelSignature)return;
+    layerPanelSignature=signature;
+    list.innerHTML=targets.map(tg=>{
+      const active=selectedObject && selectedObject.type===tg.type && (tg.type!=='sticker'||selectedObject.index===tg.index);
+      const hidden=isLayerHidden(tg), locked=isLayerLocked(tg);
+      const idx=tg.type==='sticker'?tg.index:-1;
+      return `<div class="layer-row ${active?'active':''}"><button class="layer-select" type="button" onclick="selectStudioLayer('${tg.type}',${idx})">${layerLabel(tg)}${hidden?' · 已隐藏':''}${locked?' · 已锁定':''}</button><button class="layer-action" type="button" title="${hidden?'显示':'隐藏'}" aria-label="${hidden?'显示':'隐藏'}" onclick="toggleStudioLayer('${tg.type}',${idx},'hidden')">${hidden?'◌':'◉'}</button><button class="layer-action" type="button" title="${locked?'解锁':'锁定'}" aria-label="${locked?'解锁':'锁定'}" onclick="toggleStudioLayer('${tg.type}',${idx},'locked')">${locked?'🔒':'♧'}</button><button class="layer-action" type="button" title="重命名" aria-label="重命名" onclick="renameStudioLayer('${tg.type}',${idx})">✎</button><button class="layer-action" type="button" title="删除图层" aria-label="删除图层" onclick="deleteStudioLayer('${tg.type}',${idx})">×</button><button class="layer-action" type="button" title="复制贴纸" aria-label="复制贴纸" ${tg.type!=='sticker'?'disabled':''} onclick="duplicateStudioLayer('${tg.type}',${idx})">＋</button><button class="layer-action" type="button" title="上移图层" aria-label="上移图层" ${tg.type!=='sticker'||tg.index===h.stickers.length-1?'disabled':''} onclick="moveStudioSticker(${idx},1)">↑</button><button class="layer-action" type="button" title="下移图层" aria-label="下移图层" ${tg.type!=='sticker'||tg.index===0?'disabled':''} onclick="moveStudioSticker(${idx},-1)">↓</button></div>`;
+    }).join('');
+  }
+  window.selectStudioLayer=function(type,index){
+    const target=type==='sticker'?{type,index}:{type};
+    if(isLayerHidden(target)){toast('这个图层已隐藏，请先显示');return;}
+    selectedObject=target;
+    if(type==='sticker') state.hand.selSticker=index;
+    render();
+  };
+  window.toggleStudioLayer=function(type,index,flag){
+    const h=state.hand;
+    if(type==='sticker'){const st=h.stickers[index];if(!st)return;st[flag]=!st[flag];}
+    else {const map=flag==='hidden'?'layerHidden':'layerLocked';h[map]=h[map]||{};h[map][type]=!h[map][type];}
+    if(flag==='hidden' && isLayerHidden(type==='sticker'?{type,index}:{type}) && selectedObject && selectedObject.type===type && (type!=='sticker'||selectedObject.index===index)) selectedObject=null;
+    render();scheduleAutoSave();
+  };
+  window.deleteStudioLayer=function(type,index){
+    const target=type==='sticker'?{type,index}:{type};
+    if(!window.confirm('确定删除这个图层吗？'))return;
+    deleteObject(target);
+  };
+  window.renameStudioLayer=function(type,index){
+    const target=type==='sticker'?state.hand.stickers[index]:null;
+    const current=target?(target.name||layerLabel({type,index})):layerLabel({type});
+    const next=window.prompt('给这个图层起一个名字：',current);
+    if(next===null)return;
+    const clean=next.trim().slice(0,32);if(!clean){toast('图层名称不能为空');return;}
+    if(target)target.name=clean;else{state.hand.layerNames=state.hand.layerNames||{};state.hand.layerNames[type]=clean;}
+    render();scheduleAutoSave();
+  };
+  window.moveStudioSticker=function(index,delta){
+    const arr=state.hand.stickers, next=index+delta;if(next<0||next>=arr.length)return;
+    pushHandHistory();[arr[index],arr[next]]=[arr[next],arr[index]];
+    if(selectedObject?.type==='sticker'){if(selectedObject.index===index)selectedObject.index=next;else if(selectedObject.index===next)selectedObject.index=index;}
+    state.hand.selSticker=selectedObject?.type==='sticker'?selectedObject.index:-1;render();scheduleAutoSave();
+  };
+
+  window.duplicateStudioLayer=function(type,index){
+    if(type!=='sticker')return;
+    const st=state.hand.stickers[index];if(!st)return;
+    pushHandHistory();
+    const copy=JSON.parse(JSON.stringify(st));copy.x=Math.min(1030,(copy.x||540)+42);copy.y=Math.min(1030,(copy.y||540)+42);copy.name=(copy.name||'贴纸')+' 副本';copy.hidden=false;copy.locked=false;
+    state.hand.stickers.push(copy);selectedObject={type:'sticker',index:state.hand.stickers.length-1};state.hand.selSticker=selectedObject.index;render();scheduleAutoSave();toast('已复制贴纸');
+  };
+
   function render() {
     const cv = document.getElementById('stampCanvas');
     const ctx = cv.getContext('2d');
@@ -3612,7 +3723,9 @@ THIS CUTENESS</textarea>
     if (state.mode === 'hand') {
       renderHandStamp(ctx, cv.width, cv.height);
       drawSelectionControls(ctx);
+      renderLayerPanel();
     } else {
+      renderLayerPanel();
       renderPixelStamp(ctx, cv.width, cv.height, state.pixel.showGrid);
       const pg = state.pixel.geom;
       if (pg) { ctx.save(); tracePixelStampPath(ctx, pg.outerX, pg.outerY, pg.outerW, pg.outerH, pg.cell); ctx.clip(); drawPixelImagePreview(ctx); ctx.restore(); }
@@ -4253,11 +4366,11 @@ THIS CUTENESS</textarea>
     };
     const objectTargets = () => {
       const h=state.hand, arr=[];
-      if(h.badge.enabled) arr.push({type:'badge'});
-      if(h.postmark.enabled) arr.push({type:'postmark'});
-      if(h.character!=='none') arr.push({type:'character'});
-      if(String(h.text||'').trim()) arr.push({type:'text'});
-      for(let i=0;i<h.stickers.length;i++) arr.push({type:'sticker',index:i});
+      if(h.badge.enabled && !isLayerHidden({type:'badge'}) && !isLayerLocked({type:'badge'})) arr.push({type:'badge'});
+      if(h.postmark.enabled && !isLayerHidden({type:'postmark'}) && !isLayerLocked({type:'postmark'})) arr.push({type:'postmark'});
+      if(h.character!=='none' && !isLayerHidden({type:'character'}) && !isLayerLocked({type:'character'})) arr.push({type:'character'});
+      if(String(h.text||'').trim() && !isLayerHidden({type:'text'}) && !isLayerLocked({type:'text'})) arr.push({type:'text'});
+      for(let i=0;i<h.stickers.length;i++) if(!h.stickers[i].hidden && !h.stickers[i].locked) arr.push({type:'sticker',index:i});
       return arr.reverse();
     };
     const hitObject = (p,target) => {
@@ -4313,6 +4426,7 @@ THIS CUTENESS</textarea>
         didMutate=true;
         render(); return;
       }
+      if(selectedObject && isLayerLocked(selectedObject)) { selectedObject=null; render(); }
       if(selectedObject) {
         const b=getObjectBox(selectedObject);
         if(b && hitHandle(p,b,'delete')) { deleteObject(selectedObject); return; }
