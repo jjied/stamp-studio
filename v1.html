@@ -381,6 +381,7 @@ textarea.txt-input { width: 100%; resize: none; line-height: 1.35; }
   .mode-tabs { max-width: 100%; }
   .mode-btn { padding: 7px 9px; font-size: 11px; white-space: nowrap; }
   .btn-export { padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+  .nav-right .mini-act-btn { padding:7px 9px; font-size:11px; white-space:nowrap; }
   .stage-col {
     padding: 10px 9px;
     gap: 8px;
@@ -827,6 +828,14 @@ body {
 .layer-action:disabled{opacity:.3}
 .layer-empty{padding:10px;text-align:center;color:#A18E88;font-size:11px}
 @media(max-width:600px){.layer-panel{width:100%;margin:7px 0 2px;padding:9px}.layer-list{max-height:160px}.layer-row{min-height:38px}.layer-action{width:34px;height:34px;flex-basis:34px}.layer-select{font-size:12px}}
+
+/* v12 export studio */
+.export-modal-backdrop{position:fixed;inset:0;background:rgba(48,37,33,.48);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.export-modal{width:min(760px,100%);max-height:min(92vh,900px);overflow:auto;background:#fffaf6;border:1px solid #e8d8ce;border-radius:22px;box-shadow:0 22px 70px rgba(53,35,30,.24);padding:20px;color:#51413b}
+.export-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.export-modal-head h2{font-family:Georgia,serif;font-size:23px;margin:0;color:#74585a}.export-close{border:0;background:#f2e7e2;border-radius:50%;width:36px;height:36px;font-size:20px;color:#755d58;cursor:pointer}
+.export-modal-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(220px,.9fr);gap:18px}.export-preview-wrap{min-height:260px;border:1px dashed #d9c5bb;border-radius:16px;background-color:#fff;background-image:linear-gradient(45deg,#f4eee9 25%,transparent 25%),linear-gradient(-45deg,#f4eee9 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f4eee9 75%),linear-gradient(-45deg,transparent 75%,#f4eee9 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}.export-preview-wrap canvas{max-width:100%;max-height:340px;width:auto;height:auto;object-fit:contain;box-shadow:0 5px 20px rgba(50,35,30,.12)}.export-settings{display:flex;flex-direction:column;gap:12px}.export-field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#77665f}.export-field input,.export-field select{width:100%;border:1px solid #e2d1c7;border-radius:10px;background:white;padding:10px;color:#51413b;font:inherit;box-sizing:border-box}.export-dimensions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.export-check{display:flex;align-items:center;gap:8px;font-size:13px;color:#66534d}.export-check input{accent-color:#b98289}.export-note{font-size:11px;line-height:1.55;color:#9a8981;background:#f7eee9;padding:10px;border-radius:10px}.export-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;flex-wrap:wrap}.export-actions button{border:1px solid #dfcbc1;border-radius:12px;padding:10px 16px;background:#fff;color:#74585a;font-weight:700;cursor:pointer}.export-actions .primary{background:#b98289;color:white;border-color:#b98289}.export-size-line{font-size:12px;color:#8a7770;text-align:center;margin-top:8px}
+@media(max-width:620px){.export-modal{padding:15px;border-radius:17px}.export-modal-grid{grid-template-columns:1fr}.export-preview-wrap{min-height:190px}.export-preview-wrap canvas{max-height:230px}.export-modal-head h2{font-size:20px}}
+
 </style>
 </head>
 <body>
@@ -864,6 +873,9 @@ body {
         <option value="ja">日本語</option>
         <option value="ko">한국어</option>
       </select>
+      <button class="mini-act-btn" type="button" onclick="exportStudioProject()" title="保存可继续编辑的项目文件">保存项目</button>
+      <button class="mini-act-btn" type="button" onclick="document.getElementById('studio-project-import').click()" title="打开项目文件">打开项目</button>
+      <input id="studio-project-import" type="file" accept=".json,application/json" style="display:none" onchange="importStudioProject(event)">
       <button class="btn-export" onclick="exportPNG()" data-i18n="btnExportTop">导出高清 PNG</button>
     </div>
   </header>
@@ -2065,6 +2077,133 @@ THIS CUTENESS</textarea>
     updateUndoRedoButtons();
     scheduleAutoSave();
     toast(t('toastRedo'));
+  };
+
+  // ==================== Portable project files (v13) ====================
+  const PROJECT_FORMAT = 'stamp-studio-project';
+  const PROJECT_VERSION = 1;
+  window.exportStudioProject = function() {
+    try {
+      const payload = {
+        format: PROJECT_FORMAT,
+        version: PROJECT_VERSION,
+        createdAt: new Date().toISOString(),
+        mode: state.mode,
+        ratio: state.ratio,
+        hand: JSON.parse(cloneHandSnapshot()),
+        uploadedAssets: state.hand.uploadedAssets || {},
+        pixel: {
+          borderColor: state.pixel.borderColor,
+          innerColor: state.pixel.innerColor,
+          cols: state.pixel.cols,
+          rows: state.pixel.rows,
+          showGrid: state.pixel.showGrid,
+          gridCodes: state.pixel.grid.map(row => row.map(cell => cell ? cell.code : null))
+        }
+      };
+      const json = JSON.stringify(payload);
+      if (json.length > 30 * 1024 * 1024) {
+        toast('项目文件超过 30MB，请减少超大图片素材后再保存');
+        return;
+      }
+      const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `stamp-studio-project-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      toast('可继续编辑的项目文件已保存');
+    } catch (err) {
+      console.error('Project export failed:', err);
+      toast('项目保存失败，可能是图片素材过大');
+    }
+  };
+
+  window.importStudioProject = function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const input = event.target;
+    if (file.size > 30 * 1024 * 1024) {
+      toast('项目文件过大（上限 30MB）'); input.value = ''; return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result || ''));
+        if (!data || data.format !== PROJECT_FORMAT || data.version !== PROJECT_VERSION) {
+          throw new Error('项目格式或版本不受支持');
+        }
+        if (!data.hand || !data.pixel || !RATIOS[data.ratio] || !['hand','pixel'].includes(data.mode)) {
+          throw new Error('项目数据不完整');
+        }
+        const assets = data.uploadedAssets || data.hand.uploadedAssets || {};
+        if (!assets || typeof assets !== 'object' || Array.isArray(assets)) throw new Error('图片素材数据无效');
+        Object.keys(assets).forEach(k => {
+          if (typeof assets[k] !== 'string' || !/^data:image\//i.test(assets[k])) throw new Error('项目包含无效图片素材');
+        });
+        const rows = data.pixel.gridCodes;
+        if (!Array.isArray(rows) || rows.length > 120 || rows.some(row => !Array.isArray(row) || row.length > 120)) {
+          throw new Error('像素画布数据无效或尺寸过大');
+        }
+        if (!window.confirm('打开项目会替换当前编辑内容。建议先保存当前项目，确定继续吗？')) { input.value = ''; return; }
+
+        state.ratio = data.ratio;
+        const ratio = RATIOS[state.ratio];
+        document.querySelectorAll('.ratio-btn[data-r]').forEach(b => b.classList.toggle('active', b.dataset.r === state.ratio));
+        document.getElementById('aspect-box').className = ratio.cls;
+        const canvas = document.getElementById('stampCanvas'); canvas.width = ratio.w; canvas.height = ratio.h;
+
+        const defaults = getDefaultHandState();
+        state.hand = Object.assign(defaults, data.hand, { uploadedAssets: assets, photoImg: null, sketchCanvas: null, doodleOn: false });
+        state.hand.layerHidden = state.hand.layerHidden || defaults.layerHidden;
+        state.hand.layerLocked = state.hand.layerLocked || defaults.layerLocked;
+        state.hand.layerNames = state.hand.layerNames || {};
+        state.hand.stickers = Array.isArray(state.hand.stickers) ? state.hand.stickers : [];
+        state.hand.layerOrder = Array.isArray(state.hand.layerOrder) ? state.hand.layerOrder : [];
+        state.handHistory = []; state.handRedoStack = []; selectedObject = null;
+
+        const px = data.pixel;
+        const cols = Math.max(1, Math.min(120, Number(px.cols) || 24));
+        const pixelRows = Math.max(1, Math.min(120, Number(px.rows) || rows.length || 24));
+        state.pixel.borderColor = /^#[0-9a-f]{6}$/i.test(px.borderColor || '') ? px.borderColor : '#FFFFFF';
+        state.pixel.innerColor = /^#[0-9a-f]{6}$/i.test(px.innerColor || '') ? px.innerColor : '#FFFFFF';
+        state.pixel.cols = cols; state.pixel.rows = pixelRows;
+        state.pixel.showGrid = px.showGrid !== false;
+        state.pixel.grid = Array.from({length:pixelRows}, (_,y) => Array.from({length:cols}, (_,x) => {
+          const code = rows[y] && rows[y][x]; return code && BEAD_BY_CODE[code] ? BEAD_BY_CODE[code] : null;
+        }));
+        state.pixel.history = []; state.pixel.redoStack = [];
+        state.pixel.archive = {};
+        state.mode = data.mode;
+
+        const finishImport = () => {
+          syncAllHandControls();
+          document.getElementById('pk-pixel-border').value = state.pixel.borderColor;
+          document.getElementById('hx-pixel-border').textContent = state.pixel.borderColor.toUpperCase();
+          document.getElementById('pk-pixel-inner').value = state.pixel.innerColor;
+          document.getElementById('hx-pixel-inner').textContent = state.pixel.innerColor.toUpperCase();
+          syncPixelGridSlider(Math.max(cols, pixelRows));
+          renderBeadTabs(); renderBeadGrid();
+          if (data.mode === 'pixel') switchMode('pixel'); else switchMode('hand');
+          render(); scheduleAutoSave(); updateUndoRedoButtons();
+          toast('项目已打开，可以继续编辑啦');
+        };
+        const photoKey = state.hand.currentPhotoAssetKey;
+        const photoData = photoKey && assets[photoKey];
+        if (photoData) {
+          const img = new Image();
+          img.onload = () => { state.hand.photoImg = img; finishImport(); };
+          img.onerror = () => { finishImport(); toast('项目已打开，但当前照片无法读取'); };
+          img.src = photoData;
+        } else finishImport();
+      } catch (err) {
+        console.error('Project import failed:', err);
+        toast(err.message || '项目文件读取失败');
+      } finally { input.value = ''; }
+    };
+    reader.onerror = () => { toast('文件读取失败，请重新选择'); input.value = ''; };
+    reader.readAsText(file);
   };
 
   // ==================== LocalStorage Auto-Save & Restore ====================
@@ -3388,7 +3527,7 @@ THIS CUTENESS</textarea>
     }
   }
 
-  function renderHandStamp(ctx, W, H) {
+  function renderHandStamp(ctx, W, H, transparentPaper = false) {
     const h = state.hand;
     const pad = Math.round(Math.min(W, H) * 0.05);
     const toothR = Math.round(Math.min(W, H) * 0.017);
@@ -3407,8 +3546,10 @@ THIS CUTENESS</textarea>
     ctx.rect(inPad, inPad, iW, iH);
     ctx.clip();
 
-    ctx.fillStyle = h.paperColor;
-    ctx.fillRect(inPad, inPad, iW, iH);
+    if (!transparentPaper) {
+      ctx.fillStyle = h.paperColor;
+      ctx.fillRect(inPad, inPad, iW, iH);
+    }
 
     if (h.pattern !== 'none') {
       ctx.save();
@@ -3519,8 +3660,10 @@ THIS CUTENESS</textarea>
     ctx.fill();
     ctx.clip();
 
-    ctx.fillStyle = state.pixel.innerColor || '#FFFFFF';
-    ctx.fillRect(outerX, outerY, outerW, outerH);
+    if (!state.exportTransparent) {
+      ctx.fillStyle = state.pixel.innerColor || '#FFFFFF';
+      ctx.fillRect(outerX, outerY, outerW, outerH);
+    }
 
     // 采用 index 的网格单元显示方式：空格棋盘底、已填色块、格内色号。
     for (let r = 0; r < rows; r++) {
@@ -4648,37 +4791,95 @@ THIS CUTENESS</textarea>
     applyCanvasView();
   }
 
-  window.exportPNG = function() {
+  let exportSettings = { width: 0, height: 0, transparent: false, guide: false };
+  function getExportBaseSize() {
     const m = RATIOS[state.ratio];
-    const uhd = document.getElementById('chk-uhd')?.checked ? 2 : 1;
-    const out = document.createElement('canvas');
-    if (state.mode === 'hand') {
-      out.width = m.w * uhd; out.height = m.h * uhd;
-      const ctx = out.getContext('2d');
-      ctx.scale(uhd, uhd);
-      renderHandStamp(ctx, m.w, m.h);
-    } else {
-      // 先按原始网格坐标渲染透明邮票，再裁切到邮票外接边界，避免外围多余矩形留白。
-      const full = document.createElement('canvas');
-      full.width = m.w; full.height = m.h;
-      const fctx = full.getContext('2d');
-      fctx.imageSmoothingEnabled = false;
-      renderPixelStamp(fctx, m.w, m.h, false);
-      const g = state.pixel.geom;
-      const sx = Math.max(0, Math.floor(g.outerX));
-      const sy = Math.max(0, Math.floor(g.outerY));
-      const sw = Math.min(full.width - sx, Math.ceil(g.outerW));
-      const sh = Math.min(full.height - sy, Math.ceil(g.outerH));
-      out.width = sw * uhd; out.height = sh * uhd;
-      const ctx = out.getContext('2d');
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(full, sx, sy, sw, sh, 0, 0, out.width, out.height);
+    if (state.mode === 'pixel') {
+      const probe = document.createElement('canvas'); probe.width=m.w; probe.height=m.h;
+      renderPixelStamp(probe.getContext('2d'),m.w,m.h,false);
+      const g=state.pixel.geom;
+      return { width:Math.max(1,Math.ceil(g.outerW)), height:Math.max(1,Math.ceil(g.outerH)), crop:{x:Math.max(0,Math.floor(g.outerX)),y:Math.max(0,Math.floor(g.outerY))} };
     }
-    const a = document.createElement('a');
-    a.download = `stamp-studio-${Date.now()}.png`;
-    a.href = out.toDataURL('image/png');
-    a.click();
-    toast(t('toastExported'));
+    return {width:m.w,height:m.h,crop:null};
+  }
+  function buildExportCanvas(width,height,transparent) {
+    const m=RATIOS[state.ratio];
+    const out=document.createElement('canvas'); out.width=width; out.height=height;
+    const ctx=out.getContext('2d');
+    ctx.imageSmoothingEnabled=state.mode==='hand';
+    if(state.mode==='hand') {
+      ctx.save(); ctx.scale(width/m.w,height/m.h);
+      renderHandStamp(ctx,m.w,m.h,transparent);
+      ctx.restore();
+    } else {
+      const full=document.createElement('canvas'); full.width=m.w; full.height=m.h;
+      const fctx=full.getContext('2d'); fctx.imageSmoothingEnabled=false;
+      const oldTransparent=state.exportTransparent; state.exportTransparent=transparent;
+      renderPixelStamp(fctx,m.w,m.h,false);
+      state.exportTransparent=oldTransparent;
+      const g=state.pixel.geom, sx=Math.max(0,Math.floor(g.outerX)), sy=Math.max(0,Math.floor(g.outerY));
+      const sw=Math.min(full.width-sx,Math.ceil(g.outerW)), sh=Math.min(full.height-sy,Math.ceil(g.outerH));
+      ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(full,sx,sy,sw,sh,0,0,width,height);
+    }
+    return out;
+  }
+  function openExportStudio() {
+    const base=getExportBaseSize();
+    exportSettings={width:base.width,height:base.height,transparent:false,guide:false};
+    let modal=document.getElementById('stamp-export-modal');
+    if(!modal){
+      modal=document.createElement('div'); modal.id='stamp-export-modal'; modal.className='export-modal-backdrop'; modal.innerHTML=`
+        <section class="export-modal" role="dialog" aria-modal="true" aria-labelledby="export-modal-title">
+          <div class="export-modal-head"><h2 id="export-modal-title">作品导出 · EXPORT STUDIO</h2><button class="export-close" type="button" onclick="closeExportStudio()" aria-label="关闭">×</button></div>
+          <div class="export-modal-grid"><div><div class="export-preview-wrap"><canvas id="export-preview-canvas" width="480" height="480"></canvas></div><div class="export-size-line" id="export-preview-size"></div></div>
+          <div class="export-settings">
+            <label class="export-field">导出尺寸（像素）<div class="export-dimensions"><input id="export-width" type="number" min="64" max="8192" step="1" aria-label="导出宽度"><input id="export-height" type="number" min="64" max="8192" step="1" aria-label="导出高度"></div></label>
+            <label class="export-field">快速清晰度<select id="export-scale"><option value="1">标准尺寸 · 1×</option><option value="2" selected>高清 · 2×</option><option value="3">超清 · 3×</option><option value="4">印刷级 · 4×</option><option value="custom">自定义尺寸</option></select></label>
+            <label class="export-check"><input id="export-transparent" type="checkbox"> 透明背景 PNG</label>
+            <div class="export-note" id="export-mode-note">手绘邮票：保留邮票纸张、齿孔和全部装饰。透明背景会移除邮票内侧纸色，保留边框与绘制内容。</div>
+            <div class="export-note">像素拼豆导出会保持硬边缘，不进行平滑处理。导出尺寸仅影响最终文件，不会改变编辑画布。</div>
+          </div></div>
+          <div class="export-actions"><button type="button" onclick="closeExportStudio()">取消</button><button class="primary" type="button" onclick="confirmStudioExport()">保存 PNG 图片</button></div>
+        </section>`;
+      modal.addEventListener('click',e=>{if(e.target===modal)closeExportStudio();}); document.body.appendChild(modal);
+      const w=modal.querySelector('#export-width'),h=modal.querySelector('#export-height'),scale=modal.querySelector('#export-scale');
+      w.addEventListener('change',()=>{const base=getExportBaseSize();const v=Math.max(64,Math.min(8192,Number(w.value)||base.width));w.value=v;h.value=Math.max(64,Math.min(8192,Math.round(v*base.height/base.width)));scale.value='custom';refreshExportPreview();});
+      h.addEventListener('change',()=>{const base=getExportBaseSize();const v=Math.max(64,Math.min(8192,Number(h.value)||base.height));h.value=v;w.value=Math.max(64,Math.min(8192,Math.round(v*base.width/base.height)));scale.value='custom';refreshExportPreview();});
+      scale.addEventListener('change',()=>{const base=getExportBaseSize();const factor=scale.value==='custom'?1:Number(scale.value);w.value=Math.min(8192,base.width*factor);h.value=Math.min(8192,base.height*factor);refreshExportPreview();});
+      modal.querySelector('#export-transparent').addEventListener('change',refreshExportPreview);
+    }
+    const defaultScale=document.getElementById('chk-uhd')?.checked?2:1;
+    modal.querySelector('#export-width').value=base.width*defaultScale; modal.querySelector('#export-height').value=base.height*defaultScale; modal.querySelector('#export-scale').value=String(defaultScale);
+    modal.querySelector('#export-transparent').checked=false;
+    modal.querySelector('#export-mode-note').textContent=state.mode==='hand'?'手绘邮票：保留邮票纸张、齿孔和全部装饰。透明背景会移除邮票内侧纸色，保留边框与绘制内容。':'像素拼豆：导出会自动裁切到邮票齿孔外边界，并保持每个像素的硬边缘。透明背景会移除空白底色。';
+    modal.style.display='flex'; refreshExportPreview();
+  }
+  function refreshExportPreview() {
+    const modal=document.getElementById('stamp-export-modal'); if(!modal||modal.style.display==='none')return;
+    const width=Math.max(64,Math.min(8192,Number(modal.querySelector('#export-width').value)||64));
+    const height=Math.max(64,Math.min(8192,Number(modal.querySelector('#export-height').value)||64));
+    const preview=modal.querySelector('#export-preview-canvas');
+    const ratio=Math.min(480/width,320/height,1); const pw=Math.max(1,Math.round(width*ratio)),ph=Math.max(1,Math.round(height*ratio));
+    const source=buildExportCanvas(pw,ph,modal.querySelector('#export-transparent').checked);
+    preview.width=pw;preview.height=ph;const ctx=preview.getContext('2d');ctx.clearRect(0,0,pw,ph);ctx.drawImage(source,0,0);
+    modal.querySelector('#export-preview-size').textContent=`最终文件：${width} × ${height} px · PNG`;
+  }
+  window.closeExportStudio=function(){const m=document.getElementById('stamp-export-modal');if(m)m.style.display='none';};
+  window.exportPNG=function(){openExportStudio();};
+  window.confirmStudioExport=function(){
+    const modal=document.getElementById('stamp-export-modal');if(!modal)return;
+    const width=Math.max(64,Math.min(8192,Math.round(Number(modal.querySelector('#export-width').value)||0)));
+    const height=Math.max(64,Math.min(8192,Math.round(Number(modal.querySelector('#export-height').value)||0)));
+    if(!width||!height){toast('请填写有效的导出尺寸');return;}
+    const transparent=modal.querySelector('#export-transparent').checked;
+    const out=buildExportCanvas(width,height,transparent);
+    out.toBlob(blob=>{
+      if(!blob){toast('导出失败，请降低图片尺寸后重试');return;}
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.download=`stamp-studio-${state.mode}-${width}x${height}-${Date.now()}.png`;a.href=url;a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);closeExportStudio();toast(t('toastExported'));
+    },'image/png');
   };
 
   window.exportBeadGuidePNG = function() {
