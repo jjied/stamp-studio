@@ -162,8 +162,15 @@ body {
 .aspect-4-3 { width: 100%; max-width: 400px; aspect-ratio: 4 / 3; }
 #stampCanvas {
   width: 100%; height: 100%; display: block; touch-action: none;
+  transform: translate(var(--canvas-pan-x, 0px), var(--canvas-pan-y, 0px)) scale(var(--canvas-zoom, 1));
+  transform-origin: center center;
   filter: drop-shadow(0 12px 22px rgba(35, 31, 32, 0.16));
 }
+.canvas-zoom-bar { display:flex; align-items:center; justify-content:center; gap:7px; flex-wrap:wrap; margin:2px 0 5px; }
+.canvas-zoom-bar button { border:1px solid #D9CEBC; background:#FFFDF9; color:var(--ink); border-radius:9px; min-width:34px; min-height:32px; padding:5px 9px; font-weight:800; cursor:pointer; }
+.canvas-zoom-bar span { min-width:48px; text-align:center; color:var(--ink-soft); font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; }
+#aspect-box { overflow:hidden; position:relative; }
+@media (max-width:700px) { .canvas-zoom-bar button { min-width:40px; min-height:38px; } }
 .stage-footer {
   width: 100%; padding-top: 10px; border-top: 1px solid var(--line);
   display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -901,6 +908,13 @@ body {
 
       <div class="stage-hint" id="stage-hint" data-i18n="hintHand">点选对象后拖动移动：左上角删除 · 左下角缩放 · 右下角旋转</div>
 
+      <div class="canvas-zoom-bar" aria-label="画布缩放控制">
+        <button type="button" onclick="changeCanvasZoom(-0.15)" aria-label="缩小画布">−</button>
+        <span id="canvas-zoom-label">100%</span>
+        <button type="button" onclick="changeCanvasZoom(0.15)" aria-label="放大画布">＋</button>
+        <button type="button" onclick="resetCanvasZoom()">适应画布</button>
+        <span style="font-weight:500;min-width:auto;">手机可双指缩放／平移</span>
+      </div>
       <div class="canvas-holder">
         <div id="aspect-box" class="aspect-1-1">
           <canvas id="stampCanvas" width="1080" height="1080"></canvas>
@@ -4409,12 +4423,33 @@ THIS CUTENESS</textarea>
     scheduleAutoSave();
   }
 
+  let canvasZoom = 1, canvasPanX = 0, canvasPanY = 0;
+  function applyCanvasView() {
+    const cv=document.getElementById('stampCanvas');
+    if(!cv) return;
+    cv.style.setProperty('--canvas-zoom', String(canvasZoom));
+    cv.style.setProperty('--canvas-pan-x', `${canvasPanX}px`);
+    cv.style.setProperty('--canvas-pan-y', `${canvasPanY}px`);
+    const label=document.getElementById('canvas-zoom-label');
+    if(label) label.textContent=`${Math.round(canvasZoom*100)}%`;
+  }
+  window.changeCanvasZoom = function(delta) {
+    canvasZoom=Math.max(1,Math.min(2.5,Math.round((canvasZoom+delta)*100)/100));
+    if(canvasZoom===1){canvasPanX=0;canvasPanY=0;}
+    applyCanvasView();
+  };
+  window.resetCanvasZoom = function() { canvasZoom=1;canvasPanX=0;canvasPanY=0;applyCanvasView(); };
+
   function bindCanvasEvents() {
     const cv = document.getElementById('stampCanvas');
     const ptOf = e => {
       const rc=cv.getBoundingClientRect();
       return {x:(e.clientX-rc.left)*(cv.width/rc.width),y:(e.clientY-rc.top)*(cv.height/rc.height)};
     };
+    const activePointers = new Map();
+    let pinchState = null;
+    const pointerMid = (a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+    const pointerDistance = (a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
     const objectTargets = () => {
       const h=state.hand, arr=[]; ensureLayerOrder();
       h.layerOrder.slice().reverse().forEach(key=>{
@@ -4438,6 +4473,14 @@ THIS CUTENESS</textarea>
       if(e.pointerType==='mouse' && e.button!==0) return;
       e.preventDefault();
       cv.setPointerCapture?.(e.pointerId);
+      activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(activePointers.size===2) {
+        const pts=[...activePointers.values()];
+        pinchState={distance:Math.max(1,pointerDistance(pts[0],pts[1])),mid:pointerMid(pts[0],pts[1]),zoom:canvasZoom,panX:canvasPanX,panY:canvasPanY};
+        isDown=false; activePointer=null; dragMode=null; dragStart=null; dragCenter=null; curStroke=null;
+        return;
+      }
+      if(pinchState) return;
       activePointer=e.pointerId;
       const p=ptOf(e);
       isDown=true;
@@ -4511,6 +4554,19 @@ THIS CUTENESS</textarea>
     };
 
     const move = e => {
+      if(activePointers.has(e.pointerId)) activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(pinchState && activePointers.size>=2) {
+        e.preventDefault();
+        const pts=[...activePointers.values()].slice(0,2);
+        const mid=pointerMid(pts[0],pts[1]);
+        const dist=Math.max(1,pointerDistance(pts[0],pts[1]));
+        canvasZoom=Math.max(1,Math.min(2.5,pinchState.zoom*dist/pinchState.distance));
+        canvasPanX=pinchState.panX+(mid.x-pinchState.mid.x);
+        canvasPanY=pinchState.panY+(mid.y-pinchState.mid.y);
+        if(canvasZoom===1){canvasPanX=0;canvasPanY=0;}
+        applyCanvasView();
+        return;
+      }
       if(!isDown || (activePointer!==null && e.pointerId!==activePointer)) return;
       e.preventDefault();
       const p=ptOf(e);
@@ -4574,6 +4630,13 @@ THIS CUTENESS</textarea>
       render();
     };
     const up = e => {
+      activePointers.delete(e.pointerId);
+      if(pinchState) {
+        if(activePointers.size<2) pinchState=null;
+        if(activePointers.size===1) { activePointer=null; isDown=false; }
+        applyCanvasView();
+        return;
+      }
       if(activePointer!==null && e.pointerId!==activePointer) return;
       if (didMutate) scheduleAutoSave();
       isDown=false;dragMode=null;dragStart=null;dragCenter=null;curStroke=null;lastKey='';activePointer=null;didMutate=false;
@@ -4582,6 +4645,7 @@ THIS CUTENESS</textarea>
     window.addEventListener('pointermove',move,{passive:false});
     window.addEventListener('pointerup',up);
     window.addEventListener('pointercancel',up);
+    applyCanvasView();
   }
 
   window.exportPNG = function() {
