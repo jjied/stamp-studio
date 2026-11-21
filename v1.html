@@ -1,3 +1,9 @@
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -3655,13 +3661,15 @@ THIS CUTENESS</textarea>
     panel.classList.toggle('hidden',state.mode!=='hand');
     if(state.mode!=='hand') return;
     const h=state.hand, targets=[];
+    // 为贴纸建立稳定身份，确保交换位置后面板缓存能够识别对象变化。
+    h.stickers.forEach(st=>{if(!st._layerId)st._layerId='st_'+Math.random().toString(36).slice(2,10);});
     if(h.badge.enabled) targets.push({type:'badge'});
     if(h.postmark.enabled) targets.push({type:'postmark'});
     if(h.character!=='none') targets.push({type:'character'});
     if(String(h.text||'').trim()) targets.push({type:'text'});
     for(let i=h.stickers.length-1;i>=0;i--) targets.push({type:'sticker',index:i});
     if(!targets.length){const sig='empty';if(layerPanelSignature!==sig){list.innerHTML='<div class="layer-empty">画布上还没有可管理的对象</div>';layerPanelSignature=sig;}return;}
-    const signature=targets.map(tg=>`${tg.type}:${tg.index??''}:${isLayerHidden(tg)?1:0}:${isLayerLocked(tg)?1:0}:${layerLabel(tg)}`).join('|')+'|sel:'+ (selectedObject?`${selectedObject.type}:${selectedObject.index??''}`:'none');
+    const signature=targets.map(tg=>`${tg.type}:${tg.index??''}:${tg.type==='sticker'?(h.stickers[tg.index]?._layerId||''):''}:${isLayerHidden(tg)?1:0}:${isLayerLocked(tg)?1:0}:${layerLabel(tg)}`).join('|')+'|sel:'+ (selectedObject?`${selectedObject.type}:${selectedObject.index??''}`:'none');
     if(signature===layerPanelSignature)return;
     layerPanelSignature=signature;
     list.innerHTML=targets.map(tg=>{
@@ -3703,7 +3711,11 @@ THIS CUTENESS</textarea>
     const arr=state.hand.stickers, next=index+delta;if(next<0||next>=arr.length)return;
     pushHandHistory();[arr[index],arr[next]]=[arr[next],arr[index]];
     if(selectedObject?.type==='sticker'){if(selectedObject.index===index)selectedObject.index=next;else if(selectedObject.index===next)selectedObject.index=index;}
-    state.hand.selSticker=selectedObject?.type==='sticker'?selectedObject.index:-1;render();scheduleAutoSave();
+    state.hand.selSticker=selectedObject?.type==='sticker'?selectedObject.index:-1;
+    // 交换的是数组中的对象，而列表默认名称按位置生成；必须清空缓存，
+    // 否则签名可能保持不变，导致图层面板仍显示旧顺序。
+    layerPanelSignature='';
+    render();scheduleAutoSave();toast(delta>0?'图层已上移':'图层已下移');
   };
 
   window.duplicateStudioLayer=function(type,index){
@@ -4645,3 +4657,7 @@ THIS CUTENESS</textarea>
 </script>
 </body>
 </html>
+
+
+
+
