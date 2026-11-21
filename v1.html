@@ -1997,7 +1997,7 @@ THIS CUTENESS</textarea>
       textAlign: h.textAlign, textColor: h.textColor, fontScale: h.fontScale,
       textX: h.textX, textY: h.textY, textRot: h.textRot,
       stickers: h.stickers, postmark: h.postmark, badge: h.badge,
-      layerHidden: h.layerHidden || {}, layerNames: h.layerNames || {}, layerLocked: h.layerLocked || {},
+      layerHidden: h.layerHidden || {}, layerNames: h.layerNames || {}, layerLocked: h.layerLocked || {}, layerOrder: h.layerOrder || [],
       brushColor: h.brushColor, brushSize: h.brushSize, strokes: h.strokes
     });
   }
@@ -3247,6 +3247,133 @@ THIS CUTENESS</textarea>
     return `<canvas class="animal-thumb" width="48" height="48" data-character-thumbnail="${id}" aria-hidden="true"></canvas>`;
   }
 
+  // Unified layer system: every drawable object is painted in the exact order shown in the layer panel.
+  function ensureLayerOrder() {
+    const h = state.hand;
+    h.stickers.forEach(st => { if (!st._layerId) st._layerId = 'st_' + Math.random().toString(36).slice(2, 10); });
+    const available = [];
+    if (h.character !== 'none') available.push('character');
+    h.stickers.forEach(st => available.push('sticker:' + st._layerId));
+    if (String(h.text || '').trim()) available.push('text');
+    if (h.badge.enabled) available.push('badge');
+    if (h.postmark.enabled) available.push('postmark');
+    // Preserve existing relative order and append newly-created objects at the top.
+    const old = Array.isArray(h.layerOrder) ? h.layerOrder : [];
+    h.layerOrder = old.filter(k => available.includes(k));
+    available.forEach(k => { if (!h.layerOrder.includes(k)) h.layerOrder.push(k); });
+    return h.layerOrder;
+  }
+  function layerKeyForTarget(target) {
+    if (!target) return '';
+    if (target.type === 'sticker') return 'sticker:' + (state.hand.stickers[target.index]?._layerId || '');
+    return target.type;
+  }
+  function targetForLayerKey(key) {
+    if (key.startsWith('sticker:')) {
+      const id = key.slice(8), index = state.hand.stickers.findIndex(st => st._layerId === id);
+      return index < 0 ? null : { type: 'sticker', index };
+    }
+    return { type: key };
+  }
+  function drawHandLayer(ctx, key, W, H, pad, toothR) {
+    const h = state.hand;
+    if (key === 'character') {
+      ctx.save();
+      ctx.translate(h.charX, h.charY);
+      ctx.rotate(h.charRot);
+      const sc = h.charScale / 100;
+      ctx.scale(sc, sc);
+      if (h.character === 'photo' && h.photoImg) {
+        const src = h.sketchFilter && h.sketchCanvas ? h.sketchCanvas : h.photoImg;
+        const photoSize = getPhotoBaseSize(src);
+        ctx.drawImage(src, -photoSize.w / 2, -photoSize.h / 2, photoSize.w, photoSize.h);
+      } else {
+        drawChibiWhiteAnimal(ctx, h.character, h.inkColor);
+      }
+      ctx.restore();
+
+      return;
+    }
+    if (key.startsWith('sticker:')) {
+      const target = targetForLayerKey(key); if (!target) return;
+      const st = h.stickers[target.index]; if (st && !st.hidden) drawSticker(ctx, st, h.inkColor);
+      return;
+    }
+    if (key === 'text') { if (!(h.layerHidden && h.layerHidden.text)) drawHandLetteredText(ctx, h); return; }
+    if (key === 'strokes') {
+      h.strokes.forEach(s => {
+      if (s.pts.length < 2) return;
+      ctx.save();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size * 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(s.pts[0].x, s.pts[0].y);
+      for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i].x, s.pts[i].y);
+      ctx.stroke();
+      ctx.restore();
+      });
+
+      return;
+    }
+    if (key === 'badge') {
+      const bg = h.badge;
+      ctx.save();
+      ctx.translate(bg.x, bg.y);
+      ctx.rotate(bg.rot);
+      ctx.scale(bg.scale, bg.scale);
+      ctx.font = '800 28px "Comic Sans MS", sans-serif';
+      const bw = Math.max(96, ctx.measureText(bg.text).width + 32);
+      const bh = 48;
+      ctx.strokeStyle = bg.color;
+      ctx.fillStyle = bg.color;
+      ctx.lineWidth = 4.2;
+      if (bg.shape === 'box') { ctx.beginPath(); ctx.roundRect(-bw/2, -bh/2, bw, bh, 10); ctx.stroke(); }
+      else if (bg.shape === 'oval') { ctx.beginPath(); ctx.ellipse(0, 0, bw/2 + 4, bh/2 + 2, 0, 0, Math.PI*2); ctx.stroke(); }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(bg.text, 0, 2);
+      ctx.restore();
+      return;
+    }
+    if (key === 'postmark') {
+      const pm = h.postmark;
+      ctx.save();
+      traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
+      ctx.clip();
+      ctx.translate(pm.x, pm.y);
+      ctx.rotate(pm.rot);
+      ctx.scale(pm.scale, pm.scale);
+      ctx.globalAlpha = 0.82;
+      ctx.strokeStyle = pm.color;
+      ctx.fillStyle = pm.color;
+      ctx.lineWidth = 4;
+      if (pm.type === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 132 : 56; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
+        ctx.closePath(); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(0, 0, 98, 0, Math.PI * 2); ctx.stroke();
+        if (pm.type === 'round') { ctx.beginPath(); ctx.arc(0, 0, 84, 0, Math.PI * 2); ctx.stroke(); }
+      }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '800 16px sans-serif'; ctx.fillText(pm.top, 0, -42);
+      ctx.font = '800 21px monospace'; ctx.fillText(pm.date, 0, 1);
+      ctx.font = '800 14px sans-serif'; ctx.fillText(pm.bot, 0, 42);
+      if (pm.type === 'wave') {
+        for (let w = -1; w <= 1; w++) {
+          ctx.beginPath();
+          for (let x = 94; x <= 182; x += 6) {
+            const y = w * 18 + Math.sin(x * 0.16) * 6;
+            x === 94 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.restore();      return;
+    }
+  }
+
   function renderHandStamp(ctx, W, H) {
     const h = state.hand;
     const pad = Math.round(Math.min(W, H) * 0.05);
@@ -3299,96 +3426,15 @@ THIS CUTENESS</textarea>
       ctx.restore();
     }
 
-    if (h.character !== 'none' && !(h.layerHidden && h.layerHidden.character)) {
-      ctx.save();
-      ctx.translate(h.charX, h.charY);
-      ctx.rotate(h.charRot);
-      const sc = h.charScale / 100;
-      ctx.scale(sc, sc);
-      if (h.character === 'photo' && h.photoImg) {
-        const src = h.sketchFilter && h.sketchCanvas ? h.sketchCanvas : h.photoImg;
-        const photoSize = getPhotoBaseSize(src);
-        ctx.drawImage(src, -photoSize.w / 2, -photoSize.h / 2, photoSize.w, photoSize.h);
-      } else {
-        drawChibiWhiteAnimal(ctx, h.character, h.inkColor);
-      }
-      ctx.restore();
-    }
-
-    h.stickers.forEach(st => { if (!st.hidden) drawSticker(ctx, st, h.inkColor); });
-    if (!(h.layerHidden && h.layerHidden.text)) drawHandLetteredText(ctx, h);
-
-    h.strokes.forEach(s => {
-      if (s.pts.length < 2) return;
-      ctx.save();
-      ctx.strokeStyle = s.color;
-      ctx.lineWidth = s.size * 2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(s.pts[0].x, s.pts[0].y);
-      for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i].x, s.pts[i].y);
-      ctx.stroke();
-      ctx.restore();
+    // Drawing strokes stay as a fixed base layer; all other objects follow layerOrder.
+    drawHandLayer(ctx, 'strokes', W, H, pad, toothR);
+    const order = ensureLayerOrder();
+    order.forEach(key => {
+      const target = targetForLayerKey(key);
+      if (!target || isLayerHidden(target)) return;
+      drawHandLayer(ctx, key, W, H, pad, toothR);
     });
 
-    if (h.badge.enabled && !(h.layerHidden && h.layerHidden.badge)) {
-      const bg = h.badge;
-      ctx.save();
-      ctx.translate(bg.x, bg.y);
-      ctx.rotate(bg.rot);
-      ctx.scale(bg.scale, bg.scale);
-      ctx.font = '800 28px "Comic Sans MS", sans-serif';
-      const bw = Math.max(96, ctx.measureText(bg.text).width + 32);
-      const bh = 48;
-      ctx.strokeStyle = bg.color;
-      ctx.fillStyle = bg.color;
-      ctx.lineWidth = 4.2;
-      if (bg.shape === 'box') { ctx.beginPath(); ctx.roundRect(-bw/2, -bh/2, bw, bh, 10); ctx.stroke(); }
-      else if (bg.shape === 'oval') { ctx.beginPath(); ctx.ellipse(0, 0, bw/2 + 4, bh/2 + 2, 0, 0, Math.PI*2); ctx.stroke(); }
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(bg.text, 0, 2);
-      ctx.restore();
-    }
-
-    ctx.restore();
-
-    if (h.postmark.enabled && !(h.layerHidden && h.layerHidden.postmark)) {
-      const pm = h.postmark;
-      ctx.save();
-      traceStampRect(ctx, pad, pad, W - pad * 2, H - pad * 2, toothR);
-      ctx.clip();
-      ctx.translate(pm.x, pm.y);
-      ctx.rotate(pm.rot);
-      ctx.scale(pm.scale, pm.scale);
-      ctx.globalAlpha = 0.82;
-      ctx.strokeStyle = pm.color;
-      ctx.fillStyle = pm.color;
-      ctx.lineWidth = 4;
-      if (pm.type === 'star') {
-        ctx.beginPath();
-        for (let i = 0; i < 10; i++) { const a = -Math.PI/2 + i*Math.PI/5; const r = i%2===0 ? 132 : 56; const x=Math.cos(a)*r, y=Math.sin(a)*r; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); }
-        ctx.closePath(); ctx.stroke();
-      } else {
-        ctx.beginPath(); ctx.arc(0, 0, 98, 0, Math.PI * 2); ctx.stroke();
-        if (pm.type === 'round') { ctx.beginPath(); ctx.arc(0, 0, 84, 0, Math.PI * 2); ctx.stroke(); }
-      }
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = '800 16px sans-serif'; ctx.fillText(pm.top, 0, -42);
-      ctx.font = '800 21px monospace'; ctx.fillText(pm.date, 0, 1);
-      ctx.font = '800 14px sans-serif'; ctx.fillText(pm.bot, 0, 42);
-      if (pm.type === 'wave') {
-        for (let w = -1; w <= 1; w++) {
-          ctx.beginPath();
-          for (let x = 94; x <= 182; x += 6) {
-            const y = w * 18 + Math.sin(x * 0.16) * 6;
-            x === 94 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-        }
-      }
-      ctx.restore();
-    }
   }
 
   // 像素邮票专用：所有尺寸均以正方形网格格子为单位。
@@ -3609,6 +3655,7 @@ THIS CUTENESS</textarea>
     pushHandHistory();
     const h=state.hand;
     if (target.type==='sticker') {
+      const removed=h.stickers[target.index]; if(removed?._layerId && Array.isArray(h.layerOrder)) h.layerOrder=h.layerOrder.filter(k=>k!=='sticker:'+removed._layerId);
       h.stickers.splice(target.index,1);
       h.selSticker=-1;
     } else if (target.type==='character') {
@@ -3655,13 +3702,9 @@ THIS CUTENESS</textarea>
     panel.classList.toggle('hidden',state.mode!=='hand');
     if(state.mode!=='hand') return;
     const h=state.hand, targets=[];
-    // 为贴纸建立稳定身份，确保交换位置后面板缓存能够识别对象变化。
-    h.stickers.forEach(st=>{if(!st._layerId)st._layerId='st_'+Math.random().toString(36).slice(2,10);});
-    if(h.badge.enabled) targets.push({type:'badge'});
-    if(h.postmark.enabled) targets.push({type:'postmark'});
-    if(h.character!=='none') targets.push({type:'character'});
-    if(String(h.text||'').trim()) targets.push({type:'text'});
-    for(let i=h.stickers.length-1;i>=0;i--) targets.push({type:'sticker',index:i});
+    ensureLayerOrder();
+    // 面板从最上层到最下层显示；layerOrder 本身按底层到顶层保存。
+    h.layerOrder.slice().reverse().forEach(key=>{const target=targetForLayerKey(key);if(target)targets.push(target);});
     if(!targets.length){const sig='empty';if(layerPanelSignature!==sig){list.innerHTML='<div class="layer-empty">画布上还没有可管理的对象</div>';layerPanelSignature=sig;}return;}
     const signature=targets.map(tg=>`${tg.type}:${tg.index??''}:${tg.type==='sticker'?(h.stickers[tg.index]?._layerId||''):''}:${isLayerHidden(tg)?1:0}:${isLayerLocked(tg)?1:0}:${layerLabel(tg)}`).join('|')+'|sel:'+ (selectedObject?`${selectedObject.type}:${selectedObject.index??''}`:'none');
     if(signature===layerPanelSignature)return;
@@ -3670,7 +3713,7 @@ THIS CUTENESS</textarea>
       const active=selectedObject && selectedObject.type===tg.type && (tg.type!=='sticker'||selectedObject.index===tg.index);
       const hidden=isLayerHidden(tg), locked=isLayerLocked(tg);
       const idx=tg.type==='sticker'?tg.index:-1;
-      return `<div class="layer-row ${active?'active':''}"><button class="layer-select" type="button" onclick="selectStudioLayer('${tg.type}',${idx})">${layerLabel(tg)}${hidden?' · 已隐藏':''}${locked?' · 已锁定':''}</button><button class="layer-action" type="button" title="${hidden?'显示':'隐藏'}" aria-label="${hidden?'显示':'隐藏'}" onclick="toggleStudioLayer('${tg.type}',${idx},'hidden')">${hidden?'◌':'◉'}</button><button class="layer-action" type="button" title="${locked?'解锁':'锁定'}" aria-label="${locked?'解锁':'锁定'}" onclick="toggleStudioLayer('${tg.type}',${idx},'locked')">${locked?'🔒':'♧'}</button><button class="layer-action" type="button" title="重命名" aria-label="重命名" onclick="renameStudioLayer('${tg.type}',${idx})">✎</button><button class="layer-action" type="button" title="删除图层" aria-label="删除图层" onclick="deleteStudioLayer('${tg.type}',${idx})">×</button><button class="layer-action" type="button" title="复制贴纸" aria-label="复制贴纸" ${tg.type!=='sticker'?'disabled':''} onclick="duplicateStudioLayer('${tg.type}',${idx})">＋</button><button class="layer-action" type="button" title="上移图层" aria-label="上移图层" ${tg.type!=='sticker'||tg.index===h.stickers.length-1?'disabled':''} onclick="moveStudioSticker(${idx},1)">↑</button><button class="layer-action" type="button" title="下移图层" aria-label="下移图层" ${tg.type!=='sticker'||tg.index===0?'disabled':''} onclick="moveStudioSticker(${idx},-1)">↓</button></div>`;
+      return `<div class="layer-row ${active?'active':''}"><button class="layer-select" type="button" onclick="selectStudioLayer('${tg.type}',${idx})">${layerLabel(tg)}${hidden?' · 已隐藏':''}${locked?' · 已锁定':''}</button><button class="layer-action" type="button" title="${hidden?'显示':'隐藏'}" aria-label="${hidden?'显示':'隐藏'}" onclick="toggleStudioLayer('${tg.type}',${idx},'hidden')">${hidden?'◌':'◉'}</button><button class="layer-action" type="button" title="${locked?'解锁':'锁定'}" aria-label="${locked?'解锁':'锁定'}" onclick="toggleStudioLayer('${tg.type}',${idx},'locked')">${locked?'🔒':'♧'}</button><button class="layer-action" type="button" title="重命名" aria-label="重命名" onclick="renameStudioLayer('${tg.type}',${idx})">✎</button><button class="layer-action" type="button" title="删除图层" aria-label="删除图层" onclick="deleteStudioLayer('${tg.type}',${idx})">×</button><button class="layer-action" type="button" title="复制图层" aria-label="复制图层" ${tg.type!=='sticker'?'disabled':''} onclick="duplicateStudioLayer('${tg.type}',${idx})">＋</button><button class="layer-action" type="button" title="上移图层" aria-label="上移图层" ${h.layerOrder.indexOf(layerKeyForTarget(tg))===h.layerOrder.length-1?'disabled':''} onclick="moveStudioLayer('${tg.type}',${idx},1)">↑</button><button class="layer-action" type="button" title="下移图层" aria-label="下移图层" ${h.layerOrder.indexOf(layerKeyForTarget(tg))===0?'disabled':''} onclick="moveStudioLayer('${tg.type}',${idx},-1)">↓</button></div>`;
     }).join('');
   }
   window.selectStudioLayer=function(type,index){
@@ -3701,23 +3744,25 @@ THIS CUTENESS</textarea>
     if(target)target.name=clean;else{state.hand.layerNames=state.hand.layerNames||{};state.hand.layerNames[type]=clean;}
     render();scheduleAutoSave();
   };
-  window.moveStudioSticker=function(index,delta){
-    const arr=state.hand.stickers, next=index+delta;if(next<0||next>=arr.length)return;
-    pushHandHistory();[arr[index],arr[next]]=[arr[next],arr[index]];
-    if(selectedObject?.type==='sticker'){if(selectedObject.index===index)selectedObject.index=next;else if(selectedObject.index===next)selectedObject.index=index;}
-    state.hand.selSticker=selectedObject?.type==='sticker'?selectedObject.index:-1;
-    // 交换的是数组中的对象，而列表默认名称按位置生成；必须清空缓存，
-    // 否则签名可能保持不变，导致图层面板仍显示旧顺序。
+  window.moveStudioLayer=function(type,index,delta){
+    const h=state.hand; ensureLayerOrder();
+    const target=type==='sticker'?{type,index}:{type};
+    const key=layerKeyForTarget(target), from=h.layerOrder.indexOf(key), to=from+delta;
+    if(from<0||to<0||to>=h.layerOrder.length)return;
+    pushHandHistory();
+    [h.layerOrder[from],h.layerOrder[to]]=[h.layerOrder[to],h.layerOrder[from]];
     layerPanelSignature='';
     render();scheduleAutoSave();toast(delta>0?'图层已上移':'图层已下移');
   };
+  window.moveStudioSticker=function(index,delta){ window.moveStudioLayer('sticker',index,delta); };
+
 
   window.duplicateStudioLayer=function(type,index){
     if(type!=='sticker')return;
     const st=state.hand.stickers[index];if(!st)return;
     pushHandHistory();
-    const copy=JSON.parse(JSON.stringify(st));copy.x=Math.min(1030,(copy.x||540)+42);copy.y=Math.min(1030,(copy.y||540)+42);copy.name=(copy.name||'贴纸')+' 副本';copy.hidden=false;copy.locked=false;
-    state.hand.stickers.push(copy);selectedObject={type:'sticker',index:state.hand.stickers.length-1};state.hand.selSticker=selectedObject.index;render();scheduleAutoSave();toast('已复制贴纸');
+    const copy=JSON.parse(JSON.stringify(st));copy._layerId='st_'+Math.random().toString(36).slice(2,10);copy.x=Math.min(1030,(copy.x||540)+42);copy.y=Math.min(1030,(copy.y||540)+42);copy.name=(copy.name||'贴纸')+' 副本';copy.hidden=false;copy.locked=false;
+    state.hand.stickers.push(copy);ensureLayerOrder();state.hand.layerOrder.push('sticker:'+copy._layerId);selectedObject={type:'sticker',index:state.hand.stickers.length-1};state.hand.selSticker=selectedObject.index;render();scheduleAutoSave();toast('已复制贴纸');
   };
 
   function render() {
@@ -4371,13 +4416,12 @@ THIS CUTENESS</textarea>
       return {x:(e.clientX-rc.left)*(cv.width/rc.width),y:(e.clientY-rc.top)*(cv.height/rc.height)};
     };
     const objectTargets = () => {
-      const h=state.hand, arr=[];
-      if(h.badge.enabled && !isLayerHidden({type:'badge'}) && !isLayerLocked({type:'badge'})) arr.push({type:'badge'});
-      if(h.postmark.enabled && !isLayerHidden({type:'postmark'}) && !isLayerLocked({type:'postmark'})) arr.push({type:'postmark'});
-      if(h.character!=='none' && !isLayerHidden({type:'character'}) && !isLayerLocked({type:'character'})) arr.push({type:'character'});
-      if(String(h.text||'').trim() && !isLayerHidden({type:'text'}) && !isLayerLocked({type:'text'})) arr.push({type:'text'});
-      for(let i=0;i<h.stickers.length;i++) if(!h.stickers[i].hidden && !h.stickers[i].locked) arr.push({type:'sticker',index:i});
-      return arr.reverse();
+      const h=state.hand, arr=[]; ensureLayerOrder();
+      h.layerOrder.slice().reverse().forEach(key=>{
+        const target=targetForLayerKey(key);
+        if(target && !isLayerHidden(target) && !isLayerLocked(target)) arr.push(target);
+      });
+      return arr;
     };
     const hitObject = (p,target) => {
       const b=getObjectBox(target); if(!b) return false;
@@ -4651,7 +4695,3 @@ THIS CUTENESS</textarea>
 </script>
 </body>
 </html>
-
-
-
-
