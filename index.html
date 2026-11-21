@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="description" content="Stamp Studio 邮票工坊：制作复古手绘邮票与像素拼豆作品，支持本地编辑、贴纸素材和高清导出。">
+<meta name="description" content="Stamp Studio 邮票工坊：制作手绘邮票与像素拼豆作品，支持本地编辑、贴纸素材和高清导出。">
 <meta name="theme-color" content="#F5EEE9">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -844,9 +844,9 @@ body {
 
 
 <div class="app-shell">
-  <div class="creator-credit" aria-label="网站由📕等一场雨季和ChatGPT一起制作">
-    <span>made with love by</span> <span class="credit-names">📕等一场雨季</span><span class="credit-heart">♡</span><span class="credit-names">ChatGPT</span>
-    <span>
+  <div class="creator-credit" aria-label="网站由🍠等一场雨季和ChatGPT一起制作">
+    <span>made with love by</span> <span class="credit-names">🍠等一场雨季</span><span class="credit-heart">＆</span><span class="credit-names">ChatGPT</span>
+    <span> 
   </div>
   <div class="first-use-guide" id="first-use-guide" role="note">
     <div><strong>第一次使用？</strong> ① 选择「可爱邮票」或「像素拼豆」→ ② 上传图片 / 选择素材 → ③ 在画布调整 → ④ 导出作品。两种模式分别保存，切换不会清空另一边的作品。</div>
@@ -868,6 +868,10 @@ body {
     </div>
 
     <div class="nav-right">
+      <button class="mini-act-btn" type="button" onclick="exportStudioProject()" title="保存可继续编辑的项目文件">保存项目</button>
+      <button class="mini-act-btn" type="button" onclick="document.getElementById('studio-project-import').click()" title="打开项目文件">打开项目</button>
+      <input id="studio-project-import" type="file" accept=".json,application/json" style="display:none" onchange="importStudioProject(event)">
+      <button class="btn-export" onclick="exportPNG()" data-i18n="btnExportTop">导出高清 PNG</button>
       <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" aria-label="Language">
         <option value="zh-CN">简体中文</option>
         <option value="zh-TW">繁體中文</option>
@@ -875,10 +879,6 @@ body {
         <option value="ja">日本語</option>
         <option value="ko">한국어</option>
       </select>
-      <button class="mini-act-btn" type="button" onclick="exportStudioProject()" title="保存可继续编辑的项目文件">保存项目</button>
-      <button class="mini-act-btn" type="button" onclick="document.getElementById('studio-project-import').click()" title="打开项目文件">打开项目</button>
-      <input id="studio-project-import" type="file" accept=".json,application/json" style="display:none" onchange="importStudioProject(event)">
-      <button class="btn-export" onclick="exportPNG()" data-i18n="btnExportTop">导出高清 PNG</button>
     </div>
   </header>
 
@@ -1098,7 +1098,7 @@ THIS CUTENESS</textarea>
           </div>
           <div class="pill-grid-3">
             <input class="txt-input" id="inp-pm-top" value="CUTE MAIL" maxlength="16" onfocus="pushHandHistory()" oninput="setSub('postmark','top',this.value)">
-            <input class="txt-input" id="inp-pm-date" value="2026.11.22" maxlength="14" onfocus="pushHandHistory()" oninput="setSub('postmark','date',this.value)" style="text-align:center;">
+            <input class="txt-input" id="inp-pm-date" value="2026.11.14" maxlength="14" onfocus="pushHandHistory()" oninput="setSub('postmark','date',this.value)" style="text-align:center;">
             <input class="txt-input" id="inp-pm-bot" value="LOVE POST" maxlength="16" onfocus="pushHandHistory()" oninput="setSub('postmark','bot',this.value)">
           </div>
           <div class="row-flex">
@@ -1946,7 +1946,7 @@ THIS CUTENESS</textarea>
       layerHidden: { character:false, text:false, postmark:false, badge:false },
       layerNames: {},
       layerLocked: { character:false, text:false, postmark:false, badge:false },
-      postmark: { enabled: false, type: 'wave', top: 'CUTE MAIL', date: '2026.11.22', bot: 'LOVE POST', color: '#B84A58', x: 250, y: 240, scale: 0.88, rot: -0.14 },
+      postmark: { enabled: false, type: 'wave', top: 'CUTE MAIL', date: '2026.11.14', bot: 'LOVE POST', color: '#B84A58', x: 250, y: 240, scale: 0.88, rot: -0.14 },
       badge: { enabled: false, text: '100% CUTE', shape: 'box', color: '#231F20', x: 825, y: 875, scale: 0.92, rot: 0 },
       doodleOn: false,
       brushColor: '#231F20',
